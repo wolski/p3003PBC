@@ -1,0 +1,68 @@
+---
+title: "Hypothesis Testing"
+subtitle: "p3003 Proteombe Bioinformatics Course"
+author: "Witek Wolski"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  xaringan::moon_reader:
+    nature:
+      highlightStyle: github
+      countIncrementalSlides: false
+      ratio: '16:9'
+---
+
+## Hypothesis testing
+
+- __There is an initial research hypothesis of which the truth is unknown.__
+
+
+---
+
+## Hypothesis testing
+
+- The first step is to state the relevant null and alternative hypotheses. _This is important, as mis-stating the hypotheses will muddy the rest of the process._
+- Consider the statistical assumptions being made about the sample in doing the test; _for example, assumptions about the statistical independence or about the form of the distributions of the observations. This is equally important as invalid assumptions will mean that the results of the test are invalid._
+- Decide which test is appropriate, and state the relevant test statistic T.
+- Derive the distribution of the test statistic under the null hypothesis from the assumptions. _In standard cases this will be a well-known result. For example, the test statistic might follow a Student's t distribution or a normal distribution._
+- Select a significance level ($\alpha$), _a probability threshold below which the null hypothesis will be rejected. Common values are $5\%$ and $1\%$._
+- The distribution of the test statistic under the null hypothesis partitions the possible values of T into those for which the null hypothesis is rejected—the so-called critical region—and those for which it is not. The probability of the critical region is $\alpha$.
+- Compute from the observations the observed value $t_obs$ of the test statistic T.
+- Decide to either reject the null hypothesis in favor of the alternative or not reject it. _The decision rule is to reject the null hypothesis $H_0$ if the observed value $t_obs$ is in the critical region, and to accept or "fail to reject" the hypothesis otherwise._
+
+---
+
+# Hypothesis Testing
+
+
+- Distribution of the T statistics under null hypothesis
+- with critical region for $\alpha = 0.05$.
+
+---
+
+# Hypothesis Testing
+
+.pull-left[
+```{r echo=TRUE}
+# Plot distribution of T under null Hypothesis
+x <- seq(-3,5, by=0.1)
+plot(x, dnorm(x), type="l", xlim = c(-3,5))
+
+# Specify alpha and show critical regions
+alpha <- 0.05
+crl <- qnorm(alpha/2)
+crh <- qnorm(1-alpha/2)
+abline(h = 0)
+abline(v = c(crl, crh), col=2)
+text(2.1,0.1, "critical region", adj=0, srt=90)
+text(-2.1,0.2, "critical region", adj=0, srt=-90)
+
+# Show not significant test statistic
+abline(v = 1.2, col=3)
+text(1.2, 0.1, expression(t[obs]), srt=90)
+
+# Show significant test statistic
+abline(v = 4, col="magenta")
+text(4, 0.1, expression(t[obs]), srt=90)
+
+```
+]
