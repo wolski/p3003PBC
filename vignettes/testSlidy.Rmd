@@ -1,0 +1,100 @@
+---
+title: "Untitled"
+author: 'Witold Wolski Std Nr:'
+date: "9/7/2019"
+output: 
+  slidy_presentation:
+    
+    header: fgcz_header.html
+    footer: "Copyright (c) 2019, Witold Wolski"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## What is hypothesis testing?
+
+This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+## Hypothesis testing
+
+- There is an initial research hypothesis of which the truth is unknown.
+- The first step is to state the relevant null and alternative hypotheses. This is important, as mis-stating the hypotheses will muddy the rest of the process.
+- The second step is to consider the statistical assumptions being made about the sample in doing the test; for example, assumptions about the statistical independence or about the form of the distributions of the observations. This is equally important as invalid assumptions will mean that the results of the test are invalid.
+- Decide which test is appropriate, and state the relevant test statistic T.
+- Derive the distribution of the test statistic under the null hypothesis from the assumptions. In standard cases this will be a well-known result. For example, the test statistic might follow a Student's t distribution or a normal distribution.
+- Select a significance level ($\alpha$), a probability threshold below which the null hypothesis will be rejected. Common values are $5\%$ and $1\%$.
+- The distribution of the test statistic under the null hypothesis partitions the possible values of T into those for which the null hypothesis is rejected—the so-called critical region—and those for which it is not. The probability of the critical region is $\alpha$.
+- Compute from the observations the observed value $t_obs$ of the test statistic T.
+- Decide to either reject the null hypothesis in favor of the alternative or not reject it. The decision rule is to reject the null hypothesis $H_0$ if the observed value $t_obs$ is in the critical region, and to accept or "fail to reject" the hypothesis otherwise.
+
+
+## Brief version
+
+- State research hypothesis
+- Relevant Null and Alternative hypothesis
+- Specify test statistic
+- What is the distribution of the null hypothesis
+- What is $t_obs$?
+- specify 
+
+
+## One sample t-est
+
+- research hypothesis - mean of sample is different than some value. 
+- What is the null and what is the alternative? 
+  - Null is that the mean of observed data is equal to $\mu$.
+  - That it is NOT equal to $\mu$.
+
+- What is the distribution of the observations? 
+  - Our observations are independent, identically distributed (iid) 
+  - Normal. $x \sim N(\mu, \sigma)$.
+
+  
+- State the relevant test statistic T.
+  - A test statistics might be $\bar{X} - \mu$.
+  But we do need to know the distribution of the test statics under null, and test statistics we know the distribution of is: $T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$ and $T ~ N(0,1)$
+  - Since we do not know $\sigma$ we estimate it by the sample standard deviation $S$. What is the distribution of $T = \frac{\bar{X} - \mu}{S/\sqrt{n}}$
+  
+  
+
+```{r}
+
+N <- 10000
+N_obs <- 4
+mu <- 0
+sigma <- 1
+
+
+bb <- function(y){x <- rnorm( N_obs, mu, sigma ); data.frame(mean = mean( x ), sd = sd(x)) }
+
+res <- purrr::map_df(1:N, bb)
+head(res)
+
+hist(res$mean/(res$sd/sqrt(N_obs)),
+     breaks=200,
+     probability = T, xlim=c(-5,5),ylim=c(0,0.4))
+
+x<- seq(-10,10,0.1)
+lines(x, dnorm(x),col=2)
+lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
+
+```
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+
