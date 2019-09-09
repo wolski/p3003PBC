@@ -1,15 +1,60 @@
 ---
 title: "Hypothesis Testing"
-subtitle: "p3003 Proteombe Bioinformatics Course"
+subtitle: "p3003 Proteome Bioinformatics Course"
 author: "Witek Wolski"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   xaringan::moon_reader:
+    lib_dir: libs
     nature:
       highlightStyle: github
       countIncrementalSlides: false
       ratio: '16:9'
 ---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(fig.dim=c(4.8, 4.5), fig.retina=2, out.width="100%")
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo <- FALSE
+    options$out.height <- "99%"
+    options$fig.width <- 16
+    options$fig.height <- 8
+  }
+  options
+})
+```
+
+
+
+```{css, echo=FALSE}
+/* custom.css */
+  .left-code {
+    color: #777;
+      width: 38%;
+    height: 92%;
+    float: left;
+  }
+.right-plot {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+```
 
 ## Hypothesis testing
 
@@ -36,13 +81,14 @@ output:
 
 - Distribution of the T statistics under null hypothesis
 - with critical region for $\alpha = 0.05$.
+- Plot a $T_{obs}$ within the critical region and outside the critical region.
 
 ---
 
 # Hypothesis Testing
 
 .pull-left[
-```{r echo=TRUE}
+```{r hypo-explained, eval=FALSE}
 # Plot distribution of T under null Hypothesis
 x <- seq(-3,5, by=0.1)
 plot(x, dnorm(x), type="l", xlim = c(-3,5))
@@ -66,3 +112,233 @@ text(4, 0.1, expression(t[obs]), srt=90)
 
 ```
 ]
+
+
+.pull-right[
+```{r hypo-explained-out, ref.label="hypo-explained", echo=FALSE}
+```
+]
+
+---
+
+# Hypothesis Testing
+
+## Abbreviated version
+
+- __State research hypothesis__
+- State Relevant Null and Alternative hypothesis
+- Specify test statistic 
+- What is the distribution of the test statistics when null hypothesis is true? - difficult
+- What is $t_{obs}$? 
+
+---
+
+# Hypothesis Testing
+## Testing if mean is equal to $\mu$
+
+- research hypothesis - mean of sample is different than some value $\mu$.
+
+- What is the null and what is the alternative?
+- Null is that the mean of observed data is equal to $\mu$.
+- That it is NOT equal to $\mu$.
+
+- What is the distribution of the observations?
+- Our observations are independent, identically distributed (iid)
+- Normal. $x \sim N(\mu, \sigma)$.
+
+- State the relevant test statistic T.
+- A suitable test statistics might be $\bar{X} - \mu$.
+- But we do need to know the distribution of the test statics under null.
+- Clearly it will depend on samples size $n$ and on the variance $\sigma^2$
+
+- A test statistics we know the distribution of is: $T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$
+
+---
+
+# Hypothesis Testing
+# Simulating some data from H0
+
+
+.pull-left[
+
+
+```{r, include=FALSE}
+getBreaks <- function(T0,by=0.1){
+  res <- seq(round(min(T0), digits = 1)-by,round(max(T0), digits = 1)+by, by=by)
+  return(res)
+}
+```
+
+```{r simulateData, eval=FALSE}
+# Simulating data from Null
+N <- 10000
+N_obs <- 4
+mu <- 0
+sigma <- 1
+
+bb <- function(y){
+  x <- rnorm( N_obs, mu, sigma )
+  data.frame(mean = mean( x ), sd = sd(x)) 
+}
+res <- purrr::map_df(1:N, bb)
+par(mfrow=c(2,1))
+hist(res$mean, main="distribution of mean")
+hist(res$sd, main="distribution of sd")
+```
+]
+
+
+.pull-right[
+```{r simulateData-out, ref.label="simulateData", echo=FALSE}
+```
+]
+
+
+---
+
+# Hypothesis Testing
+# Testing if mean is equal to $\mu$ with KNOWN variance
+
+.pull-left[
+if $\sigma$ known
+
+```{r simulatingH0SigmaK, eval=FALSE}
+T0 <- res$mean/(sigma/sqrt(N_obs))
+hist(T0, breaks=getBreaks(T0), xlim=c(-6,6),
+     probability = T, ylim=c(0,0.4), main="")
+x <- seq(-10,10,0.1)
+lines(x, dnorm(x),col=2)
+
+```
+
+$T|H_0 \sim N(0,1)$
+
+]
+
+.pull-right[
+```{r simulatingH0SigmaK-out, ref.label="simulatingH0SigmaK", echo=FALSE}
+```
+]
+
+---
+
+# Hypothesis Testing
+# Testing if mean is equal to $\mu$ with UNKNOWN variance
+
+.pull-left[
+
+if $\sigma$ UNKNOWN
+
+```{r simulatingH0SigmaUK, eval = FALSE}
+T0 <- res$mean/(res$sd/sqrt(N_obs))
+hist(T0,
+     breaks=getBreaks(T0),
+     probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
+
+x <- seq(-10,10,0.1)
+lines(x, dnorm(x),col="red")
+lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
+
+```
+
+$T|H_0 \sim T(\mu=0,df=N_{obs})$
+]
+
+
+.pull-right[
+```{r simulatingH0SigmaUK-out, ref.label="simulatingH0SigmaUK", echo=FALSE}
+```
+]
+
+---
+
+# Hypothesis Testing
+# Testing if mean is equal to $\mu$ with UNKNOWN variance
+
+.pull-left[
+
+```{r simulatingH0withWrongAssumptions, eval=FALSE}
+# Simulating data from Null
+N <- 10000
+N_obs <- 4
+rate <- 1
+bb_exp <- function(y){
+  x <- rexp( N_obs, rate=rate )-1
+  data.frame(mean = mean( x ), sd = sd(x)) 
+}
+
+res <- purrr::map_df(1:N, bb_exp)
+T0 <- res$mean/(res$sd/sqrt(N_obs))
+
+hist(T0,
+     breaks=getBreaks(T0),
+     probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
+lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
+```
+]
+
+
+.pull-right[
+```{r simulatingH0withWrongAssumptions-out, ref.label="simulatingH0withWrongAssumptions", echo=FALSE}
+```
+]
+
+---
+
+# Hypothesis Testing
+# Testing if mean is equal to $\mu$ with UNKNOWN variance
+
+.pull-left[
+
+```{r simulatingH0withWrongAssumptionsN12, eval=FALSE}
+# Simulating data from Null
+N <- 10000
+N_obs <- 40
+rate <- 1
+bb_exp <- function(y){
+  x <- rexp( N_obs, rate=rate )-1
+  data.frame(mean = mean( x ), sd = sd(x)) 
+}
+
+res <- purrr::map_df(1:N, bb_exp)
+T0 <- res$mean/(res$sd/sqrt(N_obs))
+
+hist(T0,
+     breaks=getBreaks(T0),
+     probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
+lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
+```
+]
+
+
+.pull-right[
+```{r simulatingH0withWrongAssumptionsN12-out, ref.label="simulatingH0withWrongAssumptionsN12", echo=FALSE}
+```
+]
+
+---
+
+# Central Limit Theorem
+
+- In probability theory, the __central limit theorem__ (CLT) establishes that, in some situations, when independent random variables are added, their properly normalized sum tends toward a normal distribution (informally a "bell curve") even if the original variables themselves are not normally distributed. 
+
+- The theorem is a key concept in probability theory because it implies that probabilistic and statistical methods that work for normal distributions can be applicable to many problems involving other types of distributions.
+
+
+---
+
+# Two sample t-test
+
+$T = \frac{Y_1 - Y_2}{\sqrt{\frac{s_1^2}{N_1} + \frac{s_2^2}{N_2}}}$
+
+Significance level $\alpha$
+
+Reject the null hypothesis that the two means are equal if
+
+$|T| > t_{1-\alpha/2,v}$
+
+with $v$ degrees of freedom 
+
+
+$\upsilon = \frac{(s^{2}_{1}/N_{1} + s^{2}_{2}/N_{2})^{2}} {(s^{2}_{1}/N_{1})^{2}/(N_{1}-1) + (s^{2}_{2}/N_{2})^{2}/(N_{2}-1) }$
+

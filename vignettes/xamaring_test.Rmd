@@ -1,0 +1,20 @@
+---
+title: "Hypothesis Testing"
+subtitle: "p3003 Proteombe Bioinformatics Course"
+author: "Witek Wolski"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  xaringan::moon_reader:
+    css: ["default", "kunoichi", "ninjutsu", "metropolis-fonts"]
+    nature:
+    countIncrementalSlides: false
+    ratio: '16:9'
+---
+
+## Hypothesis testing
+
+- __There is an initial research hypothesis of which the truth is unknown.__
+
+```{r}
+plot(cars)
+```

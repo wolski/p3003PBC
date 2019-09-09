@@ -1,2 +1,5 @@
 *.md
 *-figure/*
+*_files/*
+*.html
+libs/
