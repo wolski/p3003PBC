@@ -342,3 +342,20 @@ with $v$ degrees of freedom
 
 $\upsilon = \frac{(s^{2}_{1}/N_{1} + s^{2}_{2}/N_{2})^{2}} {(s^{2}_{1}/N_{1})^{2}/(N_{1}-1) + (s^{2}_{2}/N_{2})^{2}/(N_{2}-1) }$
 
+
+
+# Bootstrap to generate null distribution
+
+```{r}
+N_obs=5
+my_sample <- rnorm(10000)
+boot <- function(x){ x <- sample(my_sample , N_obs,replace = TRUE); return(data.frame(mean = mean(x), sd= sd(x)))}
+res <- purrr::map_df(1:N, boot)
+library(tidyverse)
+res <- res %>% filter(sd > 0)
+T0 <- res$mean/(res$sd/sqrt(N_obs))
+
+hist(T0, freq = F,breaks=getBreaks(T0))
+lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
+
+```
