@@ -393,7 +393,7 @@ normality? E.g., because the sample sizes are small.
 
 ## Algorithm
 
-1. Suppose the 16 individuals in the study have been labelled
+1. Suppose the 10 individuals in the study have been labelled
 
 
 ```{r echo=FALSE}
@@ -412,14 +412,14 @@ tmp %>%
 
 ```
 
-2. Randomly re-assign the 16 individuals to the two groups.
+2. Randomly re-assign the 10 individuals to the two groups.
 3. Re-calculate the test-statistic for this permuted data
 4. Repeat 2 and 3 to obtain $B$ sampled test-statistics, denoted
 $T_1, \dots, T_B$.
 5. For a two-sided test, the estimated p-value of the observed
 test statistic $T_{obs}$ is:
 
-$\frac{1}{B} \sum^B_{i=0} I_{T_i} >= |T_{obs}|$
+$$\frac{1}{B} \sum^B_{i=0} I_{T_i} >= |T_{obs}|$$
 
 
 ---
@@ -497,9 +497,10 @@ abline(c(0,1), col="blue")
 ```
 ]
 
+----
+
 ## Example B
 
-----
 
 
 .pull-left[
