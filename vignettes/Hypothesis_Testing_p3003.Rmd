@@ -28,6 +28,8 @@ knitr::opts_hooks$set(fig.callout = function(options) {
 
 
 
+
+
 ```{css, echo=FALSE}
 /* custom.css */
   .left-code {
@@ -55,6 +57,14 @@ knitr::opts_hooks$set(fig.callout = function(options) {
   border: 4px solid #23373B;
 }
 ```
+
+# xaringan slides
+
+Have a look at this for including figures.
+
+
+https://www.garrickadenbuie.com/blog/decouple-code-and-output-in-xaringan-slides/
+
 
 # Hypothesis testing
 
@@ -428,15 +438,8 @@ $$\frac{1}{B} \sum^B_{i=0} I_{T_i} >= |T_{obs}|$$
 
 
 .pull-left[
-
-```{r randomization_test, eval=FALSE, echo=FALSE}
-
-rm(list=ls())
+```{r fun_def, echo=FALSE, include=FALSE}
 library(coin)
-
-
-dist1 <- function(N){rnorm(N, 0, 1 )}
-dist2 <- function(N){rnorm(N, 1.3,1.5)}
 
 sample_stats <- function(N = 12, dist1, dist2, samples = 100){
   
@@ -466,16 +469,21 @@ sample_stats <- function(N = 12, dist1, dist2, samples = 100){
   }
   return(list(res_p = res_p, sample=sample , means=means, h_0_norm = h_0_norm, t_obs =t_obs))
 }
+```
+
+
+```{r randomization_test, eval=FALSE, echo=TRUE, fig.width=20, fig.height=20}
+dist1 <- function(N){rnorm(N, 0, 1 )}
+dist2 <- function(N){rnorm(N, 1.3,1.5)}
 
 xx <- sample_stats(N=10, dist1, dist2)
-par(mfrow=c(1,4))
+par(mfrow=c(2,2))
 boxplot(intensity ~treatment, data = xx$sample)
 points(xx$means[,2],col="red",pch="-", cex=4)
 breaks <- seq(-5,5,by=0.1)
 hist(xx$h_0_norm, breaks=breaks, freq = F, xlim=c(-3,3), ylim=c(0,1), density=8,angle=-45)
 abline(v = xx$t_obs, col="green",lwd=2)
 
-
 plot(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", ylab="t.test", xlab="randomization test")
 points(xx$res_p[nrow(xx$res_p),"coin"], xx$res_p[nrow(xx$res_p),"t.test"],col=2, pch="x", cex=2)
 abline(c(0,1), col="blue")
@@ -488,31 +496,28 @@ abline(c(0,1), col="blue")
 
 ```
 
-
-
 ]
 
 .pull-right[
-```{r randomization_test-out, ref.label="randomization_test", echo=FALSE}
+```{r randomization_test-out, ref.label="randomization_test", echo=FALSE, fig.width=20, fig.height=20}
 ```
 ]
 
-----
+---
 
 ## Example B
 
 
-
 .pull-left[
-```{r randomization_test_ex2}
+```{r randomization_test_ex2, eval=FALSE}
 dist1 <- function(N){rnorm(N, 1, 1 )}
 dist2 <- function(N){rexp(N, 0.4)*2}
 
 xx <- sample_stats(N=10, dist1, dist2)
-par(mfrow=c(1,4))
+par(mfrow=c(2,2))
 boxplot(intensity ~treatment, data = xx$sample)
 points(xx$means[,2],col="red",pch="-", cex=4)
-breaks <- seq(-10,10,by=0.1)
+breaks <- seq(-15,15,by=0.1)
 hist(xx$h_0_norm, breaks=breaks, freq = F, xlim=c(-3,3), ylim=c(0,1), density=8,angle=-45)
 abline(v = xx$t_obs, col="green",lwd=2)
 
@@ -532,7 +537,7 @@ abline(v=0.05, h=.05, col="red")
 
 
 .pull-right[
-```{r randomization_test_ex2-out, ref.label="randomization_test_ex2", echo=FALSE}
+```{r randomization_test_ex2-out, ref.label="randomization_test_ex2", echo=FALSE, fig.width=10, fig.height=10}
 ```
 ]
 
