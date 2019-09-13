@@ -56,14 +56,63 @@ knitr::opts_hooks$set(fig.callout = function(options) {
 }
 ```
 
-## Hypothesis testing
+# Hypothesis testing
+
+- What is hypothesis testing
+- What is a p-Value?
+- Why p-Values might differ for the same data.
+- Modelling distribution of X under null hypothesis becomes very complex very fast for more complex models.
+- Often only correct for large sample sizes - asymptotic properties, using CLT results 
+- When p-values are usefull?
 
 - __There is an initial research hypothesis of which the truth is unknown.__
 
 
+
 ---
 
-## Hypothesis testing
+
+## Lady tasting tea
+
+Dr. Muriel Bristol, a female colleague of Fisher claimed to be able to tell whether the tea or the milk was added first to a cup.
+
+- The null hypothesis was that the Lady had no such ability.
+- The test statistic was a simple count of the number of successes in selecting the 4 cups out of 8.
+- What the probability was for her getting the number she got correct?
+
+
+---
+
+## Lady tasting tea
+
+.pull-left[
+
+```{r teatasting, eval = TRUE}
+
+x <- c(0,1,0,1,1,0,0,1)
+x <- combn(x,4)
+nrcor <- apply(x, 2, sum)
+nulldistr <- table(nrcor)
+probs <- nulldistr / sum(nulldistr)
+plot(probs)
+
+```
+]
+
+
+.pull-right[
+
+
+Hence, on $\alpha = 0.05$ reject since getting 4 right is $P(x = 4) = `r probs[5]`$ 
+
+If she would have 3 right would you reject the null hypothesis?
+$P(x > 3) = `r probs[5] + probs[4]`$.
+
+]
+
+---
+
+## Long version
 
 - The first step is to state the relevant null and alternative hypotheses. _This is important, as mis-stating the hypotheses will muddy the rest of the process._
 - Consider the statistical assumptions being made about the sample in doing the test; _for example, assumptions about the statistical independence or about the form of the distributions of the observations. This is equally important as invalid assumptions will mean that the results of the test are invalid._
@@ -76,8 +125,7 @@ knitr::opts_hooks$set(fig.callout = function(options) {
 
 ---
 
-# Hypothesis Testing
-
+## Brief version
 
 - Distribution of the T statistics under null hypothesis
 - with critical region for $\alpha = 0.05$.
@@ -85,7 +133,6 @@ knitr::opts_hooks$set(fig.callout = function(options) {
 
 ---
 
-# Hypothesis Testing
 
 .pull-left[
 ```{r hypo-explained, eval=FALSE}
@@ -121,8 +168,6 @@ text(4, 0.1, expression(t[obs]), srt=90)
 
 ---
 
-# Hypothesis Testing
-
 ## Abbreviated version
 
 - __State research hypothesis__
@@ -133,7 +178,6 @@ text(4, 0.1, expression(t[obs]), srt=90)
 
 ---
 
-# Hypothesis Testing
 ## Testing if mean is equal to $\mu$
 
 - research hypothesis - mean of sample is different than some value $\mu$.
@@ -151,12 +195,12 @@ text(4, 0.1, expression(t[obs]), srt=90)
 - But we do need to know the distribution of the test statics under null.
 - Clearly it will depend on samples size $n$ and on the variance $\sigma^2$
 
-- A test statistics we know the distribution of is: $T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$
+- A test statistics we know the distribution of is: 
+$$T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$$
 
 ---
 
-# Hypothesis Testing
-# Simulating some data from H0
+## Simulating some data from H0
 
 
 .pull-left[
@@ -196,8 +240,7 @@ hist(res$sd, main="distribution of sd")
 
 ---
 
-# Hypothesis Testing
-# Testing if mean is equal to $\mu$ with KNOWN variance
+## Testing if mean is equal to $\mu$ with KNOWN variance
 
 .pull-left[
 if $\sigma$ known
@@ -222,8 +265,7 @@ $T|H_0 \sim N(0,1)$
 
 ---
 
-# Hypothesis Testing
-# Testing if mean is equal to $\mu$ with UNKNOWN variance
+## Testing if mean is equal to $\mu$ with UNKNOWN variance
 
 .pull-left[
 
@@ -252,8 +294,7 @@ $T|H_0 \sim T(\mu=0,df=N_{obs})$
 
 ---
 
-# Hypothesis Testing
-# Testing if mean is equal to $\mu$ with UNKNOWN variance
+## Testing if mean is equal to $\mu$ with UNKNOWN variance
 
 .pull-left[
 
@@ -285,8 +326,7 @@ lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
 
 ---
 
-# Hypothesis Testing
-# Testing if mean is equal to $\mu$ with UNKNOWN variance
+## Testing if mean is equal to $\mu$ with UNKNOWN variance
 
 .pull-left[
 
@@ -342,20 +382,170 @@ with $v$ degrees of freedom
 
 $\upsilon = \frac{(s^{2}_{1}/N_{1} + s^{2}_{2}/N_{2})^{2}} {(s^{2}_{1}/N_{1})^{2}/(N_{1}-1) + (s^{2}_{2}/N_{2})^{2}/(N_{2}-1) }$
 
+---
+
+# Randomization tests
+
+But what if we want to analyse the data without assuming
+normality? E.g., because the sample sizes are small.
+
+---
+
+## Algorithm
+
+1. Suppose the 16 individuals in the study have been labelled
 
 
-# Bootstrap to generate null distribution
+```{r echo=FALSE}
+tmp <- list("Diet A"=as.integer(c( 1, 2, 3, 4, 5)),
+            "Diet B" = as.integer(c( 6, 7, 8 , 9, 10)))
 
-```{r}
-N_obs=5
-my_sample <- rnorm(10000)
-boot <- function(x){ x <- sample(my_sample , N_obs,replace = TRUE); return(data.frame(mean = mean(x), sd= sd(x)))}
-res <- purrr::map_df(1:N, boot)
-library(tidyverse)
-res <- res %>% filter(sd > 0)
-T0 <- res$mean/(res$sd/sqrt(N_obs))
+library(flextable)
+tmp <- (data.frame(tmp))
 
-hist(T0, freq = F,breaks=getBreaks(T0))
-lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
+tmp %>%
+  head() %>%
+  t() %>% 
+  as.data.frame() %>% 
+  rownames_to_column() %>% 
+  flextable()
 
 ```
+
+2. Randomly re-assign the 16 individuals to the two groups.
+3. Re-calculate the test-statistic for this permuted data
+4. Repeat 2 and 3 to obtain $B$ sampled test-statistics, denoted
+$T_1, \dots, T_B$.
+5. For a two-sided test, the estimated p-value of the observed
+test statistic $T_{obs}$ is:
+
+$\frac{1}{B} \sum^B_{i=0} I_{T_i} >= |T_{obs}|$
+
+
+---
+
+## Example A
+
+
+.pull-left[
+
+```{r randomization_test, eval=FALSE, echo=FALSE}
+
+rm(list=ls())
+library(coin)
+
+
+dist1 <- function(N){rnorm(N, 0, 1 )}
+dist2 <- function(N){rnorm(N, 1.3,1.5)}
+
+sample_stats <- function(N = 12, dist1, dist2, samples = 100){
+  
+  xx <- combn(N, N/2)
+  
+  res_p <- matrix(nrow=samples, ncol=4)
+  colnames(res_p) <- c("our","coin","t.test","asymp.test")
+  means <- NULL
+  h_0_norm <- NULL
+  t_obs <- NULL
+  for(i in 1:samples){
+    sample <- data.frame(intensity = c(dist1(N/2), dist2(N/2)),
+                         treatment = c(rep("A", N/2), rep("B", N/2)))
+    
+    teststat <- function(i, comb, data){res <- mean(data[comb[,i],1]) - mean(data[-comb[,i],1]); return(res)}
+    h_0_norm <- sapply(1:ncol(xx), teststat, xx, sample)
+    
+    means <- aggregate(intensity ~treatment, sample, mean)
+    t_obs <- means[2,2] - means[1,2]
+    
+    our <- sum(abs(t_obs) <= abs(h_0_norm)) / length(h_0_norm)
+    coin <- pvalue(independence_test(intensity ~treatment, data = sample ,distribution = exact()))
+    t.test <- t.test(intensity~ treatment, data = sample)$p.value
+    asymp.test <- asympTest::asymp.test(intensity~ treatment, data = sample)$p.value
+
+    res_p[i,]<-c(our, coin, t.test, asymp.test)
+  }
+  return(list(res_p = res_p, sample=sample , means=means, h_0_norm = h_0_norm, t_obs =t_obs))
+}
+
+xx <- sample_stats(N=10, dist1, dist2)
+par(mfrow=c(1,4))
+boxplot(intensity ~treatment, data = xx$sample)
+points(xx$means[,2],col="red",pch="-", cex=4)
+breaks <- seq(-5,5,by=0.1)
+hist(xx$h_0_norm, breaks=breaks, freq = F, xlim=c(-3,3), ylim=c(0,1), density=8,angle=-45)
+abline(v = xx$t_obs, col="green",lwd=2)
+
+
+plot(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", ylab="t.test", xlab="randomization test")
+points(xx$res_p[nrow(xx$res_p),"coin"], xx$res_p[nrow(xx$res_p),"t.test"],col=2, pch="x", cex=2)
+abline(c(0,1), col="blue")
+
+plot(xx$res_p[,"asymp.test"], xx$res_p[,"t.test"], log="xy",  xlab="asymptotic test",ylab="t.test")
+points(xx$res_p[nrow(xx$res_p),"asymp.test"], xx$res_p[nrow(xx$res_p),"t.test"],col=2, pch="x", cex=2)
+abline(c(0,1), col="blue")
+
+
+
+```
+
+
+
+]
+
+.pull-right[
+```{r randomization_test-out, ref.label="randomization_test", echo=FALSE}
+```
+]
+
+## Example B
+
+----
+
+
+.pull-left[
+```{r randomization_test_ex2}
+dist1 <- function(N){rnorm(N, 1, 1 )}
+dist2 <- function(N){rexp(N, 0.4)*2}
+
+xx <- sample_stats(N=10, dist1, dist2)
+par(mfrow=c(1,4))
+boxplot(intensity ~treatment, data = xx$sample)
+points(xx$means[,2],col="red",pch="-", cex=4)
+breaks <- seq(-10,10,by=0.1)
+hist(xx$h_0_norm, breaks=breaks, freq = F, xlim=c(-3,3), ylim=c(0,1), density=8,angle=-45)
+abline(v = xx$t_obs, col="green",lwd=2)
+
+
+plot(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", ylab="t.test", xlab="randomization test")
+points(xx$res_p[nrow(xx$res_p),"coin"], xx$res_p[nrow(xx$res_p),"t.test"],col=2, pch="x", cex=2)
+abline(c(0,1), col="blue")
+abline(v=0.05, h=.05, col="red")
+
+plot(xx$res_p[,"asymp.test"], xx$res_p[,"t.test"], log="xy",  xlab="asymptotic test",ylab="t.test")
+points(xx$res_p[nrow(xx$res_p),"asymp.test"], xx$res_p[nrow(xx$res_p),"t.test"],col=2, pch="x", cex=2)
+abline(c(0,1), col="blue")
+abline(v=0.05, h=.05, col="red")
+
+```
+]
+
+
+.pull-right[
+```{r randomization_test_ex2-out, ref.label="randomization_test_ex2", echo=FALSE}
+```
+]
+
+
+---
+
+# Take home message
+
+
+- __Think about your resarch hypothesis of which the truth is unknown.__
+- What is H_0?
+
+
+- Very difficcult to get it right distribution under H_0.
+- Usually asymptotic properties are used (e.g. CLT)
+- Impossible to get it right for the sample sizes we have.
+- Some software for high throughput proteomics therefore reports other types of probabilities.
