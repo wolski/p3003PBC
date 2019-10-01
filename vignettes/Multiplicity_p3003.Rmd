@@ -6,6 +6,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   xaringan::moon_reader:
     lib_dir: libs
+    css:  ["default", "metropolis", "metropolis-fonts", "trug-ggplot2.css"]
     nature:
       highlightStyle: github
       countIncrementalSlides: false
@@ -28,34 +29,6 @@ knitr::opts_hooks$set(fig.callout = function(options) {
 
 
 
-```{css, echo=FALSE}
-/* custom.css */
-  .left-code {
-    color: #777;
-      width: 38%;
-    height: 92%;
-    float: left;
-  }
-.right-plot {
-  width: 60%;
-  float: right;
-  padding-left: 1%;
-}
-.plot-callout {
-  height: 225px;
-  width: 450px;
-  bottom: 5%;
-  right: 5%;
-  position: absolute;
-  padding: 0px;
-  z-index: 100;
-}
-.plot-callout img {
-  width: 100%;
-  border: 4px solid #23373B;
-}
-```
-
 
 # Simulate some data
 
@@ -66,9 +39,12 @@ Idea is to simulate some data and than fit various models to obtain those distri
 (interpreting-pvalue-histogram)[http://varianceexplained.org/statistics/interpreting-pvalue-histogram/]
 
 
+---
 
-```{r}
+# Scenario A: Anti-conservative p-values (“Hooray!”)
 
 
-
+```{r reg_pvalues, out.width=400, out.height=400, echo=FALSE}
+knitr::include_graphics("../inst/images/pValueDistribution/reg_pvalues-1.png")
 ```
+

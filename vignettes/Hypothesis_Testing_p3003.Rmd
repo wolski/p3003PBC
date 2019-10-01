@@ -14,6 +14,7 @@ output:
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
+library(tidyverse)
 knitr::opts_chunk$set(fig.dim=c(4.8, 4.5), fig.retina=2, out.width="100%")
 knitr::opts_hooks$set(fig.callout = function(options) {
   if (options$fig.callout) {
@@ -31,26 +32,25 @@ knitr::opts_hooks$set(fig.callout = function(options) {
 
 
 ```{css, echo=FALSE}
-/* custom.css */
-  .left-code {
-    color: #777;
-      width: 38%;
-    height: 92%;
-    float: left;
-  }
+.left-code {
+  color: #777;
+    width: 50%;
+  height: 92%;
+  float: left;
+}
 .right-plot {
-  width: 60%;
+  width: 50%;
   float: right;
   padding-left: 1%;
 }
 .plot-callout {
-  height: 225px;
+  height: 450px;
   width: 450px;
   bottom: 5%;
   right: 5%;
   position: absolute;
   padding: 0px;
-  z-index: 100;
+  z-index: 0;
 }
 .plot-callout img {
   width: 100%;
@@ -95,9 +95,9 @@ Dr. Muriel Bristol, a female colleague of Fisher claimed to be able to tell whet
 
 ## Lady tasting tea
 
-.pull-left[
+.left-code[
 
-```{r teatasting, eval = TRUE}
+```{r teatasting, eval = FALSE}
 
 x <- c(0,1,0,1,1,0,0,1)
 x <- combn(x,4)
@@ -111,7 +111,8 @@ plot(probs)
 
 
 .pull-right[
-
+```{r teatasting-out, ref.label="teatasting", echo=FALSE}
+```
 
 Hence, on $\alpha = 0.05$ reject since getting 4 right is $P(x = 4) = `r probs[5]`$ 
 
