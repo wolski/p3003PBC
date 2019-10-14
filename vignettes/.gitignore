@@ -3,3 +3,5 @@
 *_files/*
 *.html
 libs/
+*_cache/*
+

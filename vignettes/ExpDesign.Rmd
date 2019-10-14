@@ -1,0 +1,277 @@
+---
+title: "Experimental Design<br>for LFQ experiments"
+subtitle: "FGCZ Bioinformatics Training"
+author: "Witold Wolski wew@fgcz.ethz.ch"
+date: "2018-01-23<br><br>Follow along: **bit.ly/trug-ggplot2**"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "metropolis", "metropolis-fonts", "trug-ggplot2.css"]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "%current%"
+editor_options:
+  chunk_output_type: console
+---
+
+class: fullscreen, inverse, top, center, text-white
+background-image: url("chairDesign.jpg")
+
+.font150[**design**]
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width=4.25, fig.height=3.5, fig.retina=3,
+                      message=FALSE, warning=FALSE, cache = TRUE,
+                      autodep = TRUE, hiline=TRUE)
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo <- FALSE
+    options$out.height <- "99%"
+    options$fig.width <- 16
+    options$fig.height <- 8
+  }
+  options
+})
+hook_source <- knitr::knit_hooks$get('source')
+knitr::knit_hooks$set(source = function(x, options) {
+  if (!is.null(options$hiline) && options$hiline) {
+    x <- stringr::str_replace(x, "^ ?(.+)\\s?#<<", "*\\1")
+  }
+  hook_source(x, options)
+})
+options(htmltools.dir.version = FALSE, width = 90)
+as_table <- function(...) knitr::kable(..., format='html', digits = 3)
+```
+---
+
+# Scientific Method
+
+1. Question
+2. Hypothesis
+3. Experiment <br/> ordered investigation that attempts to prove or disprove a hypothesis
+  - must show if hypothesis is supported or not.
+  - results must be measurable
+  - experiment must be repeatable
+4. Observation <br/> make observations about results of experiment
+5. Analysis <br/> run test
+6. Conclusion <br/> significant result
+
+
+---
+
+
+# Scientific Method
+
+Question of causality
+
+Assess whether a particular agent (e.g. a medication or drug or treatment regime or exposure to an environmental factor) caused or influenced a particular outcome (e.g. cure of disease, reduction in pain, medical condition, change in protein expression etc.)
+
+1.  Strength of association – (effect size) the greater the effect compared with those not
+exposed to the agent the more plausible is the association
+--
+2. Consistency – (reproducibility) does it happen in other groups of people – both men and
+women, different countries
+--
+3. Specificity – no other likely explanations - Causation is likely if there is a very specific population at a specific site and disease with no other likely explanation.
+--
+4. Temporality – effect follows cause, and if expected delay, effect must occur after that delay
+--
+5.  Biological gradient – the stronger the agent the greater the effect – 
+response follow dose but also inverse effects possible
+--
+6.  Plausibility – is there a possible biological mechanism that could explain
+the effect
+--
+7. Coherence – do different types of study result in similar conclusions – con-
+trolled trials and observational studies
+9. Analogous results found elsewhere – do similar agents have similar results
+
+New:
+a) Considering confounding factors and bias. - Confounding factor is something related to both the agent and the outcome but is not in itself a cause
+
+
+Bradford-Hill - satisfying most of them does add considerably to the evidence.
+
+
+---
+
+
+---
+
+
+
+# Study Types 
+
+.pull-left[
+## Observational study
+- subjects are observed in order to determine both their exposure and their outcome (e.g. healthy cancer)
+- not randomized to the exposed or unexposed groups
+- The exposure status is thus not determined by the researcher
+]
+
+.pull-right[
+## Experiment
+- subjects are randomized to the exposed and unexposed groups
+- experiment must be repeatable
+]
+
+---
+
+
+.pull-left[
+## Observational study
+- Case-control study -  only individuals with a specific characteristic (disease and similar individuals without disease)
+- Cross-sectional study - aim to provide data on the entire population under study
+- Longitudinal study - repeated observations of the same variables (e.g., people) over short or long periods of time
+]
+
+.pull-right[
+## Experiment
+- randomized controlled trials
+]
+
+
+---
+layout: false
+# Randomized controlled trial
+
+- Aims to reduce certain sources of __bias__
+
+--
+
+.img-right[
+![](../inst/images/Man_In_The_Moon_1.png)
+]
+
+--
+
+.img-right[
+![](../inst/images/Man_In_The_Moon_2.png)
+]
+
+--
+
+.img-right[
+![](../inst/images/Man_In_The_Moon_3.png)
+]
+
+
+---
+
+# Randomized controlled trial
+
+Aims to reduce certain sources of __bias__
+
+- Randomly allocate subjects to two or more groups
+ - selection and allocation bias
+- Blinding
+ - Information which may influence the participants is withheld until after the experiment is completed
+ - A blind can be imposed on any participant of an experiment, including __subjects, researchers, technicians, data analysts, and evaluators__
+
+e.g.:
+
+- more care when processing treated samples than controls,
+- data analysts tweaks thresholds till obtaining expected output.
+
+
+---
+  
+# Clinical Trial
+
+- Planned experiment  : is pre-planned/designed
+- On patients <br/> not a study on healthy volunteers
+- Inferential procedure <br/> want to use results from _limited_ sample of patients
+to identify best treatment for the general future population of patients.
+
+---
+
+# Blindness of trials
+
+- Single blind – either patient or evaluator blind.
+- Double blind – both patient and evaluator blind.
+
+Good practice is that double blind trials should
+be used where possible
+
+
+---
+layout: false
+
+# Confounders
+
+- Avoid batch effects:
+    - process all samples in parallel
+
+- If unavoidable, randomize over 
+  biological and technical co-variates. e.g. sex, age, in MS Run ID.
+
+- If randomization is not possible, choose a complete block design, i.e., all batch groups (e.g. sex) are
+present in each treatment group in equal numbers. _blocking_
+
+.img-right[
+![](../inst/images/BatchEffect.png)
+]
+
+
+---
+
+# Confounders
+
+.pull-left[
+
+Document any possible co-variate, e.g.,
+
+  - Human subjects: age, bmi, gender, ethnicity, tissue,
+medical center
+  -  Cellular model: cell batch, passage number, reagent
+lot no, name of technician, sequencing lane, date of
+experiment, date of sequencing
+
+]
+
+# Ethical considerations (Clinical Trial)
+
+(Declaration of Helsinki (1964+amendments))
+https://www.wma.net/policies-post/wma-declaration-of-helsinki-ethical-principles-for-medical-research-involving-human-subjects/
+
+
+- The local ethics committee has discretion on how it will supervise __noninterventional__ studies
+  -  US - Institutional Review Board (IRB)
+  -  EU - ethics committees
+
+# Ethical considerations (Clinical Trial)
+
+- It is agreed that it is unethical to conduct research which is badly planned or
+executed.
+-  It is unethical to perform a trial which has many more subjects than are needed to
+reach a conclusion.
+- It is also unethical to
+perform a trial which has little prospect of reaching any conclusion, e.g. because
+of insufficient numbers of subjects (or some other aspect of poor design)
+
+---
+
+# Sample size calculations 
+
+For each statistical test, there exists a unique
+relation between
+
+- desired smallest detectable effect size $\mu$
+- sample variance $\sigma^2$
+- sample size $N$
+- critical p-value $p_0$
+- statistical power
+
+
+.img-right[
+![](../inst/images/hl_nullhypo_errors.png)
+]
+
+
+```{r}
+
+```
+
