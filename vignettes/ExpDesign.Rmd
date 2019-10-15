@@ -81,30 +81,16 @@ caused or influenced a particular outcome
 
 1.  Strength of association – (effect size) the greater the effect compared with those not
 exposed to the agent the more plausible is the association
---
-
 2. Consistency – (reproducibility) does it happen in other groups of people – both men and
 women, different countries
---
-
 3. Specificity – no other likely explanations - Causation is likely if there is a very specific population at a specific site and disease with no other likely explanation.
---
-
 4. Temporality – effect follows cause, and if expected delay, effect must occur after that delay
---
-
 5.  Biological gradient – the stronger the agent the greater the effect – 
 response follow dose but also inverse effects possible
---
-
 6.  Plausibility – is there a possible biological mechanism that could explain
 the effect
---
-
 7. Coherence – do different types of study result in similar conclusions – con-
 trolled trials and observational studies
---
-
 9. Analogous results found elsewhere – do similar agents have similar results?
 
 
@@ -112,11 +98,12 @@ trolled trials and observational studies
 
 # Question - Causality - Bradford-Hill Criteria
 
-
 - Are there other scientifically relevant questions than causality?
-- What is your research question?
+- Does establishing all B-H criteria prove cause and effect?
+--
+
+- What is __your__ research question?
 - Which B-H criteria do you aim to establish?
-- Does establishing every one of these prove cause and effect?
 
 ---
 
@@ -171,8 +158,8 @@ This year’s Laureates have introduced<br/>
 a new approach to obtaining reliable answers</br>
 about the best ways to fight global poverty. 
 
-In brief, it involves dividing this issue into</br>
-smaller, more manageable, questions – for example,</br>
+In brief, it involves __dividing this issue into</br>
+smaller, more manageable, questions__ – for example,</br>
 the most effective interventions for improving educational</br>
 outcomes or child health. 
 
@@ -237,7 +224,7 @@ What is __selection bias__?
 
 --
 
-sample obtained is not representative of the population intended to be analyzed
+sample obtained is _not representative_ of the population intended to be analyzed
 
 --
 
@@ -245,7 +232,7 @@ What is __allocation bias__?
 
 --
 
-systematic difference in how participants are assigned to treatment groups and comparison groups
+_systematic difference_ in how participants are assigned to treatment groups and comparison groups
 
 ---
 
@@ -254,20 +241,18 @@ systematic difference in how participants are assigned to treatment groups and c
 Examples
 
 
-- more care when processing treated samples than controls,
-- "normalizing" data till obtaining expected output.
-- tweaking thresholds till obtaining significant results.
+- more care when processing treated samples than controls
+- _adjusting_ thresholds till obtaining significant results
 - ?
 
 --
 
 How could you improve you experiment by _blinding_ ?
-
 --
 
-- Avoid transfer of information unnecessary to perform a task,<br/>
+- Do not transfer information unnecessary to perform a task,<br/>
    e.g. use uninformative sample labels and group lables
-- ?
+- Perform analysis per protocol. 
 
 --
 
@@ -281,8 +266,7 @@ In clinical Trials double blind trials should be used where possible
 
 Correlation does not imply causation but causation may imply correlation
 
-__Reichenbach's common cause principle:__ 
-
+__Reichenbach's common cause principle:__ <br/>
 A correlation occurs due to one of the three possible mechanisms
 .img-small[
 ![](../inst/images/Causality_Mechanisms_3.png)
@@ -304,9 +288,8 @@ layout: false
 - Avoid batch effects:
     - process all samples in parallel
 
-- If unavoidable, randomize over <br/> 
-  biological and technical co-variates. <br/> 
-  e.g. sex, age, run ID.
+- Randomize over biological and<br/>  technical co-variates. <br/> 
+  e.g. run Id, age.
 
 - If randomization is not possible, choose a<br/>
 _complete block design_, i.e.,<br/> 
@@ -337,14 +320,13 @@ Document any possible co-variate, e.g.,
 ]
 
 .pull-right[
--  Cellular model: 
-   - cell batch, 
-   - passage number, 
+-  Biochemical/Technical: 
+   - batch, 
+   - run Id
    - reagent lot no,
+   - chromatographic column,
    - name of technician,
    - instrument,
-   - chromatographic column,
-   - run Id
 ]
 
 
@@ -394,6 +376,29 @@ is to __increase the sample size__, and this may not be feasible.
 
 ---
 
+# Sample size calculation
+
+.pull-left[
+- Biological variance >> biochemical+technical variance <br/>
+Only provide biological replicates
+
+- biochemical+technical variance >> biological variance<br/>
+  - technical replicates
+  - choose different technology
+  - buy better instrument
+]
+
+.pull-right[
+
+Run pilot experiment and measure the CV, $\sigma^2$ of replicates
+
+- technical
+- biochemical
+- biological
+]
+
+---
+
 # Sample size calculations 
 
 .pull-left[
@@ -434,3 +439,68 @@ plot(delta, resdelta, xlab = "mu", ylab="N", type="l", log="xy", main = "sd=1, p
 
 ```
 ]
+
+---
+
+# Design
+
+The key technical issue is whether comparions are made ‘between’ or ‘within’ patients.
+
+
+.pull-left[
+Between
+
+- Paralel Group Design <br/> k - groups, $n_i$ patients in group $i$ receive treatemnt $i$
+- Factorial Design <br/>  combining treatments, e.g. A and B to same patient.
+]
+
+.pull-right[
+Within
+
+- In series design <br/> each patient all $k$ treatments in same order
+- crossover design <br/> each patient  all $k$ treatements in different order
+]
+
+Are combinations of both possible?
+
+---
+
+# Factorial Design vs Parallel group
+
+40 patients, Placebo Treatment A and B.
+
+How would you allocate these patients?
+
+--
+.pull-left[
+Factorial
+
+- AB 10
+- B 10
+- A 10
+- Placebo 10
+]
+
+.pull-right[
+Parallel
+
+- A 13
+- B 13
+- Placebo 14
+]
+
+
+---
+
+# Interactions
+
+.plot-my[![](../inst/images/TypesOfInteractions_NO.png)]
+
+--
+
+.plot-my[![](../inst/images/TypesOfInteractions_Quanti.png)]
+
+--
+
+.plot-my[![](../inst/images/TypesOfInteractions_Quali.png)]
+

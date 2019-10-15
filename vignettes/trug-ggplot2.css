@@ -101,6 +101,22 @@ body {
   width: 400px;
 }
 
+.img-small img {
+  width: 100%;
+}
+
+.plot-my {
+  top: 25%;
+  position: absolute;
+  padding: 0px;
+}
+
+.plot-my img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+
 .plot-callout {
   height: 225px;
   width: 450px;
