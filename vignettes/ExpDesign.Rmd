@@ -117,18 +117,16 @@ trolled trials and observational studies
 - What is your research question?
 - Which B-H criteria do you aim to establish?
 - Does establishing every one of these prove cause and effect?
-- Can we infer causal models from data?
 
 ---
 
-# Question - Causality - Causal Disco
+# Question - Causality
+
+- Can we infer causal models directly from data?
 
 ![](../inst/images/Causality_fromData.jpg)
 
 https://github.com/annennenne/causalDisco/blob/master/slides/causaldisco_ahp_user2019.pdf
-
----
-
 
 
 ---
@@ -150,6 +148,7 @@ https://github.com/annennenne/causalDisco/blob/master/slides/causaldisco_ahp_use
 
 ---
 
+# Study Types 
 
 .pull-left[
 ## Observational study
@@ -165,37 +164,53 @@ https://github.com/annennenne/causalDisco/blob/master/slides/causaldisco_ahp_use
 
 
 ---
+
+# Randomized controlled trials
+
+This year’s Laureates have introduced<br/>
+a new approach to obtaining reliable answers</br>
+about the best ways to fight global poverty. 
+
+In brief, it involves dividing this issue into</br>
+smaller, more manageable, questions – for example,</br>
+the most effective interventions for improving educational</br>
+outcomes or child health. 
+
+They have shown that these smaller, more precise,</br>
+questions are often best answered via carefully</br>
+__designed experiments__<br/>
+among the people who are most affected.
+
+
+.img-right[
+![](../inst/images/Nobel2019.png)
+]
+
+
+---
 layout: false
 
 # Randomized controlled trial
 
 Aims to reduce certain sources of __bias__
 
-Bias is an inclination towards something, or a predisposition, partiality, prejudice, preference, or predilection.
+Bias is an inclination towards something, or a predisposition,<br/> partiality, prejudice, preference, or predilection.
+
+--
 
 - Confirmation bias,<br/> tendency to favor information that confirm hypothesis
-
---
-
-- Funding bias,<br/> bias relative to the commercial interests of a study's financial sponsor
---
-
-- Publication bias,<br/> bias towards publication of certain experimental results
-
---
-
 .img-right[
 ![](../inst/images/Man_In_The_Moon_1.png)
 ]
-
 --
 
+- Funding bias,<br/> bias relative to the commercial interests of a study's <br/> financial sponsor
 .img-right[
 ![](../inst/images/Man_In_The_Moon_2.png)
 ]
-
 --
 
+- Publication bias,<br/> bias towards publication of certain experimental results
 .img-right[
 ![](../inst/images/Man_In_The_Moon_3.png)
 ]
@@ -208,27 +223,25 @@ Bias is an inclination towards something, or a predisposition, partiality, preju
 Aims to reduce certain sources of __bias__
 
 - Randomly allocate subjects to two or more groups
- - selection and allocation bias
+ - _selection_ and _allocation_ bias
 - Blinding
  - Information which may influence the participants is withheld until after the experiment is completed
- - A blind can be imposed on any participant of an experiment, including __subjects, researchers, technicians, data analysts, and evaluators__
-
-e.g.:
-
-- more care when processing treated samples than controls,
-- data analysts tweaks thresholds till obtaining expected output.
+ - A blind can be imposed on any participant of an experiment, including<br/> __subjects, researchers, technicians, data analysts, and evaluators__
 
 
 ---
 
-What is selection bias?
+# Bias
+
+What is __selection bias__?
 
 --
+
 sample obtained is not representative of the population intended to be analyzed
 
 --
 
-What is allocation bias?
+What is __allocation bias__?
 
 --
 
@@ -236,38 +249,52 @@ systematic difference in how participants are assigned to treatment groups and c
 
 ---
 
-# Blindness of trials
+# Bias
 
-- Single blind – either patient or evaluator blind.
-- Double blind – both patient and evaluator blind.
+Examples
 
-Good practice is that double blind trials should be used where possible
+
+- more care when processing treated samples than controls,
+- "normalizing" data till obtaining expected output.
+- tweaking thresholds till obtaining significant results.
+- ?
 
 --
 
-How could you blind the data analyst?
+How could you improve you experiment by _blinding_ ?
 
 --
 
-- avoid confirmation bias
-  - use uninformative group labels
-  - do not discuss analysis outcomes - i.e. this is super interesting etc.
-  
+- Avoid transfer of information unnecessary to perform a task,<br/>
+   e.g. use uninformative sample labels and group lables
+- ?
+
+--
+
+In clinical Trials double blind trials should be used where possible
+  - Single blind – either patient or evaluator blind.
+  - Double blind – both patient and evaluator blind
 
 ---
 
 # Confounders
 
-- Confounding is a causal concept.
-- It is a variable that influences both the dependent variable and independent variable, causing a spurious association.
+Correlation does not imply causation but causation may imply correlation
 
+__Reichenbach's common cause principle:__ 
 
+A correlation occurs due to one of the three possible mechanisms
+.img-small[
+![](../inst/images/Causality_Mechanisms_3.png)
+]
 
+__Confounder__ - is a variable that influences both the dependent variable and independent variable, causing a spurious association.
+
+<!--
 .img-right[
 ![](../inst/images/Confrounding_Wiki.png)
 ]
-
-
+-->
 
 ---
 layout: false
@@ -277,11 +304,14 @@ layout: false
 - Avoid batch effects:
     - process all samples in parallel
 
-- If unavoidable, randomize over 
-  biological and technical co-variates. e.g. sex, age, in MS Run ID.
+- If unavoidable, randomize over <br/> 
+  biological and technical co-variates. <br/> 
+  e.g. sex, age, run ID.
 
-- If randomization is not possible, choose a complete block design, i.e., all batch groups (e.g. sex) are
-present in each treatment group in equal numbers. _blocking_
+- If randomization is not possible, choose a<br/>
+_complete block design_, i.e.,<br/> 
+all batch groups are present in each treatment<br/>
+group in equal numbers.
 
 .img-right[
 ![](../inst/images/BatchEffect.png)
@@ -292,58 +322,115 @@ present in each treatment group in equal numbers. _blocking_
 
 # Confounders
 
-.pull-left[
-
 Document any possible co-variate, e.g.,
 
-  - Human subjects: age, bmi, gender, ethnicity, tissue,
-medical center
-  -  Cellular model: cell batch, passage number, reagent
-lot no, name of technician, sequencing lane, date of
-experiment, date of sequencing
+.pull-left[
 
+
+- Human subjects:
+  - age, 
+  - bmi, 
+  - gender, 
+  - ethnicity, 
+  - tissue, 
+  - medical center
 ]
 
+.pull-right[
+-  Cellular model: 
+   - cell batch, 
+   - passage number, 
+   - reagent lot no,
+   - name of technician,
+   - instrument,
+   - chromatographic column,
+   - run Id
+]
+
+
+---
+
 # Ethical considerations (Clinical Trial)
 
-(Declaration of Helsinki (1964+amendments))
-https://www.wma.net/policies-post/wma-declaration-of-helsinki-ethical-principles-for-medical-research-involving-human-subjects/
-
-
-- The local ethics committee has discretion on how it will supervise __noninterventional__ studies
-  -  US - Institutional Review Board (IRB)
-  -  EU - ethics committees
-
-# Ethical considerations (Clinical Trial)
-
-- It is agreed that it is unethical to conduct research which is badly planned or
-executed.
+- It is agreed that it is __unethical__ _to conduct research which is badly planned or
+executed_.
 -  It is unethical to perform a trial which has many more subjects than are needed to
 reach a conclusion.
 - It is also unethical to
 perform a trial which has little prospect of reaching any conclusion, e.g. because
 of insufficient numbers of subjects (or some other aspect of poor design)
 
+
+- The local ethics committee has discretion on how it will supervise __noninterventional__ studies
+  -  US - Institutional Review Board (IRB)
+  -  EU - ethics committees
+
+(Declaration of Helsinki (1964+amendments))
+https://www.wma.net/policies-post/wma-declaration-of-helsinki-ethical-principles-for-medical-research-involving-human-subjects/
+
+---
+
+
+
+# Types of error
+
+
+A _type I error_ (false positive) occurs when the null hypothesis (H0) is true, but is rejected.<br/> 
+The _type I error rate_ or __significance level__ (p-Value) is the probability of rejecting the<br/> 
+null hypothesis given that it is true.
+
+
+A _type II error_ (false negetive) occurs when the null hypothesis<br/>
+is false, but erroneously fails to be rejected. <br/>
+The _the type II error rate_ is denoted by the Greek letter $\beta$<br/>
+and related to the __power of a test__ (which equals $1−\beta$).
+
+For a given test, the only way to reduce both error rates<br/> 
+is to __increase the sample size__, and this may not be feasible.
+
+.img-right[
+![](../inst/images/hl_nullhypo_errors.png)
+]
+
 ---
 
 # Sample size calculations 
 
-For each statistical test, there exists a unique
-relation between
+.pull-left[
+For each statistical test,<br/> 
+there exists a unique relation between:
 
 - desired smallest detectable effect size $\mu$
 - sample variance $\sigma^2$
 - sample size $N$
 - critical p-value $p_0$
 - statistical power
-
-
-.img-right[
-![](../inst/images/hl_nullhypo_errors.png)
 ]
 
+.img-right[
+```{r echo=FALSE}
 
-```{r}
+sd <- seq(0.5, 2, by =.001)
+
+dd <- power.t.test(delta = 2, sd = 1, sig.level = 0.05, power = 0.8)
+
+powersd <- function(sd, delta = 1, sig.level = 0.05, power = 0.8){
+  ceiling(power.t.test(delta = 2, sd = sd, sig.level = sig.level, power = power)$n)
+}
+
+
+ressd <- sapply(sd, powersd)
+
+power_delta <- function( delta, sd = 1, sig.level = 0.05, power = 0.8){
+  ceiling(power.t.test(delta = delta, sd = sd, sig.level = sig.level, power = power)$n)
+}
+
+delta <- seq(0.5,6, by = 0.001)
+resdelta <- sapply(delta, power_delta)
+#par(mfrow=c(2,1))
+plot(sd, ressd, ylab="N", type="l", main = "mu=1, p=0.05, power = 0.8")
+plot(delta, resdelta, xlab = "mu", ylab="N", type="l", log="xy", main = "sd=1, p=0.05, power = 0.8")
+
 
 ```
-
+]

@@ -87,13 +87,18 @@ body {
 .img-right{
   height: 300px;
   width: 300px;
-  top: 34%;
+  top: 25%;
   left: 65%;
   position: absolute;
 }
 
 .img-right img {
   width: 100%;
+}
+
+.img-small{
+  height: 300px;
+  width: 400px;
 }
 
 .plot-callout {
