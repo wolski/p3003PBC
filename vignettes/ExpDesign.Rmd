@@ -17,7 +17,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-class: fullscreen, inverse, top, center, text-white
+class: fullscreen, inverse, top, center, text-black
 background-image: url("chairDesign.jpg")
 
 .font150[**design**]
@@ -45,6 +45,7 @@ knitr::knit_hooks$set(source = function(x, options) {
 options(htmltools.dir.version = FALSE, width = 90)
 as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 ```
+
 ---
 
 # Scientific Method
@@ -62,46 +63,75 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 
 ---
 
+# Question - Causality
 
-# Scientific Method
 
-Question of causality
+Assess whether a particular agent 
 
-Assess whether a particular agent (e.g. a medication or drug or treatment regime or exposure to an environmental factor) caused or influenced a particular outcome (e.g. cure of disease, reduction in pain, medical condition, change in protein expression etc.)
+(e.g. a medication or drug or treatment regime or exposure to an environmental factor)
+
+caused or influenced a particular outcome 
+
+(e.g. cure of disease, reduction in pain, medical condition, change in protein expression etc.)
+
+---
+
+# Question - Causality - Bradford-Hill Criteria
+
 
 1.  Strength of association – (effect size) the greater the effect compared with those not
 exposed to the agent the more plausible is the association
 --
+
 2. Consistency – (reproducibility) does it happen in other groups of people – both men and
 women, different countries
 --
+
 3. Specificity – no other likely explanations - Causation is likely if there is a very specific population at a specific site and disease with no other likely explanation.
 --
+
 4. Temporality – effect follows cause, and if expected delay, effect must occur after that delay
 --
+
 5.  Biological gradient – the stronger the agent the greater the effect – 
 response follow dose but also inverse effects possible
 --
+
 6.  Plausibility – is there a possible biological mechanism that could explain
 the effect
 --
+
 7. Coherence – do different types of study result in similar conclusions – con-
 trolled trials and observational studies
-9. Analogous results found elsewhere – do similar agents have similar results
+--
 
-New:
-a) Considering confounding factors and bias. - Confounding factor is something related to both the agent and the outcome but is not in itself a cause
-
-
-Bradford-Hill - satisfying most of them does add considerably to the evidence.
+9. Analogous results found elsewhere – do similar agents have similar results?
 
 
 ---
 
+# Question - Causality - Bradford-Hill Criteria
+
+
+- Are there other scientifically relevant questions than causality?
+- What is your research question?
+- Which B-H criteria do you aim to establish?
+- Does establishing every one of these prove cause and effect?
+- Can we infer causal models from data?
+
+---
+
+# Question - Causality - Causal Disco
+
+![](../inst/images/Causality_fromData.jpg)
+
+https://github.com/annennenne/causalDisco/blob/master/slides/causaldisco_ahp_user2019.pdf
 
 ---
 
 
+
+---
 
 # Study Types 
 
@@ -109,13 +139,13 @@ Bradford-Hill - satisfying most of them does add considerably to the evidence.
 ## Observational study
 - subjects are observed in order to determine both their exposure and their outcome (e.g. healthy cancer)
 - not randomized to the exposed or unexposed groups
-- The exposure status is thus not determined by the researcher
+- The exposure status is not determined by the researcher
 ]
 
 .pull-right[
 ## Experiment
-- subjects are randomized to the exposed and unexposed groups
 - experiment must be repeatable
+- subjects are randomized to the exposed and unexposed groups
 ]
 
 ---
@@ -136,9 +166,21 @@ Bradford-Hill - satisfying most of them does add considerably to the evidence.
 
 ---
 layout: false
+
 # Randomized controlled trial
 
-- Aims to reduce certain sources of __bias__
+Aims to reduce certain sources of __bias__
+
+Bias is an inclination towards something, or a predisposition, partiality, prejudice, preference, or predilection.
+
+- Confirmation bias,<br/> tendency to favor information that confirm hypothesis
+
+--
+
+- Funding bias,<br/> bias relative to the commercial interests of a study's financial sponsor
+--
+
+- Publication bias,<br/> bias towards publication of certain experimental results
 
 --
 
@@ -178,13 +220,19 @@ e.g.:
 
 
 ---
-  
-# Clinical Trial
 
-- Planned experiment  : is pre-planned/designed
-- On patients <br/> not a study on healthy volunteers
-- Inferential procedure <br/> want to use results from _limited_ sample of patients
-to identify best treatment for the general future population of patients.
+What is selection bias?
+
+--
+sample obtained is not representative of the population intended to be analyzed
+
+--
+
+What is allocation bias?
+
+--
+
+systematic difference in how participants are assigned to treatment groups and comparison groups
 
 ---
 
@@ -193,8 +241,32 @@ to identify best treatment for the general future population of patients.
 - Single blind – either patient or evaluator blind.
 - Double blind – both patient and evaluator blind.
 
-Good practice is that double blind trials should
-be used where possible
+Good practice is that double blind trials should be used where possible
+
+--
+
+How could you blind the data analyst?
+
+--
+
+- avoid confirmation bias
+  - use uninformative group labels
+  - do not discuss analysis outcomes - i.e. this is super interesting etc.
+  
+
+---
+
+# Confounders
+
+- Confounding is a causal concept.
+- It is a variable that influences both the dependent variable and independent variable, causing a spurious association.
+
+
+
+.img-right[
+![](../inst/images/Confrounding_Wiki.png)
+]
+
 
 
 ---
