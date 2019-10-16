@@ -1,21 +1,31 @@
 ---
 title: "Hypothesis Testing"
-subtitle: "p3003 Proteome Bioinformatics Course"
-author: "Witek Wolski"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: 
+subtitle: "FGCZ Prot - Bio - Informatics Training"
+author: "Witold Wolski wew@fgcz.ethz.ch"
+date: "2018-01-23"
+output:
   xaringan::moon_reader:
     lib_dir: libs
+    css: ["default", "metropolis", "metropolis-fonts", "trug-ggplot2.css"]
     nature:
+      ratio: 16:9
       highlightStyle: github
+      highlightLines: true
       countIncrementalSlides: false
-      ratio: '16:9'
+      slideNumberFormat: "%current%"
+editor_options:
+  chunk_output_type: console
 ---
 
+class: fullscreen, inverse, top, center, text-black
+background-image: url("../inst/images/test_chair.jpeg")
+
+.font150[**hypothesis testing**]
+
 ```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE)
-library(tidyverse)
-knitr::opts_chunk$set(fig.dim=c(4.8, 4.5), fig.retina=2, out.width="100%")
+knitr::opts_chunk$set(fig.width=4.25, fig.height=3.5, fig.retina=3,
+                      message=FALSE, warning=FALSE, cache = TRUE,
+                      autodep = TRUE, hiline=TRUE)
 knitr::opts_hooks$set(fig.callout = function(options) {
   if (options$fig.callout) {
     options$echo <- FALSE
@@ -25,128 +35,99 @@ knitr::opts_hooks$set(fig.callout = function(options) {
   }
   options
 })
+hook_source <- knitr::knit_hooks$get('source')
+knitr::knit_hooks$set(source = function(x, options) {
+  if (!is.null(options$hiline) && options$hiline) {
+    x <- stringr::str_replace(x, "^ ?(.+)\\s?#<<", "*\\1")
+  }
+  hook_source(x, options)
+})
+options(htmltools.dir.version = FALSE, width = 90)
+as_table <- function(...) knitr::kable(..., format='html', digits = 3)
+
+library(tidyverse)
 ```
-
-
-
-
-
-```{css, echo=FALSE}
-.left-code {
-  color: #777;
-    width: 50%;
-  height: 92%;
-  float: left;
-}
-.right-plot {
-  width: 50%;
-  float: right;
-  padding-left: 1%;
-}
-.plot-callout {
-  height: 450px;
-  width: 450px;
-  bottom: 5%;
-  right: 5%;
-  position: absolute;
-  padding: 0px;
-  z-index: 0;
-}
-.plot-callout img {
-  width: 100%;
-  border: 4px solid #23373B;
-}
-```
-
-# xaringan slides
-
-Have a look at this for including figures.
-
-
-https://www.garrickadenbuie.com/blog/decouple-code-and-output-in-xaringan-slides/
-
-
-# Hypothesis testing
-
-- What is hypothesis testing
-- What is a p-Value?
-- Why p-Values might differ for the same data.
-- Modelling distribution of X under null hypothesis becomes very complex very fast for more complex models.
-- Often only correct for large sample sizes - asymptotic properties, using CLT results 
-- When p-values are usefull?
-
-- __There is an initial research hypothesis of which the truth is unknown.__
-
-
 
 ---
 
-
-## Lady tasting tea
+#  Lady tasting tea
 
 Dr. Muriel Bristol, a female colleague of Fisher claimed to be able to tell whether the tea or the milk was added first to a cup.
 
-- The null hypothesis was that the Lady had no such ability.
-- The test statistic was a simple count of the number of successes in selecting the 4 cups out of 8.
-- What the probability was for her getting the number she got correct?
+--
 
+- The null hypothesis was that the Lady had no such ability.
+--
+
+- The test statistic was a simple count of the number of successes<br/> in selecting the 4 cups out of 8.
+
+--
+- What was the probability of getting the number she got correct (all correct)?
 
 ---
 
-## Lady tasting tea
+# Lady tasting tea
 
 .left-code[
-
 ```{r teatasting, eval = FALSE}
-
-x <- c(0,1,0,1,1,0,0,1)
-x <- combn(x,4)
-nrcor <- apply(x, 2, sum)
+truth <- c(0,1,0,1,1,0,0,1)
+x <- combn(truth,4) #<<
+nrcor <- apply(x, 2, sum) #<<
 nulldistr <- table(nrcor)
-probs <- nulldistr / sum(nulldistr)
-plot(probs)
 
+plot(nulldistr, xlab="nr correct")
 ```
 ]
 
 
-.pull-right[
-```{r teatasting-out, ref.label="teatasting", echo=FALSE}
+.right-plot[
+```{r teatasting-out, ref.label="teatasting", echo=FALSE,  out.width="100%"}
+```
+]
+
+---
+# Lady tasting tea
+
+```{r}
+probs <- nulldistr / sum(nulldistr)
+probs
 ```
 
 Hence, on $\alpha = 0.05$ reject since getting 4 right is $P(x = 4) = `r probs[5]`$ 
 
-If she would have 3 right would you reject the null hypothesis?
-$P(x > 3) = `r probs[5] + probs[4]`$.
+If she would have 3 right would you accept the null hypothesis?
 
-]
+--
 
----
-
-## Long version
-
-- The first step is to state the relevant null and alternative hypotheses. _This is important, as mis-stating the hypotheses will muddy the rest of the process._
-- Consider the statistical assumptions being made about the sample in doing the test; _for example, assumptions about the statistical independence or about the form of the distributions of the observations. This is equally important as invalid assumptions will mean that the results of the test are invalid._
-- Decide which test is appropriate, and state the relevant test statistic T.
-- Derive the distribution of the test statistic under the null hypothesis from the assumptions. _In standard cases this will be a well-known result. For example, the test statistic might follow a Student's t distribution or a normal distribution._
-- Select a significance level ($\alpha$), _a probability threshold below which the null hypothesis will be rejected. Common values are $5\%$ and $1\%$._
-- The distribution of the test statistic under the null hypothesis partitions the possible values of T into those for which the null hypothesis is rejected—the so-called critical region—and those for which it is not. The probability of the critical region is $\alpha$.
-- Compute from the observations the observed value $t_obs$ of the test statistic T.
-- Decide to either reject the null hypothesis in favor of the alternative or not reject it. _The decision rule is to reject the null hypothesis $H_0$ if the observed value $t_obs$ is in the critical region, and to accept or "fail to reject" the hypothesis otherwise._
+$P(x > 3) = `r probs[5]` + `r probs[4]` = `r probs[5] +  probs[4]`$.
 
 ---
 
-## Brief version
+# Hypothesis testing - Long version
 
-- Distribution of the T statistics under null hypothesis
-- with critical region for $\alpha = 0.05$.
-- Plot a $T_{obs}$ within the critical region and outside the critical region.
+- State the relevant null and alternative hypotheses. _This is important, as mis-stating the hypotheses will muddy the rest of the process._
+- Consider the statistical assumptions being made about the sample. _e.g., statistical independence, distributions of the observations. invalid assumptions will mean that the results of the test are invalid._
+- State the relevant test statistic T (Decide which test is appropriate).
+- Derive the distribution of the test statistic under the null hypothesis. _e.g., the test statistic follow's a Student's t distribution_
+- Select a significance level $\alpha$, which defines the critical region of null distribution.
+- Compute from the observations the observed value $t_{obs}$ of the test statistic T.
+- Reject the null hypothesis if the observed value $t_{obs}$ is in the critical region.
 
 ---
+
+# Hypothesis testing - Brief version
+
+- __State research hypothesis__
+- State Relevant Null and Alternative hypothesis
+- Define test (T) statistic. 
+- Determine distribution of the test statistic under null hypothesis
+- Define Critical region.
+- Check if $T_{obs}$ is within the critical region.
+
 
 
 .pull-left[
-```{r hypo-explained, eval=FALSE}
+```{r hypo-explained, eval=FALSE, echo = FALSE}
 # Plot distribution of T under null Hypothesis
 x <- seq(-3,5, by=0.1)
 plot(x, dnorm(x), type="l", xlim = c(-3,5))
@@ -154,11 +135,12 @@ plot(x, dnorm(x), type="l", xlim = c(-3,5))
 # Specify alpha and show critical regions
 alpha <- 0.05
 crl <- qnorm(alpha/2)
-crh <- qnorm(1-alpha/2)
+crh <- qnorm(1 - alpha/2)
 abline(h = 0)
 abline(v = c(crl, crh), col=2)
-text(2.1,0.1, "critical region", adj=0, srt=90)
-text(-2.1,0.2, "critical region", adj=0, srt=-90)
+
+text(  2.1 , 0.1, "critical region", adj=0, srt=90)
+text( -2.1 , 0.2, "critical region", adj=0, srt=-90)
 
 # Show not significant test statistic
 abline(v = 1.2, col=3)
@@ -172,125 +154,178 @@ text(4, 0.1, expression(t[obs]), srt=90)
 ]
 
 
-.pull-right[
+.right-plot[
 ```{r hypo-explained-out, ref.label="hypo-explained", echo=FALSE}
 ```
 ]
 
----
-
-## Abbreviated version
-
-- __State research hypothesis__
-- State Relevant Null and Alternative hypothesis
-- Specify test statistic 
-- What is the distribution of the test statistics when null hypothesis is true? - difficult
-- What is $t_{obs}$? 
 
 ---
 
-## Testing if mean is equal to $\mu$
+# Testing if mean is equal to $\mu$
 
-- research hypothesis - mean of sample is different than some value $\mu$.
-
+- Hypothesis - mean of sample is different than some value $\mu$.
 - What is the null and what is the alternative?
-- Null is that the mean of observed data is equal to $\mu$.
-- That it is NOT equal to $\mu$.
+--
 
+  - Null is that the mean of observed data is equal to $\mu$.
+  - Alternative - it is NOT equal to $\mu$.
 - What is the distribution of the observations?
-- Our observations are independent, identically distributed (iid)
-- Normal. $x \sim N(\mu, \sigma)$.
+--
+  
+  - Observations are independent, identically distributed (iid)
+  - Normal. $x \sim N(\mu, \sigma)$.
+- State the relevant test statistic T?
+--
 
-- State the relevant test statistic T.
-- A suitable test statistics might be $\bar{X} - \mu$.
-- But we do need to know the distribution of the test statics under null.
-- Clearly it will depend on samples size $n$ and on the variance $\sigma^2$
+  - A suitable test statistics $\bar{X} - \mu$.
+- What is the distribution of T under the null hypothesis?
+--
 
-- A test statistics we know the distribution of is: 
-$$T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$$
+  - It will depend on samples size $n$ and on the variance $\sigma^2$
+
 
 ---
 
-## Simulating some data from H0
+#  mean is equal to $\mu$? Simulate data under null
 
 
-.pull-left[
+.left-code[
 
 
 ```{r, include=FALSE}
+decimalplaces <- function(x) {
+    if (abs(x - round(x)) > .Machine$double.eps^0.5) {
+        nchar(strsplit(sub('0+$', '', as.character(x)), ".", fixed = TRUE)[[1]][[2]])
+    } else {
+        return(0)
+    }
+}
+
 getBreaks <- function(T0,by=0.1){
-  res <- seq(round(min(T0), digits = 1)-by,round(max(T0), digits = 1)+by, by=by)
+  res <- seq(round(min(T0), digits = decimalplaces(by))-by,round(max(T0), digits = decimalplaces(by))+by, by=by)
   return(res)
 }
+
+
 ```
 
 ```{r simulateData, eval=FALSE}
 # Simulating data from Null
-N <- 10000
-N_obs <- 4
-mu <- 0
-sigma <- 1
-
+N <- 1000; N_obs <- 4; mu <- 0; sigma <- 1
 bb <- function(y){
   x <- rnorm( N_obs, mu, sigma )
   data.frame(mean = mean( x ), sd = sd(x)) 
 }
 res <- purrr::map_df(1:N, bb)
-par(mfrow=c(2,1))
-hist(res$mean, main="distribution of mean")
-hist(res$sd, main="distribution of sd")
+res %>% tidyr::gather() %>%
+ggplot(aes(x = value)) +
+  geom_histogram() +
+  facet_grid(~key)
 ```
 ]
 
 
-.pull-right[
-```{r simulateData-out, ref.label="simulateData", echo=FALSE}
+.right-plot[
+```{r simulateData-out, ref.label="simulateData", echo=FALSE,  out.width="100%"}
 ```
 ]
 
 
 ---
 
-## Testing if mean is equal to $\mu$ with KNOWN variance
+# Mean = $\mu$? What is the distribution of T?
 
-.pull-left[
+.left-code[
 if $\sigma$ known
 
-```{r simulatingH0SigmaK, eval=FALSE}
-T0 <- res$mean/(sigma/sqrt(N_obs))
-hist(T0, breaks=getBreaks(T0), xlim=c(-6,6),
-     probability = T, ylim=c(0,0.4), main="")
-x <- seq(-10,10,0.1)
-lines(x, dnorm(x),col=2)
+```{r simulatingH0SigmaK, eval=FALSE, size="footnotesize"}
+T0 <- mu - res$mean
+hist(T0, breaks=getBreaks(T0, by=0.05),
+     probability = T,
+     main="")
+x <- seq(-10,10,0.01)
+lines(x, 
+      dnorm(x,
+            sd= (sigma/sqrt(N_obs))), #<<
+      col=2)
 
 ```
 
-$T|H_0 \sim N(0,1)$
+$T|H_0 \sim N(0,\sigma/\sqrt(N_{obs}))$
 
 ]
 
-.pull-right[
+.right-plot[
 ```{r simulatingH0SigmaK-out, ref.label="simulatingH0SigmaK", echo=FALSE}
 ```
 ]
 
+
+
 ---
 
-## Testing if mean is equal to $\mu$ with UNKNOWN variance
+# Improved test statistic
 
-.pull-left[
+
+$$T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$$
+Z- transformed data $\sim WN(0,1)$.
+
+The variance of the sampling distribution of the mean is the population variance divided by N.
+
+$$\sigma^2_{mean} = \sigma^2/n$$
+
+---
+
+# Mean = $\mu$? What is the distribution of T*?
+
+.left-code[
+if $\sigma$ known
+
+```{r simulatingH0SigmaKTnew, eval=FALSE, size="footnotesize"}
+T0 <- (mu - res$mean)/
+  (sigma/sqrt(N_obs)) #<<
+hist(T0, breaks=getBreaks(T0, by=0.05),
+     probability = T,
+     main="")
+x <- seq(-10,10,0.01)
+lines(x, 
+      dnorm(x, 
+            sd= 1), #<<
+      col=2)
+
+```
+
+$T|H_0 \sim N(0,1)$
+]
+
+.right-plot[
+```{r simulatingH0SigmaKTnew-out, ref.label="simulatingH0SigmaKTnew", echo=FALSE}
+```
+]
+
+
+
+---
+
+# Mean = $\mu$? Unknown Variance
+
+.left-code[
 
 if $\sigma$ UNKNOWN
 
 ```{r simulatingH0SigmaUK, eval = FALSE}
-T0 <- res$mean/(res$sd/sqrt(N_obs))
-hist(T0,
-     breaks=getBreaks(T0),
-     probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
+T0 <- (mu - res$mean) /
+  (res$sd/sqrt(N_obs)) #<<
+hist(T0, breaks=getBreaks(T0),probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
 
 x <- seq(-10,10,0.1)
-lines(x, dnorm(x),col="red")
-lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
+lines(x, 
+      dnorm(x),#<<
+      col="red")
+lines(x,
+      dt(x,df = N_obs), #<<
+      type="l",col="green",lwd=2)
 
 ```
 
@@ -298,74 +333,93 @@ $T|H_0 \sim T(\mu=0,df=N_{obs})$
 ]
 
 
-.pull-right[
+.right-plot[
 ```{r simulatingH0SigmaUK-out, ref.label="simulatingH0SigmaUK", echo=FALSE}
 ```
 ]
 
 ---
 
-## Testing if mean is equal to $\mu$ with UNKNOWN variance
+# Mean = $\mu$? $x \sim Exp(1)$
 
-.pull-left[
+.left-code[
 
 ```{r simulatingH0withWrongAssumptions, eval=FALSE}
-# Simulating data from Null
-N <- 10000
-N_obs <- 4
-rate <- 1
+N <- 10000;N_obs <- 4;rate <- 1
 bb_exp <- function(y){
-  x <- rexp( N_obs, rate=rate )-1
+  x <- rexp( N_obs, rate=rate )-1 #<<
   data.frame(mean = mean( x ), sd = sd(x)) 
-}
-
+  }
 res <- purrr::map_df(1:N, bb_exp)
-T0 <- res$mean/(res$sd/sqrt(N_obs))
-
-hist(T0,
-     breaks=getBreaks(T0),
-     probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
-lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
+T0 <- (res$mean - mu)/ #<<
+  (res$sd/sqrt(N_obs)) #<<
+hist(T0, breaks=getBreaks(T0), probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
+lines(x,
+      dt(x,df = N_obs), #<<
+      type="l",col="green",lwd=2)
 ```
 ]
 
 
-.pull-right[
+.right-plot[
 ```{r simulatingH0withWrongAssumptions-out, ref.label="simulatingH0withWrongAssumptions", echo=FALSE}
 ```
 ]
 
 ---
 
-## Testing if mean is equal to $\mu$ with UNKNOWN variance
+# Mean = $\mu$? $x \sim Exp(1)$  with $N_{obs} = 40$
 
-.pull-left[
+.left-code[
 
 ```{r simulatingH0withWrongAssumptionsN12, eval=FALSE}
 # Simulating data from Null
-N <- 10000
-N_obs <- 40
-rate <- 1
+N <- 10000;N_obs <- 40;rate <- 1
 bb_exp <- function(y){
   x <- rexp( N_obs, rate=rate )-1
   data.frame(mean = mean( x ), sd = sd(x)) 
 }
-
 res <- purrr::map_df(1:N, bb_exp)
-T0 <- res$mean/(res$sd/sqrt(N_obs))
-
-hist(T0,
-     breaks=getBreaks(T0),
-     probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
+T0 <- res$mean/
+  (res$sd/sqrt(N_obs))
+hist(T0, breaks=getBreaks(T0), probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
 lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
 ```
 ]
 
 
-.pull-right[
+.right-plot[
 ```{r simulatingH0withWrongAssumptionsN12-out, ref.label="simulatingH0withWrongAssumptionsN12", echo=FALSE}
 ```
 ]
+
+---
+
+# Mean = $\mu$? $x \sim Exp(1)$ but with $N_obs = 100$
+
+.left-code[
+
+```{r simulatingH0withWrongAssumptionsN100, eval=FALSE}
+# Simulating data from Null
+N <- 10000;N_obs <- 100;rate <- 1
+bb_exp <- function(y){
+  x <- rexp( N_obs, rate=rate )-1
+  data.frame(mean = mean( x ), sd = sd(x)) 
+}
+res <- purrr::map_df(1:N, bb_exp)
+T0 <- res$mean/
+  (res$sd/sqrt(N_obs))
+hist(T0, breaks=getBreaks(T0), probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
+lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
+```
+]
+
+
+.right-plot[
+```{r simulatingH0withWrongAssumptionsN100-out, ref.label="simulatingH0withWrongAssumptionsN100", echo=FALSE}
+```
+]
+
 
 ---
 
@@ -373,10 +427,18 @@ lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
 
 - In probability theory, the __central limit theorem__ (CLT) establishes that, in some situations, when independent random variables are added, their properly normalized sum tends toward a normal distribution (informally a "bell curve") even if the original variables themselves are not normally distributed. 
 
+--
+
 - The theorem is a key concept in probability theory because it implies that probabilistic and statistical methods that work for normal distributions can be applicable to many problems involving other types of distributions.
+
+--
+
+- __assymptotic properties__
+
 
 
 ---
+
 
 # Two sample t-test
 
@@ -397,12 +459,11 @@ $\upsilon = \frac{(s^{2}_{1}/N_{1} + s^{2}_{2}/N_{2})^{2}} {(s^{2}_{1}/N_{1})^{2
 
 # Randomization tests
 
-But what if we want to analyse the data without assuming
-normality? E.g., because the sample sizes are small.
+- Sample sizes are small
 
 ---
 
-## Algorithm
+# Randomization tests
 
 1. Suppose the 10 individuals in the study have been labelled
 
@@ -434,34 +495,29 @@ $$\frac{1}{B} \sum^B_{i=0} I_{T_i} >= |T_{obs}|$$
 
 
 ---
-
-## Example A
-
-
-.pull-left[
 ```{r fun_def, echo=FALSE, include=FALSE}
 library(coin)
 
-sample_stats <- function(N = 12, dist1, dist2, samples = 100){
+sample_stats <- function(N_obs = 12, dist1, dist2, samples = 100){
   
-  xx <- combn(N, N/2)
-  
+  xx <- combn(N_obs, N_obs/2)
   res_p <- matrix(nrow=samples, ncol=4)
   colnames(res_p) <- c("our","coin","t.test","asymp.test")
   means <- NULL
   h_0_norm <- NULL
   t_obs <- NULL
   for(i in 1:samples){
-    sample <- data.frame(intensity = c(dist1(N/2), dist2(N/2)),
-                         treatment = c(rep("A", N/2), rep("B", N/2)))
+    sample <- data.frame(intensity = c(dist1(N_obs/2), dist2(N_obs/2)),
+                         treatment = c(rep("A", N_obs/2), rep("B", N_obs/2)))
     
     teststat <- function(i, comb, data){res <- mean(data[comb[,i],1]) - mean(data[-comb[,i],1]); return(res)}
     h_0_norm <- sapply(1:ncol(xx), teststat, xx, sample)
     
-    means <- aggregate(intensity ~treatment, sample, mean)
+    means <- aggregate(intensity ~ treatment, sample, mean)
     t_obs <- means[2,2] - means[1,2]
     
     our <- sum(abs(t_obs) <= abs(h_0_norm)) / length(h_0_norm)
+    
     coin <- pvalue(independence_test(intensity ~treatment, data = sample ,distribution = exact()))
     t.test <- t.test(intensity~ treatment, data = sample)$p.value
     asymp.test <- asympTest::asymp.test(intensity~ treatment, data = sample)$p.value
@@ -472,75 +528,114 @@ sample_stats <- function(N = 12, dist1, dist2, samples = 100){
 }
 ```
 
+# Choice of test
 
-```{r randomization_test, eval=FALSE, echo=TRUE, fig.width=20, fig.height=20}
+.pull-left[
+
+- Simulate data <br/> $x_1 \sim N(0,1)$ and $x_2\sim N(1.3,1.3)$
+- compute p-value:
+  - randomization test
+  - t-test
+  - assymptotic test <br/> (T under null $\sim N(\mu, \sigma)$)
+
+
+```{r randomization_test, eval=FALSE, echo=FALSE}
 dist1 <- function(N){rnorm(N, 0, 1 )}
-dist2 <- function(N){rnorm(N, 1.3,1.5)}
+dist2 <- function(N){rnorm(N, 1.3,1.3)}
+xx <- sample_stats(N=10,
+                   dist1,
+                   dist2,
+                   samples = 100)
 
-xx <- sample_stats(N=10, dist1, dist2)
-par(mfrow=c(2,2))
-boxplot(intensity ~treatment, data = xx$sample)
-points(xx$means[,2],col="red",pch="-", cex=4)
-breaks <- seq(-5,5,by=0.1)
-hist(xx$h_0_norm, breaks=breaks, freq = F, xlim=c(-3,3), ylim=c(0,1), density=8,angle=-45)
-abline(v = xx$t_obs, col="green",lwd=2)
+par(mfrow=c(2,1))
 
-plot(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", ylab="t.test", xlab="randomization test")
-points(xx$res_p[nrow(xx$res_p),"coin"], xx$res_p[nrow(xx$res_p),"t.test"],col=2, pch="x", cex=2)
+plot(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", ylab="t.test", xlab="randomization test", pch=16,cex=0.5)
 abline(c(0,1), col="blue")
+abline(h=0.01,v=0.01, col="gray")
 
-plot(xx$res_p[,"asymp.test"], xx$res_p[,"t.test"], log="xy",  xlab="asymptotic test",ylab="t.test")
-points(xx$res_p[nrow(xx$res_p),"asymp.test"], xx$res_p[nrow(xx$res_p),"t.test"],col=2, pch="x", cex=2)
+plot(xx$res_p[,"asymp.test"], xx$res_p[,"t.test"], log="xy",  xlab="asymptotic test",ylab="t.test", pch=16,cex=0.5)
 abline(c(0,1), col="blue")
-
-
+abline(h=0.01,v=0.01, col="gray")
 
 ```
-
 ]
 
+
+.right-plot[
+```{r randomization_test-out, ref.label="randomization_test", echo=FALSE, fig.width=6, fig.height=8}
+```
+]
+
+---
+# Choice of test
+
+```{r}
+cbind( coin = table(xx$res_p[,"coin"] < 0.01),
+t.test = table(xx$res_p[,"t.test"] < 0.01),
+asymp.test = table(xx$res_p[,"asymp.test"] < 0.01)) -> x
+rownames(x) <- c("Accept","Reject H0")
+knitr::kable(x, format="html")
+```
+
+---
+# Choice of test
+
+
+.pull-left[
+
+- Simulate data <br/>
+$x_1 \sim N(0,1)$ and $x_2\sim Exp(1/1.3)$
+- compute p-value:
+  - randomization test
+  - t-test
+  - assymptotic test <br/> (T under null $\sim N(\mu, \sigma)$)
+
+
+
+```{r randomization_test_ex2, eval=FALSE, echo=FALSE}
+dist1 <- function(N){rnorm(N, 0, 1 )}
+dist2 <- function(N){rexp(N, 1.3)}
+xx <- sample_stats(N=10,
+                   dist1,
+                   dist2,
+                   samples = 100)
+
+par(mfrow=c(2,1))
+
+plot(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", ylab="t.test", xlab="randomization test", pch=16,cex=0.5)
+abline(c(0,1), col="blue")
+abline(h=0.01,v=0.01, col="gray")
+
+plot(xx$res_p[,"asymp.test"], xx$res_p[,"t.test"], log="xy",  xlab="asymptotic test",ylab="t.test", pch=16,cex=0.5)
+abline(c(0,1), col="blue")
+abline(h=0.01,v=0.01, col="gray")
+
+```
+]
+
+
 .pull-right[
-```{r randomization_test-out, ref.label="randomization_test", echo=FALSE, fig.width=20, fig.height=20}
+```{r randomization_test_ex2-out, ref.label="randomization_test_ex2", echo=FALSE, fig.width=6, fig.height=8}
 ```
 ]
 
 ---
 
-## Example B
+# Choice of test
 
-
-.pull-left[
-```{r randomization_test_ex2, eval=FALSE}
-dist1 <- function(N){rnorm(N, 1, 1 )}
-dist2 <- function(N){rexp(N, 0.4)*2}
-
-xx <- sample_stats(N=10, dist1, dist2)
-par(mfrow=c(2,2))
-boxplot(intensity ~treatment, data = xx$sample)
-points(xx$means[,2],col="red",pch="-", cex=4)
-breaks <- seq(-15,15,by=0.1)
-hist(xx$h_0_norm, breaks=breaks, freq = F, xlim=c(-3,3), ylim=c(0,1), density=8,angle=-45)
-abline(v = xx$t_obs, col="green",lwd=2)
-
-
-plot(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", ylab="t.test", xlab="randomization test")
-points(xx$res_p[nrow(xx$res_p),"coin"], xx$res_p[nrow(xx$res_p),"t.test"],col=2, pch="x", cex=2)
-abline(c(0,1), col="blue")
-abline(v=0.05, h=.05, col="red")
-
-plot(xx$res_p[,"asymp.test"], xx$res_p[,"t.test"], log="xy",  xlab="asymptotic test",ylab="t.test")
-points(xx$res_p[nrow(xx$res_p),"asymp.test"], xx$res_p[nrow(xx$res_p),"t.test"],col=2, pch="x", cex=2)
-abline(c(0,1), col="blue")
-abline(v=0.05, h=.05, col="red")
-
+```{r}
+cbind( coin = table(xx$res_p[,"coin"] < 0.01),
+t.test = table(xx$res_p[,"t.test"] < 0.01),
+asymp.test = table(xx$res_p[,"asymp.test"] < 0.01)) -> x
+rownames(x) <- c("Accept","Reject H0")
+knitr::kable(x, format="html")
 ```
-]
 
+---
+# Choice of test
 
-.pull-right[
-```{r randomization_test_ex2-out, ref.label="randomization_test_ex2", echo=FALSE, fig.width=10, fig.height=10}
-```
-]
+- parametric tests e.g. t-test
+- nonparametric tests e.g. randomization test
 
 
 ---
@@ -548,11 +643,8 @@ abline(v=0.05, h=.05, col="red")
 # Take home message
 
 
-- __Think about your resarch hypothesis of which the truth is unknown.__
-- What is H_0?
-
-
-- Very difficcult to get it right distribution under H_0.
-- Usually asymptotic properties are used (e.g. CLT)
-- Impossible to get it right for the sample sizes we have.
-- Some software for high throughput proteomics therefore reports other types of probabilities.
+- What is H_0 and what is the p-value good for?
+- It is difficcult to get the distribution under H_0 (see t-distribution).
+- Hence asymptotic properties are used (CLT) to derive.
+- Impossible to get it right for small sample sizes in the presence of missing data.
+- Use effect size and back it up by p-value.

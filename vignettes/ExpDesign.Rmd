@@ -1,8 +1,8 @@
 ---
-title: "Experimental Design<br>for LFQ experiments"
-subtitle: "FGCZ Bioinformatics Training"
+title: "Experimental Design"
+subtitle: "FGCZ Prot - Bio - Informatics Training"
 author: "Witold Wolski wew@fgcz.ethz.ch"
-date: "2018-01-23<br><br>Follow along: **bit.ly/trug-ggplot2**"
+date: "2018-01-23"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -50,8 +50,8 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 
 # Scientific Method
 
-1. Question
-2. Hypothesis
+1. __Question__
+2. __Hypothesis__
 3. Experiment <br/> ordered investigation that attempts to prove or disprove a hypothesis
   - must show if hypothesis is supported or not.
   - results must be measurable
@@ -66,13 +66,13 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 # Question - Causality
 
 
-Assess whether a particular agent 
+Assess whether a particular __agent__ 
 
-(e.g. a medication or drug or treatment regime or exposure to an environmental factor)
+_(e.g. a medication or drug or treatment regime or exposure to an environmental factor)_
 
-caused or influenced a particular outcome 
+caused or influenced a particular __outcome__ 
 
-(e.g. cure of disease, reduction in pain, medical condition, change in protein expression etc.)
+_(e.g. cure of disease, reduction in pain, medical condition, change in protein expression etc.)_
 
 ---
 
@@ -99,11 +99,11 @@ trolled trials and observational studies
 # Question - Causality - Bradford-Hill Criteria
 
 - Are there other scientifically relevant questions than causality?
-- Does establishing all B-H criteria prove cause and effect?
+- Does establishing all Bradford-Hill criteria prove cause and effect?
 --
 
 - What is __your__ research question?
-- Which B-H criteria do you aim to establish?
+- Which Bradford-Hill criteria do you aim to meet?
 
 ---
 
@@ -122,13 +122,13 @@ https://github.com/annennenne/causalDisco/blob/master/slides/causaldisco_ahp_use
 
 .pull-left[
 ## Observational study
-- subjects are observed in order to determine both their exposure and their outcome (e.g. healthy cancer)
+- subjects are observed in order to determine both their exposure and their outcome (e.g. healthy, cancer)
 - not randomized to the exposed or unexposed groups
 - The exposure status is not determined by the researcher
 ]
 
 .pull-right[
-## Experiment
+## Experimental Intervention
 - experiment must be repeatable
 - subjects are randomized to the exposed and unexposed groups
 ]
@@ -145,7 +145,7 @@ https://github.com/annennenne/causalDisco/blob/master/slides/causaldisco_ahp_use
 ]
 
 .pull-right[
-## Experiment
+## Experiment Interventian
 - randomized controlled trials
 ]
 
@@ -252,7 +252,7 @@ How could you improve you experiment by _blinding_ ?
 
 - Do not transfer information unnecessary to perform a task,<br/>
    e.g. use uninformative sample labels and group lables
-- Perform analysis per protocol. 
+- Define analysis parameters beforhand
 
 --
 
@@ -450,7 +450,7 @@ The key technical issue is whether comparions are made ‘between’ or ‘withi
 .pull-left[
 Between
 
-- Paralel Group Design <br/> k - groups, $n_i$ patients in group $i$ receive treatemnt $i$
+- Paralel Group Design <br/> k - groups, $n_i$ patients in group $i$ receive treatment $i$
 - Factorial Design <br/>  combining treatments, e.g. A and B to same patient.
 ]
 
@@ -475,18 +475,18 @@ How would you allocate these patients?
 .pull-left[
 Factorial
 
-- AB 10
-- B 10
-- A 10
-- Placebo 10
+- drug A + drug B 10
+- plac A + drug B 10
+- drug A + plac B 10
+- plac A + plac B 10
 ]
 
 .pull-right[
 Parallel
 
-- A 13
-- B 13
-- Placebo 14
+- drug A 13
+- drug B 13
+- plac 14
 ]
 
 
@@ -499,8 +499,30 @@ Parallel
 --
 
 .plot-my[![](../inst/images/TypesOfInteractions_Quanti.png)]
-
 --
 
 .plot-my[![](../inst/images/TypesOfInteractions_Quali.png)]
+
+(Medical Statistics - University of Sheffield)
+---
+
+# Outlook - Causality
+
+Assess whether a particular __agent__ 
+
+caused or influenced a particular __outcome__ 
+
+$~$
+
+$~$
+
+--
+
+What would be the __agent__ and __outcome__ in label free quantification?
+
+--
+
+_agent_ - medication or drug or treatment and confounding factors
+
+_outcome_ - peptide and protein quantification values
 
