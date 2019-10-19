@@ -1,6 +1,6 @@
 ---
 title: "Experimental Design"
-subtitle: "FGCZ Prot - Bio - Informatics Training"
+subtitle: "FGCZ Proteome - Informatics Training"
 author: "Witold Wolski wew@fgcz.ethz.ch"
 date: "2018-01-23"
 output:
@@ -68,7 +68,7 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 
 Assess whether a particular __agent__ 
 
-_(e.g. a medication or drug or treatment regime or exposure to an environmental factor)_
+_(e.g. a medication or drug or treatment regime or exposure to an environmental factor or genetic background)_
 
 caused or influenced a particular __outcome__ 
 
@@ -79,19 +79,19 @@ _(e.g. cure of disease, reduction in pain, medical condition, change in protein 
 # Question - Causality - Bradford-Hill Criteria
 
 
-1.  Strength of association – (effect size) the greater the effect compared with those not
+1.  __Strength of association__ – (effect size) the greater the effect compared with those not
 exposed to the agent the more plausible is the association
-2. Consistency – (reproducibility) does it happen in other groups of people – both men and
+2. __Consistency__ – (reproducibility) does it happen in other groups of people – both men and
 women, different countries
-3. Specificity – no other likely explanations - Causation is likely if there is a very specific population at a specific site and disease with no other likely explanation.
-4. Temporality – effect follows cause, and if expected delay, effect must occur after that delay
-5.  Biological gradient – the stronger the agent the greater the effect – 
+3. __Specificity__ – no other likely explanations - Causation is likely if there is a very specific population at a specific site and disease with no other likely explanation.
+4. __Temporality__ – effect follows cause, and if expected delay, effect must occur after that delay
+5.  __Biological gradient__ – the stronger the agent the greater the effect – 
 response follow dose but also inverse effects possible
-6.  Plausibility – is there a possible biological mechanism that could explain
+6.  __Plausibility__ – is there a possible biological mechanism that could explain
 the effect
-7. Coherence – do different types of study result in similar conclusions – con-
-trolled trials and observational studies
-9. Analogous results found elsewhere – do similar agents have similar results?
+7. __Coherence__ – do different types of study result in similar conclusions – e.g., controlled trials and observational studies
+8. ...
+<!-- 9. Analogous results found elsewhere – do similar agents have similar results?-->
 
 
 ---
@@ -109,14 +109,26 @@ trolled trials and observational studies
 
 # Question - Causality
 
+.pull-left[
 - Can we infer causal models directly from data?
+- Would you prefer?
+  - to have dataset with $4000$ proteins and $2$ conditions
+  - a dataset with $400$ proteins and more than $>100$ conditions?
+]
 
+.right-plot[
 ![](../inst/images/Causality_fromData.jpg)
 
-https://github.com/annennenne/causalDisco/blob/master/slides/causaldisco_ahp_user2019.pdf
+
+[CausalDisco](https://github.com/annennenne/causalDisco/blob/master/slides/causaldisco_ahp_user2019.pdf)
+an overview of methods to infer causal networks from data
+]
+
 
 
 ---
+
+
 
 # Study Types 
 
@@ -145,14 +157,14 @@ https://github.com/annennenne/causalDisco/blob/master/slides/causaldisco_ahp_use
 ]
 
 .pull-right[
-## Experiment Interventian
+## Experiment Intervention
 - randomized controlled trials
 ]
 
 
 ---
 
-# Randomized controlled trials
+# Randomized controlled trial
 
 This year’s Laureates have introduced<br/>
 a new approach to obtaining reliable answers</br>
@@ -181,7 +193,7 @@ layout: false
 
 Aims to reduce certain sources of __bias__
 
-Bias is an inclination towards something, or a predisposition,<br/> partiality, prejudice, preference, or predilection.
+"Bias is an inclination towards something, or a predisposition,<br/> partiality, prejudice, preference, or predilection." (Wikipedia)
 
 --
 
@@ -202,6 +214,7 @@ Bias is an inclination towards something, or a predisposition,<br/> partiality, 
 ![](../inst/images/Man_In_The_Moon_3.png)
 ]
 
+(wiki commons licence)
 
 ---
 
@@ -251,7 +264,7 @@ How could you improve you experiment by _blinding_ ?
 --
 
 - Do not transfer information unnecessary to perform a task,<br/>
-   e.g. use uninformative sample labels and group lables
+   e.g. use uninformative sample and group labels
 - Define analysis parameters beforhand
 
 --
@@ -272,11 +285,12 @@ A correlation occurs due to one of the three possible mechanisms
 ![](../inst/images/Causality_Mechanisms_3.png)
 ]
 
+
 __Confounder__ - is a variable that influences both the dependent variable and independent variable, causing a spurious association.
 
 <!--
 .img-right[
-![](../inst/images/Confrounding_Wiki.png)
+![](../inst/images/Confounding_Wiki.png)
 ]
 -->
 
@@ -332,23 +346,20 @@ Document any possible co-variate, e.g.,
 
 ---
 
-# Ethical considerations (Clinical Trial)
+# Ethical considerations
 
 - It is agreed that it is __unethical__ _to conduct research which is badly planned or
 executed_.
--  It is unethical to perform a trial which has many more subjects than are needed to
-reach a conclusion.
-- It is also unethical to
-perform a trial which has little prospect of reaching any conclusion, e.g. because
-of insufficient numbers of subjects (or some other aspect of poor design)
+-  It is unethical to perform a trial which:
+  - has many more subjects than are needed to reach a conclusion.
+  - has little prospect of reaching any conclusion, </br> e.g. because 
+  of insufficient numbers of subjects (or some other aspect of poor design)
 
-
-- The local ethics committee has discretion on how it will supervise __noninterventional__ studies
+- The local ethics committee has discretion on how it will supervise __non-interventional__ studies
   -  US - Institutional Review Board (IRB)
   -  EU - ethics committees
 
-(Declaration of Helsinki (1964+amendments))
-https://www.wma.net/policies-post/wma-declaration-of-helsinki-ethical-principles-for-medical-research-involving-human-subjects/
+[Declaration of Helsinki (1964+amendments))](https://www.wma.net/policies-post/wma-declaration-of-helsinki-ethical-principles-for-medical-research-involving-human-subjects/)
 
 ---
 
@@ -362,7 +373,7 @@ The _type I error rate_ or __significance level__ (p-Value) is the probability o
 null hypothesis given that it is true.
 
 
-A _type II error_ (false negetive) occurs when the null hypothesis<br/>
+A _type II error_ (false negative) occurs when the null hypothesis<br/>
 is false, but erroneously fails to be rejected. <br/>
 The _the type II error rate_ is denoted by the Greek letter $\beta$<br/>
 and related to the __power of a test__ (which equals $1−\beta$).
@@ -378,24 +389,28 @@ is to __increase the sample size__, and this may not be feasible.
 
 # Sample size calculation
 
-.pull-left[
-- Biological variance >> biochemical+technical variance <br/>
-Only provide biological replicates
 
-- biochemical+technical variance >> biological variance<br/>
-  - technical replicates
+.pull-left[
+
+Run pilot experiment and measure the coefficient of variation (CV) or <br>
+$\sigma^2$ of replicates:
+
+- technical
+- _biochemical_
+- __biological__
+]
+
+
+
+.pull-right[
+- _biological variance >> bio-chem+tech variance_<br/> 
+  - Only provide biological replicates
+- _bio-chem+tech variance >> biological variance_<br/>
+  - __improve sample handling and preparation__
   - choose different technology
   - buy better instrument
 ]
 
-.pull-right[
-
-Run pilot experiment and measure the CV, $\sigma^2$ of replicates
-
-- technical
-- biochemical
-- biological
-]
 
 ---
 
@@ -414,28 +429,21 @@ there exists a unique relation between:
 
 .img-right[
 ```{r echo=FALSE}
-
 sd <- seq(0.5, 2, by =.001)
-
 dd <- power.t.test(delta = 2, sd = 1, sig.level = 0.05, power = 0.8)
-
 powersd <- function(sd, delta = 1, sig.level = 0.05, power = 0.8){
   ceiling(power.t.test(delta = 2, sd = sd, sig.level = sig.level, power = power)$n)
 }
 
-
 ressd <- sapply(sd, powersd)
-
 power_delta <- function( delta, sd = 1, sig.level = 0.05, power = 0.8){
   ceiling(power.t.test(delta = delta, sd = sd, sig.level = sig.level, power = power)$n)
 }
 
 delta <- seq(0.5,6, by = 0.001)
 resdelta <- sapply(delta, power_delta)
-#par(mfrow=c(2,1))
 plot(sd, ressd, ylab="N", type="l", main = "mu=1, p=0.05, power = 0.8")
 plot(delta, resdelta, xlab = "mu", ylab="N", type="l", log="xy", main = "sd=1, p=0.05, power = 0.8")
-
 
 ```
 ]
@@ -444,21 +452,21 @@ plot(delta, resdelta, xlab = "mu", ylab="N", type="l", log="xy", main = "sd=1, p
 
 # Design
 
-The key technical issue is whether comparions are made ‘between’ or ‘within’ patients.
+The key technical issue is whether comparisons are made __between__ or __within__ subjects.
 
 
 .pull-left[
 Between
 
-- Paralel Group Design <br/> k - groups, $n_i$ patients in group $i$ receive treatment $i$
-- Factorial Design <br/>  combining treatments, e.g. A and B to same patient.
+- Parallel Group Design <br/> k - groups, $n_i$ patients in group $i$ receive treatment $i$
+- Factorial Design <br/>  - more than one factor. combining treatments, e.g. A and B to same patient.
 ]
 
 .pull-right[
-Within
+Within (repeated/paired)
 
 - In series design <br/> each patient all $k$ treatments in same order
-- crossover design <br/> each patient  all $k$ treatements in different order
+- crossover design <br/> each patient  all $k$ treatments in different order
 ]
 
 Are combinations of both possible?
@@ -467,7 +475,7 @@ Are combinations of both possible?
 
 # Factorial Design vs Parallel group
 
-40 patients, Placebo Treatment A and B.
+40 patients, Placebo, drug A and drug B.
 
 How would you allocate these patients?
 
@@ -479,6 +487,10 @@ Factorial
 - plac A + drug B 10
 - drug A + plac B 10
 - plac A + plac B 10
+
+Compare:
+- 20 drug A vs 20 plac A
+- 20 drug B vs 20 plac B 
 ]
 
 .pull-right[
@@ -487,23 +499,53 @@ Parallel
 - drug A 13
 - drug B 13
 - plac 14
+
+Compare:
+- 13 drug A vs 14 plac
+- 13 drug B vs 14 plac
 ]
 
-
 ---
+layout: false
 
 # Interactions
 
-.plot-my[![](../inst/images/TypesOfInteractions_NO.png)]
+An interaction may arise when considering the relationship <br/>
+among three or more variables, and describes a situation in <br/>
+which the effect of one causal variable on an outcome depends <br/>
+on the state of a second causal variable.
 
 --
 
-.plot-my[![](../inst/images/TypesOfInteractions_Quanti.png)]
+- No interaction
+.img-right[
+![](../inst/images/TypesOfInteractions_NO.png)
+
+
+[Medical Statistics - University of Sheffield]
+]
+
 --
 
-.plot-my[![](../inst/images/TypesOfInteractions_Quali.png)]
+- Quantitative interaction
 
-(Medical Statistics - University of Sheffield)
+.img-right[
+![](../inst/images/TypesOfInteractions_Quanti.png)
+]
+
+
+--
+
+- Qualitative interaction
+
+.img-right[
+![](../inst/images/TypesOfInteractions_Quali.png)
+]
+
+
+
+
+
 ---
 
 # Outlook - Causality
