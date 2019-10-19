@@ -1,5 +1,5 @@
 ---
-title: "FGCZ Quantitative Proteomics Service"
+title: "Quantitative Proteomics - Service"
 subtitle: "FGCZ Prot - Bio - Informatics Training"
 author: "Witold Wolski wew@fgcz.ethz.ch"
 date: "2018-01-23"
@@ -49,4 +49,271 @@ library(tidyverse)
 ```
 
 ---
+
+# The workflow - bioinformatics part
+
+- __kickoff meeting__ - bioinformatics part
+  - _protocol_
+- __QC experiment__
+  - to determine within group variability
+  - _Sample size qc report_
+  - Fix sample sizes
+- __Main experiment__
+  - Data Analysis and _result delivery_ including linear modelling and ORA and GSEA analysis.
+  - meeting to discuss results
+  
+  
+
+---
+
+# Kickoff meeting - bioinformatics
+
+- Keep it short (15-30 minutes) by following an __agenda__
+- Give _statistical_ guidance
+- Get all the information we need to perform an analysis
+
+## Use of an Agenda
+
+- helps to prepare for the meeting
+- focuses on points relevant to the data analysis <br/>__blinding__ (minimize __bias__)
+- streamlines discussion and saves time 
+- Improve quality of services
+- Ensures reproducibility
+
+
+## Motivation
+
+- Incomplete information causes that analysis is delayed or has to be redone.
+
+.img-right[
+![](../inst/images/Meeting_Agenda_p1.png)
+]
+
+---
+layout: false
+# Kickoff meeting - bioinformatics
+
+## Document
+
+- which protein database to use
+- which condition and how many samples to use for the QC
+- collect all the parameters for sample size estimation
+- specify the hypothesis to be tested
+- specify the design of the main experiment
+- document all the names of the factors and factor levels
+
+## Conclusion
+
+- Tested on a few projects
+- Agenda is still evolving
+
+
+.img-right[
+![](../inst/images/Meeting_Agenda_p2.png)
+]
+
+.footnote[Work by Witek Wolski and Paolo Nanni]
+
+---
+layout: false
+# Sample size estimation report
+
+- Hand in 4 samples of the same condition 
+  - ideally of condition with highest variability
+  - estimate the variance of each protein.
+
+- Samples are being measured
+- Run through MaxQuant software to extract </br> precursor and peptide intensities
+- An evidence.txt file based report is being generated <br/>
+ Have a look at this reports.</br>
+ __Handouts_wolski/p2370_Analysis/samplesize_qc_report/evidence_QC_sample_Size.html__ <br/>
+ __Handouts_wolski/p2691_Analysis/samplesize_qc_report/evidence_QC_sample_Size.html__
+ 
+
+.footnote[Work by Celia Detrez and Witek Wolski]
+
+
+---
+# Sample size estimation report
+
+- There is an equivalance between linear models and the t.test </br>
+  Therefore, we use the sample size estimation method `power.t.test`.
+
+---
+
+# Sample size estimation report
+
+What __biologically relevant difference__ can be detected with a two-sample t-test using 
+a significance level of $0.05$ and a power of 0.8 given a standard deviation of $0.5$ and group size of $10$?
+
+
+```{r}
+power.t.test(n=10,sd=0.5,power=0.8,sig.level=0.05)
+```
+
+
+---
+
+# Sample size estimation report
+
+
+What is __the power__ of the two-sample t-test using 
+a significance level of $0.05$ if we want to detect a biologically relevant difference of $0.59$
+given a standard deviation of $0.5$ and group size of $10$ samples?
+
+__Power is the probability of rejecting the null hypothesis when, in fact, it is false.__
+
+
+```{r}
+power.t.test(d = 0.59,n=10,sd=0.5,sig.level=0.05)
+```
+
+
+
+---
+
+# Sample size estimation report
+
+What is the error of the sample size estimate?
+
+---
+
+# Sample size estimation report
+
+.left-code[
+```{r sampleSize_error, eval=FALSE}
+sd <- sapply(1:1000,
+             function(x){
+               sd(rnorm(4,0,1))
+               })
+tmp <- sapply(sd,
+              function(x){
+                power.t.test(d = 0.59, #<<
+                             sd=x, #<<
+                             sig.level=0.05,
+                             power=0.8)$n})
+par(mfrow=c(2,1))
+hist(sd)
+plot(table(ceiling(tmp)), ylab="#", xlab="sample size estimate")
+```
+]
+
+.right-plot[
+```{r sampleSize_error-out , ref.label="sampleSize_error", echo=FALSE, fig.width=6, fig.height=6}
+```
+]
+
+---
+
+# Sample size estimation report
+
+In the LFQ experiment you have measured 1000 of proteins, so the error of the median standard deviation should be small and the sample size estimate OK.
+
+--
+
+You run a test and you have the estimates of the $sd$, $p.value$ and fold change $d$.
+We could compute the power by taking the _estimates_ obtained by the test.
+
+How good might this power estimate be?
+
+---
+
+
+# Data preprocessing
+
+- log2 transform the data
+- apply robust z-transformation
+$$I^n_i = \frac{I^t_i - med(I^t_i)}{mad(I^t_i)} \cdot \sum_{i=1}^N mad(I^t_i)/N$$
+All samples have the same deviation $$mad(I^t_1) = mad(I^t_2)$$ equal to the average original variance of all samples.
+
+---
+
+# Data preprocessing
+
+Since we want the sample size estimates on _protein level_ we need to infer the protein intensity
+
+There are many methods to infer the protein intensity
+- aggregate all peptides
+- aggregate not more than the 3 top peptides
+- tukey median polish - a two-way decomposition of a 2D matrix.
+
+$$y_{ij} = b_0 + c_i + d_j + \epsilon_{ij}$$
+
+It is also used in the [MSstats](http://msstats.org/) package.
+
+---
+
+# Data preprocessing - Tukey Median Polish
+
+.left-code[
+```{r echo=FALSE}
+peptides_hemo <- rbind(c(14,15,14),
+                  c( 7, 4, 7),
+                  c( 8, 2,10),
+                  c(15, 9,10),
+                  c( 0, 2, 0))
+dimnames(peptides_hemo) <-
+  list(c("MVLSPADK", "TNVK",
+         "AAWGK", "VGAHAGEYGAEALER",
+         "MFLSFPTTK"),
+       c("S1", "S2" ,"S3"))
+```
+```{r}
+peptides_hemo
+```
+]
+
+.pull-left[
+```{r}
+med.d <- medpolish(peptides_hemo,trace.iter = FALSE)
+med.d$overall + med.d$col
+t(t(med.d$overall + med.d$row))
+```
+]
+
+---
+layout: false
+
+# Sample size estimation report
+
+
+- check if there are no technical problems
+.img-right[
+![](../inst/images/QC_SD_Missigness_1.png)
+]
+--
+
+- visualize standard deviation of proteins
+.img-right[
+![](../inst/images/QC_SD_distribution_function.png)
+]
+
+--
+
+.img-right[
+![](../inst/images/QC_SD_ECDF.png)
+]
+
+--
+
+- give sample size estimates for parameters</br> specified in protocol<br/>
+  power 0.8<br/>
+  significance level 0.05<br/>
+  standard deviation taken from proteins<br/>
+    
+.img-right[
+![](../inst/images/QC_SD_SampleSize_Estimates.png)
+]
+
+.footnote[
+Work by Witek Wolski and Lukas Kook
+]
+
+
+---
+# Sample size estimation report
+
+Have a look at the sample size reports
+- peptide
+- protein
 
