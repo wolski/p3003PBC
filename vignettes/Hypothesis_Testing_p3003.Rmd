@@ -265,7 +265,7 @@ $T|H_0 \sim N(0,\sigma/\sqrt(N_{obs}))$
 
 ---
 
-# Improved test statistic
+# Improved test statistic T*
 
 
 $$T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$$
@@ -293,7 +293,6 @@ lines(x,
       dnorm(x, 
             sd= 1), #<<
       col=2)
-
 ```
 
 $T|H_0 \sim N(0,1)$
@@ -303,8 +302,6 @@ $T|H_0 \sim N(0,1)$
 ```{r simulatingH0SigmaKTnew-out, ref.label="simulatingH0SigmaKTnew", echo=FALSE}
 ```
 ]
-
-
 
 ---
 
@@ -330,6 +327,7 @@ lines(x,
 ```
 
 $T|H_0 \sim T(\mu=0,df=N_{obs})$
+
 ]
 
 
@@ -433,35 +431,47 @@ lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
 
 --
 
-- __assymptotic properties__
+- Many tests rely on __assymptotic properties__
 
+---
+
+# Types of tests
+
+- parametric tests e.g. t-test 
+  - assume underlying statistical distributions in the data. 
+  - Therefore, several conditions of validity must be met so that the result of a parametric test is reliable.
+  - For example, Student’s $t-test$ for two independent samples is reliable only if each sample follows a normal distribution and if sample variances are homogeneous.  
+--
+
+- assymptotic tests
+   - assume that methods which work for normal distributions work also elsewhere
+--
+
+- nonparametric tests e.g. randomization test
+   - do not rely on any distribution. They can thus be applied even if parametric conditions of validity are not met. 
+   - Parametric tests __often__ have nonparametric equivalents. 
 
 
 ---
 
-
 # Two sample t-test
+
+There is a difference between the means of two samples.
+
+- Null hypothesis - there is no such difference
+
+- Test statistic:
 
 $T = \frac{Y_1 - Y_2}{\sqrt{\frac{s_1^2}{N_1} + \frac{s_2^2}{N_2}}}$
 
-Significance level $\alpha$
+- Significance level $\alpha$
 
-Reject the null hypothesis that the two means are equal if
-
-$|T| > t_{1-\alpha/2,v}$
-
-with $v$ degrees of freedom 
-
+- Reject the null hypothesis that the two means are equal if $|T| > t_{1-\alpha/2,v}$ with $v$ degrees of freedom 
 
 $\upsilon = \frac{(s^{2}_{1}/N_{1} + s^{2}_{2}/N_{2})^{2}} {(s^{2}_{1}/N_{1})^{2}/(N_{1}-1) + (s^{2}_{2}/N_{2})^{2}/(N_{2}-1) }$
 
 ---
 
-# Randomization tests
-
-- Sample sizes are small
-
----
 
 # Randomization tests
 
@@ -495,6 +505,7 @@ $$\frac{1}{B} \sum^B_{i=0} I_{T_i} >= |T_{obs}|$$
 
 
 ---
+
 ```{r fun_def, echo=FALSE, include=FALSE}
 library(coin)
 
@@ -528,7 +539,7 @@ sample_stats <- function(N_obs = 12, dist1, dist2, samples = 100){
 }
 ```
 
-# Choice of test
+# Compare tests
 
 .pull-left[
 
@@ -567,7 +578,7 @@ abline(h=0.01,v=0.01, col="gray")
 ]
 
 ---
-# Choice of test
+# Compare tests
 
 ```{r}
 cbind( coin = table(xx$res_p[,"coin"] < 0.01),
@@ -578,64 +589,156 @@ knitr::kable(x, format="html")
 ```
 
 ---
-# Choice of test
+
+# Repeated - correlated measurments
+
+.left-code[
+```{r corMeasures, eval=FALSE}
+old_mar <- par()$mar
+par(mfrow=c(3,1), mar=c(4,4,0,0))
+plot(extra ~ group, data = sleep) #<<
+sleep %>% tidyr::spread(group, extra) -> sleepwide
+colnames(sleepwide) <- make.names(colnames(sleepwide))
+plot(sleepwide$X1, sleepwide$X2) #<<
+legend("topleft", legend = paste("cor = ",round(cor(sleepwide$X1, sleepwide$X2), digits=2)))
+sleepwide <- sleepwide %>% 
+  dplyr::mutate(diff = X2-X1) #<<
+boxplot(sleepwide$diff) #<<
+par(mar = old_mar)
+```
+]
+
+.right-plot[
+```{r corMeasures-out , ref.label="corMeasures", echo=FALSE, fig.width=6, fig.height=6}
+```
+]
 
 
-.pull-left[
+---
 
-- Simulate data <br/>
-$x_1 \sim N(0,1)$ and $x_2\sim Exp(1/1.3)$
-- compute p-value:
-  - randomization test
-  - t-test
-  - assymptotic test <br/> (T under null $\sim N(\mu, \sigma)$)
+# Repeated - correlated measurments
+
+- test-statistics two groups
+
+$$
+t_{unpaired} = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{s^2(\frac{1}{n_1} + \frac{1}{n_2})}}
+$$
 
 
+- test-statistics paired
 
-```{r randomization_test_ex2, eval=FALSE, echo=FALSE}
-dist1 <- function(N){rnorm(N, 0, 1 )}
-dist2 <- function(N){rexp(N, 1.3)}
-xx <- sample_stats(N=10,
-                   dist1,
-                   dist2,
-                   samples = 100)
+$$
+t_{paired} = \frac{\bar{d}}{\frac{s_d}{\sqrt{n}}}
+$$
 
-par(mfrow=c(2,1))
+---
 
-plot(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", ylab="t.test", xlab="randomization test", pch=16,cex=0.5)
-abline(c(0,1), col="blue")
-abline(h=0.01,v=0.01, col="gray")
 
-plot(xx$res_p[,"asymp.test"], xx$res_p[,"t.test"], log="xy",  xlab="asymptotic test",ylab="t.test", pch=16,cex=0.5)
-abline(c(0,1), col="blue")
-abline(h=0.01,v=0.01, col="gray")
+# Repeated - correlated measurments
 
+.left-code[
+```{r}
+test.p.values <- data.frame(
+unpaired.p = 
+  t.test(extra ~ group,#<<
+         data = sleep,#<<
+         paired = FALSE)$p.value, #<<
+paired.p = 
+  t.test(extra~group,#<<
+         data = sleep, #<<
+         paired = TRUE)$p.value, #<<
+diff.p = 
+  t.test(sleepwide$diff)$p.value #<<
+)
+
+```
+]
+
+.pull-right[
+```{r  results='asis', echo=FALSE}
+knitr::kable(signif(test.p.values, digits=2), format="html")
+```
+
+]
+
+---
+
+# Missing data
+
+```{r}
+sleepless <- datasets::sleep
+sleepless$extra[c(1,4,6,12)] <- NA
+sleepless$extra[1:4]
+tryCatch(
+  t.test(extra ~ group, data = sleepless, paired =TRUE),#<<
+  error = function(e) e)
+```
+
+---
+
+# Linear models
+
+.left-code[
+```{r}
+lm1 <- lm(extra ~ group, data = sleep)
+lm2 <- lm(extra ~ group + ID, data = sleep)
+lmermod <- lmerTest::lmer(extra ~ group + (1|ID), data = sleep)
+
+
+x <- bind_rows(
+broom::tidy(anova(lm1))[1,],
+broom::tidy(anova(lm2))[1,],
+broom::tidy(anova(lmermod))[1,],
+)
+
+xx <- add_column(x, model = c("lm_1","lm_2","lmer"), .before = 1) %>%
+  select(model, p.value) %>% mutate(p.value = signif(p.value, digits=2))
+  
+```
+]
+
+.pull-right[
+```{r  results='asis', echo=FALSE}
+knitr::kable(xx, format="html")
+```
+]
+
+---
+
+# Linear models - missing data
+
+
+.left-code[
+```{r}
+lm1 <- lm(extra ~ group,
+          data = sleepless) #<<
+lm2 <- lm(extra ~ group + ID, data = sleepless)
+lmermod <- lmerTest::lmer(extra ~ group + (1|ID), data = sleepless)
+
+x <- bind_rows(
+broom::tidy(anova(lm1))[1,],
+broom::tidy(anova(lm2))[1,],
+broom::tidy(anova(lmermod))[1,],
+)
+
+xx <- add_column(x, model = c("lm_1","lm_2","lmer"), .before = 1) %>%
+  select(model, p.value) %>% mutate(p.value = signif(p.value, digits=2))
 ```
 ]
 
 
 .pull-right[
-```{r randomization_test_ex2-out, ref.label="randomization_test_ex2", echo=FALSE, fig.width=6, fig.height=8}
+```{r  results='asis', echo=FALSE}
+knitr::kable(xx, format="html")
 ```
 ]
 
 ---
 
-# Choice of test
+# Linear models
 
 ```{r}
-cbind( coin = table(xx$res_p[,"coin"] < 0.01),
-t.test = table(xx$res_p[,"t.test"] < 0.01),
-asymp.test = table(xx$res_p[,"asymp.test"] < 0.01)) -> x
-rownames(x) <- c("Accept","Reject H0")
-knitr::kable(x, format="html")
 ```
-
----
-# Choice of test
-
-- parametric tests e.g. t-test
-- nonparametric tests e.g. randomization test
 
 
 ---
@@ -643,8 +746,9 @@ knitr::kable(x, format="html")
 # Take home message
 
 
-- What is H_0 and what is the p-value good for?
-- It is difficcult to get the distribution under H_0 (see t-distribution).
-- Hence asymptotic properties are used (CLT) to derive.
-- Impossible to get it right for small sample sizes in the presence of missing data.
+- What is the null distribution of the test stastic
+- There might be no non-parametric alternative.
+- Asymptotic properties are used (CLT) to derive H0 for complex models.
+
+- What are linear models
 - Use effect size and back it up by p-value.
