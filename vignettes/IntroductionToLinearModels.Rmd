@@ -20,9 +20,10 @@ editor_options:
 class: fullscreen, inverse, top, center, text-black
 background-image: url("../inst/images/Linear_chair.jpg")
 
-.font150[**linear models**]
+.font150[**linear models (lm)**]
 
 ```{r setup, include=FALSE}
+rm(list=ls())
 knitr::opts_chunk$set(fig.width=4.25, fig.height=3.5, fig.retina=3,
                       message=FALSE, warning=FALSE, cache = TRUE,
                       autodep = TRUE, hiline=TRUE)
@@ -48,59 +49,242 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 library(tidyverse)
 ```
 
+
+
+---
+# lm intro
+
+.left-code[
+```{r stripchart1, echo=TRUE, eval=FALSE}
+dat <- read.csv("femaleMiceWeights.csv") ##previously downloaded
+stripchart(Bodyweight ~ Diet, 
+           data= dat, 
+           vertical=TRUE, 
+           method="jitter",
+           main="Bodyweight over Diet")
+```
+]
+
+.right-plot[
+```{r stripchart1-out, ref.label="stripchart1", echo=FALSE, fig.width=6, fig.height=6}
+```
+]
+
+---
+# lm intro
+
+.left-code[
+```{r}
+meansum <- 
+  dat %>%
+  group_by(Diet) %>%
+  summarise(mean = mean(Bodyweight))
+lm1 <- lm(Bodyweight ~ Diet,
+          data = dat)
+coefs <- coef(lm1)
+```
+]
+
+.pull-right[
+```{r  results='asis', echo=FALSE}
+knitr::kable(meansum, format ="html", caption = "group means")
+knitr::kable(coefs, format ="html", caption = "coefficients")
+```
+]
+
+---
+
+# lm Intro - examin the coefficients
+
+.left-code[
+```{r parameterEstimates, echo=TRUE , eval=FALSE}
+stripchart(Bodyweight ~ Diet,
+           data = dat , vertical=TRUE, method="jitter",
+           main="Bodyweight over Diet", ylim=c(0,40), xlim=c(0,3))
+a <- -0.25
+lgth <- .1
+library(RColorBrewer)
+cols <- brewer.pal(3,"Dark2")
+abline(h=0)
+arrows(1+a,0,1+a,coefs[1],lwd=3,col=cols[1],length=lgth)
+abline(h=coefs[1],col=cols[1])
+arrows(2+a,coefs[1],2+a,coefs[1]+coefs[2],lwd=3,col=cols[2],length=lgth)
+abline(h=coefs[1]+coefs[2],col=cols[2])
+legend("right",names(coefs),fill=cols,cex=.75,bg="white")
+```
+]
+
+.right-plot[
+```{r parameterEstimates-out, ref.label="parameterEstimates", echo=FALSE, fig.width=6, fig.height=6}
+```
+]
+
 ---
 
 # Introduction to linear models
 
+
 .left-code[
 ```{r}
-sleep <- datasets::sleep
-head(sleep, n=10)
+Y <- dat$Bodyweight
+X <- model.matrix(lm1)
+beta <- solve(t(X) %*% X) %*% t(X) %*% Y
+c(t(beta)%*% t(X)[,1,drop=F],
+t(beta)%*% t(X)[,13,drop=F])
+epsilon <- Y - t(beta) %*% t(X)
 
 ```
 ]
 
 .pull-right[
-A data frame with 20 observations on 3 variables.
+$$
+\beta= (X^TX)^{−1} (X^TY)
+$$
 
-- extra	 - numeric	increase in hours of sleep
-- group - factor	drug given
-- ID	- factor	patient ID
+$\beta$ minimizes $$\sum(Y - \beta X)^2 = (Y-\beta X)(Y-\beta X)^T$$. 
+
+predicting Y
+$$\hat{Y} = X \beta$$
+
+residues
+$$r = Y - X\beta$$ 
+
+]
+
+---
+
+# lm Intro - Contrasts
+
+.left-code[
+```{r}
+linfct <- rbind(
+  chow = c(1, 0),
+  hf = c(1, 1 )
+  )
+linfct %*% coef(lm1)
+```
+]
+
+.right-plot[
+```{r parameterEstimates2-out, ref.label="parameterEstimates", echo=FALSE, fig.width=6, fig.height=6}
+```
 ]
 
 
 ---
 
-# Introduction to linear models
+# lm Intro - Contrasts
 
 .left-code[
-```{r stripchart, echo=TRUE, eval=FALSE}
-stripchart(
-  sleep$extra ~ sleep$group, #<< 
-  vertical=TRUE, method="jitter",
-  main="Sleep time over treatment")
-
+```{r}
+contrasts <- rbind(
+  "chow - hf" = linfct["chow",] - linfct["hf",]
+)
+contrasts
+contrasts %*% coef(lm1)
 
 ```
 ]
 
 .right-plot[
-```{r stripchart-out, ref.label="stripchart", echo=FALSE, fig.width=6, fig.height=6}
+```{r parameterEstimates3-out, ref.label="parameterEstimates", echo=FALSE, fig.width=6, fig.height=6}
 ```
 ]
 
 ---
 
+# lm Intro -  LSE standard error
+
+.left-code[
+
+```{r}
+e <- resid(lm1)
+sigma <- sqrt(sum(e^2)/
+                (length(e) -
+                   length(coef(lm1))) )
+
+X <- model.matrix(lm1)
+solve(t(X) %*% X) * sigma^2
+vcov(lm1)
+```
+]
+
+.pull-left[
+$$
+\begin{aligned}
+var(\hat{\beta}) &= var((X^\top X)^{-1}X^\top Y)\\
+&= \cdots\\
+&= \sigma^2 (X^\top X)^{-1}
+\end{aligned}
+$$
+]
+
+---
+
+# lm Intro - computing the test statistic
+
+```{r}
+std.error <- sqrt(diag(linfct %*% vcov(lm1) %*% t(linfct)))
+t.statistic <- linfct%*%coef(lm1)/std.error
+t.statistic
+
+std.error <- sqrt(diag(contrasts %*% vcov(lm1) %*% t(contrasts)))
+t.statistic <- contrasts %*% coef(lm1) / std.error
+t.statistic
+
+```
+
+---
+
+# lm Intro - getting the p-values
+
 .left-code[
 ```{r}
-lm1 <- lm(extra ~ group, data = sleep)
-lm2 <- lm(extra ~ group + ID, data = sleep)
-lmermod <- lmerTest::lmer(extra ~ group + (1|ID), data = sleep)
+lfq <- 
+  LFQService::my_contrast( lm1, #<
+  rbind(linfct, contrasts)) %>% #<
+  dplyr::select(lhs, estimate, std.error, statistic, p.value) %>%
+  mutate(p.value = round(p.value,digits=3))
+
 ```
+]
+
+
+.pull-left[
+```{r results="asis", echo=FALSE}
+knitr::kable(lfq,format = "html" , caption ="LFQService",digits = 2)
+```
+]
+
+---
+# Multiple Hypothesis testing
+
+.left-code[
+```{r}
+multcomp <- summary(
+  glht(lm1, rbind(linfct, contrasts))) %>% #<
+  broom::tidy() %>%
+  dplyr::select(lhs, estimate, std.error, statistic , p.value) %>%
+  mutate(p.value = round(p.value,digits=3))
+```
+]
+  
+  
+.pull-left[
+```{r results="asis", echo=FALSE}
+knitr::kable(multcomp,results = "html", caption="multcomp")
+```
+]
+
+
+# lm Intro - interactions
 
 
 [genomicsclass](http://genomicsclass.github.io/book)
 
+
+
+---
 
 ---
 Briefly introduce linear models
@@ -145,9 +329,9 @@ than y_b - y_a = (a+b)-a = b
 
 # Limma
 
-- Get posterior variance and prior degrees of freedom based on variance distribution of all proteins
-- update t-statistics, degrees of freedom
-- recompute p.values
+- Get _posterior variance_ and _prior degrees of freedom_ based on variance distribution of all proteins
+- update _t-statistic_, and degrees of freedom
+- recompute _p.values_
   
   
 ```{r eval=FALSE}
@@ -157,8 +341,20 @@ df.total <- df.residual + sv$df.prior
 p.value <- 2*pt( abs(moderated.t), df=df.total, lower.tail=FALSE)
 ```
 
+.footnote[Smyth 2004, 2015]
+
 ---
 
 # ROPECA
+
+- Run Limma on peptide level
+- aggregated peptide fold changes estimates e.g. median or mean
+
+- estimate probability of differential expression
+
+
+
+---
+
 
 

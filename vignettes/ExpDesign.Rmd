@@ -156,7 +156,7 @@ an overview of methods to infer causal networks from data
 ]
 
 .pull-right[
-## Experiment Intervention
+## Experimental Intervention
 - randomized controlled trials
 ]
 
@@ -310,7 +310,8 @@ all batch groups are present in each treatment<br/>
 group in equal numbers.
 
 .img-right[
-![](../inst/images/BatchEffect.png)
+![How to avoid](../inst/images/BatchEffect.png)
+How to avoid confounding by batch
 ]
 
 
@@ -540,8 +541,6 @@ on the state of a second causal variable.
 .img-right[
 ![](../inst/images/TypesOfInteractions_Quali.png)
 ]
-
-
 
 
 

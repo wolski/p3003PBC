@@ -233,6 +233,7 @@ $$I^n_i = \frac{I^t_i - med(I^t_i)}{mad(I^t_i)} \cdot \sum_{i=1}^N mad(I^t_i)/N$
 All samples have the same deviation $$mad(I^t_1) = mad(I^t_2)$$ equal to the average original variance of all samples.
 
 .footnote[[Benchmarking of normalziation methods - Elo _et al._](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5862339/)]
+
 ---
 
 # Data preprocessing
@@ -241,7 +242,7 @@ Since we want the sample size estimates on _protein level_ we need to infer the 
 
 There are many methods to infer the protein intensity
 - aggregate all peptides
-- aggregate not more than the 3 top peptides
+- aggregate not more than the top n peptides (e.g. top 3).
 - tukey median polish - a two-way decomposition of a 2D matrix.
 
 $$y_{ij} = b_0 + c_i + d_j + \epsilon_{ij}$$
