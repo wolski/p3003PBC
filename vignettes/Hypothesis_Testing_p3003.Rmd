@@ -1,8 +1,8 @@
 ---
 title: "Hypothesis Testing"
-subtitle: "FGCZ Prot - Bio - Informatics Training"
+subtitle: "FGCZ Protein Informatics Training"
 author: "Witold Wolski wew@fgcz.ethz.ch"
-date: "2018-01-23"
+date: "2019-10-21"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -90,6 +90,7 @@ plot(nulldistr, xlab="nr correct")
 
 ```{r}
 probs <- nulldistr / sum(nulldistr)
+probs <- round(probs, digits=3)
 probs
 ```
 
@@ -114,19 +115,20 @@ $P(x > 3) = `r probs[5]` + `r probs[4]` = `r probs[5] +  probs[4]`$.
 - Reject the null hypothesis if the observed value $t_{obs}$ is in the critical region.
 
 ---
+layout: false
 
 # Hypothesis testing - Brief version
 
 - __State research hypothesis__
 - State Relevant Null and Alternative hypothesis
 - Define test (T) statistic. 
-- Determine distribution of the test statistic under null hypothesis
+- Determine distribution of the test statistic<br/> under null hypothesis
 - Define Critical region.
 - Check if $T_{obs}$ is within the critical region.
 
 
 
-.pull-left[
+
 ```{r hypo-explained, eval=FALSE, echo = FALSE}
 # Plot distribution of T under null Hypothesis
 x <- seq(-3,5, by=0.1)
@@ -140,7 +142,7 @@ abline(h = 0)
 abline(v = c(crl, crh), col=2)
 
 text(  2.1 , 0.1, "critical region", adj=0, srt=90)
-text( -2.1 , 0.2, "critical region", adj=0, srt=-90)
+text( -2.1 , 0.3, "critical region", adj=0, srt=-90)
 
 # Show not significant test statistic
 abline(v = 1.2, col=3)
@@ -151,11 +153,10 @@ abline(v = 4, col="magenta")
 text(4, 0.1, expression(t[obs]), srt=90)
 
 ```
-]
 
 
-.right-plot[
-```{r hypo-explained-out, ref.label="hypo-explained", echo=FALSE}
+.img-right[
+```{r hypo-explained-out, ref.label="hypo-explained", echo=FALSE, fig.width=6, fig.height=6}
 ```
 ]
 
@@ -271,7 +272,7 @@ $T|H_0 \sim N(0,\sigma/\sqrt(N_{obs}))$
 $$T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$$
 Z- transformed data $\sim WN(0,1)$.
 
-The variance of the sampling distribution of the mean is the population variance divided by N.
+The variance of the sampling distribution of the mean is the population variance divided by $n$ ($iid$ assumption).
 
 $$\sigma^2_{mean} = \sigma^2/n$$
 
@@ -431,7 +432,7 @@ lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
 
 --
 
-- Many tests rely on __assymptotic properties__
+- Many tests rely on __asymptotic properties__
 
 ---
 
@@ -443,7 +444,7 @@ lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
   - For example, Student’s $t-test$ for two independent samples is reliable only if each sample follows a normal distribution and if sample variances are homogeneous.  
 --
 
-- assymptotic tests
+- asymptotic tests
    - assume that methods which work for normal distributions work also elsewhere
 --
 
@@ -547,7 +548,7 @@ sample_stats <- function(N_obs = 12, dist1, dist2, samples = 100){
 - compute p-value:
   - randomization test
   - t-test
-  - assymptotic test <br/> (T under null $\sim N(\mu, \sigma)$)
+  - asymptotic test <br/> (T under null $\sim N(\mu, \sigma)$)
 
 
 ```{r randomization_test, eval=FALSE, echo=FALSE}
@@ -590,7 +591,7 @@ knitr::kable(x, format="html")
 
 ---
 
-# Repeated - correlated measurments
+# Repeated - correlated measurements
 
 .left-code[
 ```{r corMeasures, eval=FALSE}
@@ -616,7 +617,7 @@ par(mar = old_mar)
 
 ---
 
-# Repeated - correlated measurments
+# Repeated - correlated measurements
 
 - test-statistics two groups
 
@@ -634,7 +635,7 @@ $$
 ---
 
 
-# Repeated - correlated measurments
+# Repeated - correlated measurements
 
 .left-code[
 ```{r}
@@ -692,7 +693,7 @@ broom::tidy(anova(lmermod))[1,],
 )
 
 xx <- add_column(x, model = c("lm_1","lm_2","lmer"), .before = 1) %>%
-  select(model, p.value) %>% mutate(p.value = signif(p.value, digits=2))
+  dplyr::select(model, p.value) %>% mutate(p.value = signif(p.value, digits=2))
   
 ```
 ]
@@ -722,7 +723,7 @@ broom::tidy(anova(lmermod))[1,],
 )
 
 xx <- add_column(x, model = c("lm_1","lm_2","lmer"), .before = 1) %>%
-  select(model, p.value) %>% mutate(p.value = signif(p.value, digits=2))
+  dplyr::select(model, p.value) %>% mutate(p.value = signif(p.value, digits=2))
 ```
 ]
 
@@ -735,20 +736,12 @@ knitr::kable(xx, format="html")
 
 ---
 
-# Linear models
 
-```{r}
-```
+# Conclusion
 
-
----
-
-# Take home message
-
-
-- What is the null distribution of the test stastic
-- There might be no non-parametric alternative.
-- Asymptotic properties are used (CLT) to derive H0 for complex models.
-
-- What are linear models
-- Use effect size and back it up by p-value.
+- Null and alternative hypothesis
+- What is a test statistic and the null distribution
+- There are parametric tests and there might be no non-parametric alternative.
+- Parametric tests make assumptions about the data.
+- Asymptotic properties are used (CLT) to derive null distributions for complex models.
+- In practice, if you are not sure about meeting assumptions, rely on effect sizes, confidence intervals and back them up with degrees of freedom.

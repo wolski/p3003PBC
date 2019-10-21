@@ -1,8 +1,8 @@
 ---
 title: "Quantitative Proteomics - Service"
-subtitle: "FGCZ Prot - Bio - Informatics Training"
+subtitle: "FGCZ Protein Informatics Training"
 author: "Witold Wolski wew@fgcz.ethz.ch"
-date: "2018-01-23"
+date: "2019-10-21"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -112,7 +112,9 @@ layout: false
 ![](../inst/images/Meeting_Agenda_p2.png)
 ]
 
-.footnote[Work by Witek Wolski and Paolo Nanni]
+.footnote[
+Handouts_services/ExDesignSurvey.pdf</br>
+Work by Witek Wolski and Paolo Nanni]
 
 ---
 layout: false
@@ -125,12 +127,12 @@ layout: false
 - Samples are being measured
 - Run through MaxQuant software to extract </br> precursor and peptide intensities
 - An evidence.txt file based report is being generated <br/>
- Have a look at this reports.</br>
- __Handouts_wolski/p2370_Analysis/samplesize_qc_report/evidence_QC_sample_Size.html__ <br/>
- __Handouts_wolski/p2691_Analysis/samplesize_qc_report/evidence_QC_sample_Size.html__
  
 
-.footnote[Work by Celia Detrez and Witek Wolski]
+.footnote[
+ Handouts_services/p2370_Analysis/samplesize_qc_report/evidence_QC_sample_Size.html <br/>
+ Handouts_services/p2691_Analysis/samplesize_qc_report/evidence_QC_sample_Size.html <br/>
+ Work by Celia Detrez and Witek Wolski]
 
 
 ---
@@ -216,6 +218,10 @@ We could compute the power by taking the _estimates_ obtained by the test.
 
 How good might this power estimate be?
 
+--
+
+[Calculating Observed Power Is Just Transforming Noise](https://lesslikely.com/statistics/observed-power-magic/)
+
 ---
 
 
@@ -226,6 +232,7 @@ How good might this power estimate be?
 $$I^n_i = \frac{I^t_i - med(I^t_i)}{mad(I^t_i)} \cdot \sum_{i=1}^N mad(I^t_i)/N$$
 All samples have the same deviation $$mad(I^t_1) = mad(I^t_2)$$ equal to the average original variance of all samples.
 
+.footnote[[Benchmarking of normalziation methods - Elo _et al._](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5862339/)]
 ---
 
 # Data preprocessing
@@ -238,6 +245,7 @@ There are many methods to infer the protein intensity
 - tukey median polish - a two-way decomposition of a 2D matrix.
 
 $$y_{ij} = b_0 + c_i + d_j + \epsilon_{ij}$$
+where $b_0$ - global intercept, $c_i, d_j$ denote the column and row effects, $\epsilon_{ij}$ - error.
 
 It is also used in the [MSstats](http://msstats.org/) package.
 
@@ -258,6 +266,7 @@ dimnames(peptides_hemo) <-
          "MFLSFPTTK"),
        c("S1", "S2" ,"S3"))
 ```
+
 ```{r}
 peptides_hemo
 ```
@@ -267,7 +276,7 @@ peptides_hemo
 ```{r}
 med.d <- medpolish(peptides_hemo,trace.iter = FALSE)
 med.d$overall + med.d$col
-t(t(med.d$overall + med.d$row))
+as.matrix(med.d$overall + med.d$row)
 ```
 ]
 
@@ -300,14 +309,16 @@ layout: false
   power 0.8<br/>
   significance level 0.05<br/>
   standard deviation taken from proteins<br/>
+
+--
+
+- ignores multiple testing probles
+- we will be updating it with FDR controlled power/sample size estimation
     
 .img-right[
 ![](../inst/images/QC_SD_SampleSize_Estimates.png)
 ]
 
-.footnote[
-Work by Witek Wolski and Lukas Kook
-]
 
 
 ---
@@ -316,4 +327,23 @@ Work by Witek Wolski and Lukas Kook
 Have a look at the sample size reports
 - peptide
 - protein
+
+.footnote[
+Handouts_services/p2691_Analysis/samplesize_qc_report<br/>
+Handouts_services/p2370_Analysis/samplesize_qc_report<br/>
+
+Work by Witek Wolski and Lucas Kook
+]
+
+
+---
+
+# Sample size estimation report - Conclusion
+
+- Sample size __estimate__
+- take a sample size a bit larger than estimated
+- try to understand the sources of variance 
+  - technical (check QC)
+  - biochemical
+  - biological
 

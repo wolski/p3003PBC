@@ -1,6 +1,6 @@
 ---
 title: "Introduction to Linear Models"
-subtitle: "FGCZ Prot - Bio - Informatics Training"
+subtitle: "FGCZ Protein Informatics Training"
 author: "Witold Wolski wew@fgcz.ethz.ch"
 date: "2018-01-23"
 output:
@@ -18,9 +18,9 @@ editor_options:
 ---
 
 class: fullscreen, inverse, top, center, text-black
-background-image: url("../inst/images/test_chair.jpeg")
+background-image: url("../inst/images/Linear_chair.jpg")
 
-.font150[**hypothesis testing**]
+.font150[**linear models**]
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(fig.width=4.25, fig.height=3.5, fig.retina=3,
@@ -47,4 +47,118 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 
 library(tidyverse)
 ```
+
+---
+
+# Introduction to linear models
+
+.left-code[
+```{r}
+sleep <- datasets::sleep
+head(sleep, n=10)
+
+```
+]
+
+.pull-right[
+A data frame with 20 observations on 3 variables.
+
+- extra	 - numeric	increase in hours of sleep
+- group - factor	drug given
+- ID	- factor	patient ID
+]
+
+
+---
+
+# Introduction to linear models
+
+.left-code[
+```{r stripchart, echo=TRUE, eval=FALSE}
+stripchart(
+  sleep$extra ~ sleep$group, #<< 
+  vertical=TRUE, method="jitter",
+  main="Sleep time over treatment")
+
+
+```
+]
+
+.right-plot[
+```{r stripchart-out, ref.label="stripchart", echo=FALSE, fig.width=6, fig.height=6}
+```
+]
+
+---
+
+.left-code[
+```{r}
+lm1 <- lm(extra ~ group, data = sleep)
+lm2 <- lm(extra ~ group + ID, data = sleep)
+lmermod <- lmerTest::lmer(extra ~ group + (1|ID), data = sleep)
+```
+
+
+[genomicsclass](http://genomicsclass.github.io/book)
+
+
+---
+Briefly introduce linear models
+
+Explain how the coefficients work give basic formulas for coefficients, coefficient variances
+
+---
+Discuss modelling of interactions
+
+---
+Discuss modelling of contrasts
+
+explain that 
+y_b = a + b
+y_a = a
+than y_b - y_a = (a+b)-a = b
+
+---
+
+# Modelling of proteomics data
+
+- linear models
+- mixed effect models
+- Limma
+- ROPECA
+- msqRob
+  - makes empirical bayes available for .
+
+---
+
+# Limma
+
+- Limma (developed for genomics) employs empirical bayes
+  - Empirical Bayes methods are procedures for statistical inference in which the prior distribution is estimated from the data.
+  - Bayesian would start with a prior derived from pilot experiment or expert knowledge and update it using the data using the bayes rule.
+
+- Advantage
+  - Works for all types linear models.
+- Disadvantage
+  - You can't perform peptide level modelling directly - peptide measurements are correlated measures.
+---
+
+# Limma
+
+- Get posterior variance and prior degrees of freedom based on variance distribution of all proteins
+- update t-statistics, degrees of freedom
+- recompute p.values
+  
+  
+```{r eval=FALSE}
+sv <- squeezeVar(sigma^2, df=df.residual) #<< 
+moderated.t <- tstat * sigma / sqrt(sv$var.post)
+df.total <- df.residual + sv$df.prior   
+p.value <- 2*pt( abs(moderated.t), df=df.total, lower.tail=FALSE)
+```
+
+---
+
+# ROPECA
+
 

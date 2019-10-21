@@ -1,8 +1,8 @@
 ---
 title: "Experimental Design"
-subtitle: "FGCZ Proteome - Informatics Training"
+subtitle: "FGCZ Protein Informatics Training"
 author: "Witold Wolski wew@fgcz.ethz.ch"
-date: "2018-01-23"
+date: "2019-10-21"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -57,8 +57,8 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
   - results must be measurable
   - experiment must be repeatable
 4. Observation <br/> make observations about results of experiment
-5. Analysis <br/> run test
-6. Conclusion <br/> significant result
+5. __Analysis__ <br/> run test
+6. __Conclusion__ <br/> significant result
 
 
 ---
@@ -87,8 +87,7 @@ women, different countries
 4. __Temporality__ – effect follows cause, and if expected delay, effect must occur after that delay
 5.  __Biological gradient__ – the stronger the agent the greater the effect – 
 response follow dose but also inverse effects possible
-6.  __Plausibility__ – is there a possible biological mechanism that could explain
-the effect
+6.  __Plausibility__ – is there a possible biological mechanism that could explain the effect
 7. __Coherence__ – do different types of study result in similar conclusions – e.g., controlled trials and observational studies
 8. ...
 <!-- 9. Analogous results found elsewhere – do similar agents have similar results?-->
