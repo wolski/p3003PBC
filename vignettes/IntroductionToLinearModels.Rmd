@@ -79,10 +79,12 @@ meansum <-
   dat %>%
   group_by(Diet) %>%
   summarise(mean = mean(Bodyweight))
-lm1 <- lm(Bodyweight ~ Diet,
-          data = dat)
+lm1 <- lm(Bodyweight ~ Diet, #<<
+          data = dat) #<< 
 coefs <- coef(lm1)
 ```
+
+$$y = b_0X_0 + b_1 X_1 + \epsilon$$
 ]
 
 .pull-right[
@@ -94,7 +96,7 @@ knitr::kable(coefs, format ="html", caption = "coefficients")
 
 ---
 
-# lm Intro - examin the coefficients
+# lm intro - examin the coefficients
 
 .left-code[
 ```{r parameterEstimates, echo=TRUE , eval=FALSE}
@@ -121,7 +123,7 @@ legend("right",names(coefs),fill=cols,cex=.75,bg="white")
 
 ---
 
-# Introduction to linear models
+# lm intro - determining the coefficients
 
 
 .left-code[
@@ -129,9 +131,8 @@ legend("right",names(coefs),fill=cols,cex=.75,bg="white")
 Y <- dat$Bodyweight
 X <- model.matrix(lm1)
 beta <- solve(t(X) %*% X) %*% t(X) %*% Y
-c(t(beta)%*% t(X)[,1,drop=F],
-t(beta)%*% t(X)[,13,drop=F])
 epsilon <- Y - t(beta) %*% t(X)
+beta
 
 ```
 ]
@@ -144,16 +145,16 @@ $$
 $\beta$ minimizes $$\sum(Y - \beta X)^2 = (Y-\beta X)(Y-\beta X)^T$$. 
 
 predicting Y
-$$\hat{Y} = X \beta$$
+$$\hat{Y} = X \beta = b_0X_0 + b_1X_1$$
 
 residues
-$$r = Y - X\beta$$ 
+$$e = Y - X\beta$$ 
 
 ]
 
 ---
 
-# lm Intro - Contrasts
+# lm intro - contrasts
 
 .left-code[
 ```{r}
@@ -163,6 +164,12 @@ linfct <- rbind(
   )
 linfct %*% coef(lm1)
 ```
+$$
+\begin{aligned}
+Y_{chow} = b_0\cdot1 + b_1\cdot0\\
+Y_{hf} = b_0\cdot1 + b_1\cdot1\\
+\end{aligned}
+$$
 ]
 
 .right-plot[
@@ -173,17 +180,20 @@ linfct %*% coef(lm1)
 
 ---
 
-# lm Intro - Contrasts
+# lm intro - contrasts
 
 .left-code[
 ```{r}
 contrasts <- rbind(
-  "chow - hf" = linfct["chow",] - linfct["hf",]
+  "chow - hf" = 
+    linfct["chow",] - linfct["hf",] #<<
 )
-contrasts
 contrasts %*% coef(lm1)
 
 ```
+$$
+Y_{chow- hf} = b_0\cdot 0 + b_1\cdot (-1)
+$$
 ]
 
 .right-plot[
@@ -193,19 +203,20 @@ contrasts %*% coef(lm1)
 
 ---
 
-# lm Intro -  LSE standard error
+# lm intro -  LSE standard error
 
 .left-code[
 
 ```{r}
-e <- resid(lm1)
-sigma <- sqrt(sum(e^2)/
-                (length(e) -
-                   length(coef(lm1))) )
+epsilon  <- resid(lm1)
+sigma <- 
+  sqrt(sum(epsilon ^2)/
+         (length(epsilon ) -
+            length(coef(lm1))) )
 
 X <- model.matrix(lm1)
-solve(t(X) %*% X) * sigma^2
-vcov(lm1)
+solve(t(X) %*% X) * sigma^2 #<<
+vcov(lm1) #<<
 ```
 ]
 
@@ -214,37 +225,56 @@ $$
 \begin{aligned}
 var(\hat{\beta}) &= var((X^\top X)^{-1}X^\top Y)\\
 &= \cdots\\
-&= \sigma^2 (X^\top X)^{-1}
+&= \sigma^2 (X^\top X)^{-1}\\
+with~~~ \sigma^2 &= \sum e^2 / (n-p)
 \end{aligned}
 $$
 ]
 
 ---
 
-# lm Intro - computing the test statistic
+# lm intro - computing the test statistic
 
+.left-code[
 ```{r}
-std.error <- sqrt(diag(linfct %*% vcov(lm1) %*% t(linfct)))
-t.statistic <- linfct%*%coef(lm1)/std.error
+std.error <- sqrt(diag(
+  linfct %*% #<<
+  vcov(lm1) %*% #<<
+  t(linfct))) #<<
+t.statistic <- 
+  linfct%*%coef(lm1)/std.error #<<
 t.statistic
 
-std.error <- sqrt(diag(contrasts %*% vcov(lm1) %*% t(contrasts)))
-t.statistic <- contrasts %*% coef(lm1) / std.error
+std.error <- sqrt(diag(
+  contrasts %*%
+    vcov(lm1) %*%
+    t(contrasts)))
+t.statistic <- 
+  contrasts %*% coef(lm1) / std.error
 t.statistic
 
 ```
+]
 
+.pull-right[
+$$
+t_i = \frac{\beta_i}{se(\beta_i)}
+$$
+]
 ---
 
-# lm Intro - getting the p-values
+# lm intro - getting the p-values
 
 .left-code[
 ```{r}
 lfq <- 
-  LFQService::my_contrast( lm1, #<
-  rbind(linfct, contrasts)) %>% #<
-  dplyr::select(lhs, estimate, std.error, statistic, p.value) %>%
-  mutate(p.value = round(p.value,digits=3))
+  LFQService::my_contrast( lm1, #<<
+  rbind(linfct, contrasts)) %>% #<<
+  dplyr::select(lhs, estimate,
+                std.error, 
+                statistic, p.value) %>%
+  mutate(p.value =
+           round(p.value,digits=3))
 
 ```
 ]
@@ -257,104 +287,191 @@ knitr::kable(lfq,format = "html" , caption ="LFQService",digits = 2)
 ]
 
 ---
-# Multiple Hypothesis testing
+
+# lm intro - getting the p-values (adjusted)
 
 .left-code[
 ```{r}
 multcomp <- summary(
-  glht(lm1, rbind(linfct, contrasts))) %>% #<
+  glht(lm1, rbind(linfct, contrasts))) %>% #<<
   broom::tidy() %>%
-  dplyr::select(lhs, estimate, std.error, statistic , p.value) %>%
-  mutate(p.value = round(p.value,digits=3))
+  dplyr::select(lhs, estimate,
+                std.error, statistic ,
+                p.value) %>%
+  mutate(p.value =
+           round(p.value,digits=3))
 ```
 ]
   
   
 .pull-left[
 ```{r results="asis", echo=FALSE}
-knitr::kable(multcomp,results = "html", caption="multcomp")
+knitr::kable(multcomp, format = "html", caption="multcomp", digits=2)
 ```
 ]
 
-
-# lm Intro - interactions
-
-
-[genomicsclass](http://genomicsclass.github.io/book)
-
-
-
 ---
 
----
-Briefly introduce linear models
+# lm intro - interactions
 
-Explain how the coefficients work give basic formulas for coefficients, coefficient variances
+## Model without interaction
 
----
-Discuss modelling of interactions
-
----
-Discuss modelling of contrasts
-
-explain that 
-y_b = a + b
-y_a = a
-than y_b - y_a = (a+b)-a = b
-
----
-
-# Modelling of proteomics data
-
-- linear models
-- mixed effect models
-- Limma
-- ROPECA
-- msqRob
-  - makes empirical bayes available for .
-
----
-
-# Limma
-
-- Limma (developed for genomics) employs empirical bayes
-  - Empirical Bayes methods are procedures for statistical inference in which the prior distribution is estimated from the data.
-  - Bayesian would start with a prior derived from pilot experiment or expert knowledge and update it using the data using the bayes rule.
-
-- Advantage
-  - Works for all types linear models.
-- Disadvantage
-  - You can't perform peptide level modelling directly - peptide measurements are correlated measures.
----
-
-# Limma
-
-- Get _posterior variance_ and _prior degrees of freedom_ based on variance distribution of all proteins
-- update _t-statistic_, and degrees of freedom
-- recompute _p.values_
-  
-  
 ```{r eval=FALSE}
-sv <- squeezeVar(sigma^2, df=df.residual) #<< 
-moderated.t <- tstat * sigma / sqrt(sv$var.post)
-df.total <- df.residual + sv$df.prior   
-p.value <- 2*pt( abs(moderated.t), df=df.total, lower.tail=FALSE)
+lm(friction ~ type + leg, data = spider)
 ```
 
-.footnote[Smyth 2004, 2015]
+.img-right[
+![](../inst/images/interactions_and_contrasts-spider_interactions1.png)
+]
+
+.footnote[[genomicsclass interactions](http://genomicsclass.github.io/book/pages/interactions_and_contrasts.html)]
 
 ---
 
-# ROPECA
+# lm intro - interactions
 
-- Run Limma on peptide level
-- aggregated peptide fold changes estimates e.g. median or mean
+## Model with interaction
 
-- estimate probability of differential expression
+```{r eval = FALSE}
+lm(friction ~ type + leg + type:leg, data=spider)
+```
 
+.img-right[
+![](../inst/images/interactions_and_contrasts-spider_interactions2.png)
+]
 
 
 ---
 
+# Yeast dataset analysis using linear models
 
+Protein level model
+
+$y_{il} = \alpha_i + \epsilon_{il}$
+
+where $y_{il}$ the intensity of the protein in condition $i$ and replicate $l$.
+and $i \in \{ethanol, glucose\}$ and $\epsilon_{il} \in N(0,s_e)$.
+
+Than the protein fold change can be computed by:
+
+$$\textrm{fc}_{glucose - ethanol} = \alpha_{glucose} - \alpha_{ethanol}$$
+
+---
+
+# Peptide and Protein level models
+
+Series of publication showing that modelling __protein fold changes__<br/>
+by using __peptide level intensities__<br/>
+is more __sensitive__ and __specific__ than using __aggregated protein intensities__.
+
+
+_Peptide measurements are repeated measurements of the same protein._
+
+
+.footnote[Suomi and Elo 2017 PMID: 28724900</br>
+Geomine, Gevaert and Clement 2016 PMID: 26566788]
+
+---
+
+# Yeast analysis - peptide level models
+
+Linear Mixed Effect Models
+
+$$
+y = X\beta + Zu + \epsilon
+$$
+
+Where $y$ is a column vector, the outcome variable; $X$ the matrix of predictor variables (design matrix); $b$ is a column vector of the fixed-effects regression coefficients,
+$Z$ is the design matrix for the random effects (describes the covariance structure of the data) and $u$ is a column vector of the random effect coefficients, $\epsilon$ is the column vector of the residuals.
+
+.footnote[For more details see e.g.: [UCLA IDRE](https://stats.idre.ucla.edu/other/mult-pkg/introduction-to-linear-mixed-models/)]
+
+---
+
+# Yeast analysis - peptide level models
+
+mixed effects linear model for batch $p2370$ and $p2691$
+- fixed effects : condition
+- random effects : peptides
+
+$$y_{ijk} = \alpha_i + a_j + \epsilon_{ijk}$$
+with  $i \in \{ethanol, glucose\}$,  $k \in {1:t}$ (nr replicates),  and $j$ iterates over all peptides of a protein.
+
+and where: $$a_j \propto N(0, s_a); ~ \epsilon_{ijk} \propto N(0, s_e)$$
+
+The protein fold change can be computed by:
+
+$$\textrm{fc}_{glucose - ethanol} = \alpha_{glucose} - \alpha_{ethanol}$$
+
+.footnote[model specification adapted from Geomine, Gevaert and Clement 2016 PMID: 26566788]
+
+---
+
+# Yeast analysis - both batches - model 1
+
+mixed effects linear model
+- fixed effects : condition, batch
+- random effects : peptides
+
+$$y_{ijkl} = \alpha_i + \beta_j + \gamma_{ij} +  a_k + \epsilon_{ijkl}$$
+with  $i \in \{ethanol, glucose\}$, $j \in \{p2370, p2691\}$,<br/>
+$\gamma_{ij}$ i.e. $ij = \{$ ethanol:p2370, ethanol:p2691, glucose:p2370, glucose:p2691 $\}$ ,
+$l \in {1:t}$ (replicate) and $k$ iterates over all peptides of a protein.
+
+and where: 
+$$a_k \propto N(0, s_a); ~ \epsilon_{ijkl} \propto N(0, s_e)$$
+---
+
+# Yeast analysis - both batches - model 1
+
+The protein fold change can be computed by:
+$$
+\begin{aligned}
+\textrm{fc}_{glucose - ethanol} &= \alpha_{glucose} - \alpha_{ethanol}\\
+\textrm{fc}_{p2370- p2691} &= \beta{p2370} - \alpha_{p2691}\\
+\textrm{fc}_{glucose:p2370 - ethanol:p2370} &= ... \\
+\textrm{fc}_{glucose:p2691 - ethanol:p2691} &= ...\\
+\textrm{fc}_{interaction} &= \textrm{fc}_{glucose:p2370 - ethanol:p2370} - \textrm{fc}_{glucose:p2691 - ethanol:p2691}\\
+\end{aligned}
+$$
+---
+
+# Yeast analysis - both batches - model 2
+
+mixed effects linear model
+- fixed effects : condition 
+- random effects : batch, peptides
+
+
+$$y_{ijkl} = \alpha_i +  a_j + b_k + \epsilon_{ijkl}$$
+where  $i \in \{ethanol, glucose\}$,  $j \in \{p2370, p2691\}$, $l \in {1:t}$ (replicate), and $k$ iterates over all peptides of a protein and 
+
+$$a_j \propto N(0, s_a); ~ b_k \propto N(0, s_b); ~ \epsilon_{ijkl} \propto N(0, s_e)$$
+
+
+The protein fold change can be computed by:
+
+$$\textrm{fc}_{glucose - ethanol} = \alpha_{glucose} - \alpha_{ethanol}$$
+---
+
+# Conclusion
+
+
+On request we can also perform:
+- protein level analysis with moderated p.values (LIMMA).
+  - aggregate all peptides
+  - top 3 peptides
+  - tukey median polish
+- peptide level analysis using the ROPECA approach.
+- we do not support MSqRob - it does not support modelling of interactions.
+
+Handouts_services/p2370_Analysis/results_modelling
+Handouts_services/p2691_Analysis/results_modelling
+
+.footnote[
+ROPECA Suomi and Elo 2017 PMID: 28724900<br/>
+MSqRob - Geomine, Gevaert and Clement 2016 PMID: 26566788<br/>
+LIMMA - Ritchie, Smyth at al. 2015 PMID: 25605792<br/>
+mapDIA - Teo, Kim et al. 2016 PMID: PMID: 26381204
+]
 

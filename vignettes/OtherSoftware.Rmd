@@ -1,0 +1,87 @@
+---
+title: "LookIntoOtherSoftware"
+author: "Witold Wolski"
+date: "22/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+---
+
+# Modelling of proteomics data
+
+- linear models
+- mixed effect linear models
+- Limma
+- ROPECA
+- msqRob
+  - makes empirical bayes available for .
+
+---
+
+# Limma
+
+- Limma (developed for genomics) employs empirical bayes
+  - Empirical Bayes methods are procedures for statistical inference in which the prior distribution is estimated from the data.
+  - Bayesian would start with a prior derived from pilot experiment or expert knowledge and update it using the data using the bayes rule.
+
+- Advantage
+  - Works for all types linear models.
+- Disadvantage
+  - You can't perform peptide level modelling directly - peptide measurements are correlated measures.
+---
+
+# Limma
+
+- Get _posterior variance_ and _prior degrees of freedom_ based on variance distribution of all proteins
+- update _t-statistic_, and degrees of freedom
+- recompute _p.values_
+  
+  
+```{r eval=FALSE}
+sv <- squeezeVar(sigma^2, df=df.residual) #<< 
+moderated.t <- tstat * sigma / sqrt(sv$var.post)
+df.total <- df.residual + sv$df.prior   
+p.value <- 2*pt( abs(moderated.t), df=df.total, lower.tail=FALSE)
+```
+
+.footnote[Smyth 2004, 2015]
+
+---
+
+# ROPECA
+
+- Run Limma on peptide level
+- aggregated peptide fold changes estimates e.g. median or mean
+
+- estimate probability of differential expression
+
+
+
+---
+
+
