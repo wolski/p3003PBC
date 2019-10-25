@@ -803,11 +803,10 @@ knitr::kable(xx, format="html")
 
 # Conclusion
 
-- Determing null distribution is difficult
-- If assumptions in parametric tests are not met null distribution is wrong
-- Parametric tests do not make assumptions about the data
-- there might be no non-parametric alternatives
+- If assumptions in parametric tests are not met null distribution is wrong, hence p-value
+- parametric tests do not make assumptions about the data
+- there might be no non-parametric alternative to a parametric test
 - Understand CLT and what assymptotic properties are
-- Asymptotic properties are sometimes used to derive null distributions for complex models. If that is the case and your sample sizes are small be carefull.
+- Asymptotic properties are sometimes used to derive null distributions for complex models. If this is the case and your sample sizes are small be carefull.
 
 
