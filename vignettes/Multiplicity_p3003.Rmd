@@ -49,6 +49,15 @@ library(tidyverse)
 ```
 
 ---
+# Overview
+
+
+- Where does multiplicity arise
+- What is Family Wise Error Rate (RWER)
+- What is FDR
+- How to control FWER and FDR
+
+---
 layout: false
 
 # Weight loss example
@@ -83,16 +92,17 @@ Not quite significant at the $5%$ level!
 2*(1- pnorm(1.84, 0,1))#<<
 (1 - pt(1.84, df = 250-1)) #<<
 ```
-assymptotic tests - does not "help" (and is biased).<br/>
-1-sided test is not acceptable!
-Why?
 ]
+
 
 .right-plot[
 ![](../inst/images/Multi_Test_Weight_example_1.png)
 ]
 
-.footnote[Example from  Andersen (1990) ]
+.footnote[Example from  Andersen (1990)</br> 
+assymptotic tests - does not "help" (and is biased).<br/>
+1-sided test is not acceptable! Why?
+]
 ---
 layout: false
 
@@ -109,12 +119,14 @@ Look at subgroups of the data by their sign of the Zodiac.</br>
 --
 
 
-- Conclusions: those born under the sign of Aries</br> are particularly suited to this new dietary control.
-
 
 .img-right[
 ![](../inst/images/Multi_Test_Weight_example_2.png)
 ]
+
+--
+
+- __Conclusions:__ those born under the sign of Aries</br> are particularly suited to this new dietary control.
 
 ---
 
@@ -134,7 +146,8 @@ result.
 --
 
   - Plausibility - possible biological mechanism which suggest the hypothesis.
-  - You would test this hypothesis and compare it with a control group.
+  - You would test this hypothesis by having two groups Aries and Control group.
+  - Larger sample sizes per group.
   
 
 ---
@@ -187,11 +200,11 @@ In R use `p.adjust` which transforms the p-values instead transforming the thres
 
 # P-value adjustment - Bonferroni correction
 
-FamilyWise Error Rate (FWER) - control the probability of at least one Type I error
+Family Wise Error Rate (FWER) - control the probability of at least one Type I error
 Maths for Bonferroni
 $$
 \begin{align}
-Pr(at~least~one_Type~I~error|H_0) = \epsilon &=  1 - Pr(no~rejections|H_0)\\
+Pr(at~least~one~Type~I~error|H_0) = \epsilon &=  1 - Pr(no~rejections|H_0)\\
 &= 1- \prod^k Pr(p_i > \alpha)\\
 &= 1- \prod^k (1-\alpha)\\
 &= 1-(1-\alpha)^k
@@ -215,8 +228,11 @@ K <- diag(length(coef(lmod)))[-1,] #<<
 rownames(K) <- names(coef(lmod))[-1] #<<
 adjusted <- broom::tidy(summary( 
   multcomp::glht(lmod, linfct = K))) #<<
-comp <- inner_join(lmtable[-1,-c(2,3,4)],adjusted[-c(2,3,4,5)], by=c("term"="lhs"))
-colnames(comp)[c(2,3)] <- c("p.value","p.adjusted")
+comp <- inner_join(lmtable[-1,-c(2,3,4)],
+                   adjusted[-c(2,3,4,5)],
+                   by=c("term"="lhs"))
+colnames(comp)[c(2,3)] <-
+  c("p.value","p.adjusted")
 ```
 ]
 
@@ -227,7 +243,7 @@ knitr::kable(comp, format="html", caption="compare p.value and adjusted p.value"
 ```
 ]
 
-.footnote[multcomp: Simultaneous Inference in General Parametric Models by _Torsten Hothorn_, <br/>Mathematics and theory complex, uses assymptotic properties to make it tractable ]
+.footnote[multcomp: Simultaneous Inference in General Parametric Models by _Torsten Hothorn_, <br/>Mathematics and theory complex, uses assymptotic properties for some types of linear models to make it tractable. ]
 
 ---
 # Multiplicity conclusion (FWER)
@@ -242,13 +258,86 @@ of multiplicity,
 - using a more sophisticated analysis (e.g. fitting time courses)
 - in the discovery fase using _False Discovery Rate_ instead of _Family Wise Error Rates_.
 
-
 ---
 
+# FDR Motivation
+
+.footnote[Simulating pvalues Figure A) 1000 p-values where H0 true, B) 900 p-values where H0 true and 100 HA true, C) 800 p-values where H0 true and 200 HA true
+D) 700 p-values where H0 true and 300 HA true.]
+
+.left-code[
+```{r pValScenarios, echo=TRUE, eval=TRUE}
+m <- 1000
+simulate.p.values <- function(
+  i, delta=2,fraction = 0.1){
+  control <- rnorm(6,0,1)
+  treatment <- rnorm(6,0,1)
+  if(runif(1) < fraction)
+   treatment <- treatment + delta
+  return(t.test(treatment,control)$p.value)
+}
+pvals00 <- sapply(1:m, simulate.p.values,
+                  delta = 0,fraction = 0 )
+pvals21 <- sapply(1:m, simulate.p.values,
+                  delta = 2,fraction = 0.1 )
+pvals22 <- sapply(1:m, simulate.p.values,
+                  delta = 2, fraction = 0.2 )
+pvals24 <- sapply(1:m, simulate.p.values,
+                  delta = 2, fraction = 0.4 )
+```
+
+```{r pValScenariosHist, echo=FALSE, eval=FALSE}
+par(mfrow=c(2,2))
+hist(pvals00,breaks=50, ylim=c(0,300), main="A")
+hist(pvals21,breaks=50,ylim=c(0,300) ,main ="B")
+hist(pvals22,breaks=50,ylim=c(0,300), main="C")
+hist(pvals42,breaks=50,ylim=c(0,300) , main="D")
+
+```
+]
+
+.right-plot[
+```{r pValScenariosHist-out, ref.label="pValScenariosHist", echo=FALSE, fig.width=6, fig.height=6}
+```
+]
+
+
+---
 # False Discovery Rate (FDR)
 
-FDR-controlling procedures are designed to control the expected proportion of "discoveries" (rejected null hypotheses) that are false (incorrect rejections).
-Particularily usefull in the discovery fase where even FDR's of up to 50% are feasible.
+- Figrue A (previous slide) shows that even if only H0 true we have some p-values which are below the significance threshold. These are false postives (FP).
+- In Figure B-C we have p-values less than significance threshold where H0 is true (FP) and an increasing proportion of those where HA is true (TP).
+
+- FDR-controlling procedures are designed to control the expected __proportion of "discoveries"__ (rejected null hypotheses) __that are false__ (incorrect rejections).
+
+$$FDR = \frac{FP}{FP + TP}$$
+
+- Particularily usefull in the discovery fase where even FDR's of up to 50% are feasible.
+
+---
+layout: false
+
+# FDR and p-value distribution
+
+.pull-left[
+- TP true positives (H0 rejected if HA true)
+- FP false positives (H0 rejected if H0 true)
+- FN false negatives (H0 accepted if HA true)
+- TN true negatives (H0 accepted if H0 true)
+
+$$FDR = \frac{FP}{FP + TP}$$
+]
+
+.img-right[
+![](../inst/images/Multitest_pValue_FDR_Estimation.png)
+]
+
+.footnote[John D.Storey 2002; Storey and Tibshirani 2003; Prummer 2012]
+
+---
+# FDR - Benjamini Hochberg - procedure
+
+Definition of FDR as given in the Benjamini and Hochberg paper 1995.
 
 ```{r results='asis', echo=FALSE}
 table <- data.frame( c("Reject H0","Accept H0", "Total"), matrix(c("V (FP)","S (TP)","R","U (TN)","T (FN)","m-R","m_0","m-m_0","m"), ncol=3, byrow=T))
@@ -265,15 +354,6 @@ $FDR = Q_e = E[Q]$ (expected value of $Q$).
 .footnote[https://en.wikipedia.org/wiki/False_discovery_rate, Benjamini-Hochberg (1995)]
 ---
 
-# FDR and p-value distribution
-
-.img-right[
-![](../inst/images/Multitest_pValue_FDR_Estimation.png)
-]
-
-.footnote[John D.Storey 2002; Storey and Tibshirani 2003; Prummer 2012]
-
----
 
 
 # FDR - Benjamini Hochberg - procedure
@@ -293,34 +373,22 @@ Reject the null hypothesis (i.e., declare discoveries) for all $H_{(i)}$ for $i 
 
 # FDR - Benjamini Hochberg - procedure
 
-
-
+.footnote[Highlighted code illustrates the Benjmini Hochberge procedure (top line) and how you would compute the FDR in R using the method `p.adjust`.]
 .left-code[
-```{r echo=FALSE}
-m <- 1000
-delta <- 2
-pvals <- sapply(1:m, function(i){
-  control <- rnorm(6,0,1)
-  treatment <- rnorm(6,0,1)
-  if(runif(1) < 0.1){
-   treatment <- treatment + delta
-  }  
-  t.test(treatment,control)$p.value
-  })
-```
 
 ```{r BHprocedure, eval=FALSE, echo=TRUE}
 alpha <- 0.05
-i = seq(along=pvals)
-k <- max(which(sort(pvals) < i/m*alpha)) #<<
-padj <- p.adjust(pvals,method="BH") #<<
+i = seq(along=pvals24)
+k <- max(which(sort(pvals24) < i/m*alpha)) #<<
+padj <- p.adjust(pvals24,method="BH") #<<
 
 par(mfrow=c(2,2))
-hist(pvals, breaks=20)
+hist(pvals24, breaks=20)
 hist(padj , breaks = 20)
-plot(i,sort(pvals))
+plot(i,sort(pvals24))
 abline(0,i/m*alpha, col=2)
-plot(i[1:30],sort(pvals)[1:30],type="b",main="Close-up")
+plot(i[1:k],sort(pvals24)[1:k],type="b",
+     main="Close-up")
 abline(0,i/m*alpha, col=2)
 
 ```
@@ -332,6 +400,7 @@ abline(0,i/m*alpha, col=2)
 ```{r BHprocedure-out, ref.label="BHprocedure", echo=FALSE, fig.width=6, fig.height=6}
 ```
 ]
+
 
 ---
 # FDR - Benjamini Hochberg - procedure
@@ -368,20 +437,34 @@ Although we will end up with more false positives, FDR gives us much more power.
 The BH procedure is valid when the m tests are independent, and also in various scenarios of dependence, but is __not universally valid__. (e.g. gene sets.)
 
 ---
+layout: false
 
 # Possible p-value distributions
+
+In practice we can observe various shapes of p-value distributions.
 
 
 [How to interpret a p-value histogram](http://varianceexplained.org/statistics/interpreting-pvalue-histogram/)
 
+This blog post discusses what types of p-value<br/>
+distrubutions you might encounter when analysing <br/>
+data and how to treat them.
 
+.img-right[
+![](../inst/images/pValueDistribution/bimodal_pvalues-1.png)
+]
 ---
 
-# Conclusion - Take home message
+# Conclusions
 
-- _Family Wise Error Rates (FWER)_  - use to adjust for number of tests for single protein.
-  - better - limit the number of tests
-- _False Discovery Rate (FDR)_ - control error rates when selecting proteins for follow up in discovery phase
+- Limit the number of hypothesis you test with the data
+- _Family Wise Error Rates (FWER)_  
+  - use to adjust for number of tests for single protein
+  - Typical threshold for FWER are $0.05$ or $0.01$
+- _False Discovery Rate (FDR)_ 
+  - controls error rates when selecting proteins for follow up in discovery phase
+  - FDR's of $0.1$ or even $0.5$ are acceptable.
+
 
 
 

@@ -48,6 +48,20 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 
 ---
 
+# Overview
+
+- Sientific method
+- Causality and Bradford Hill criteria
+- Study Types
+- Randomized Controlled Trial
+- Types of Bias
+- Confounders
+- Ethical Considerations
+- Sample size estimation
+- Experimental Designs
+
+---
+
 # Scientific Method
 
 1. __Question__
@@ -416,6 +430,8 @@ $\sigma^2$ of replicates:
 
 # Sample size calculations 
 
+.footnote[Top - greater standard deviation requires larger sample sizes, Bottom - smaller effect size requires larger sample sizes]
+
 .pull-left[
 For each statistical test,<br/> 
 there exists a unique relation between:
@@ -425,9 +441,10 @@ there exists a unique relation between:
 - sample size $N$
 - critical p-value $p_0$
 - statistical power
+
 ]
 
-.img-right[
+.right-plot[
 ```{r echo=FALSE}
 sd <- seq(0.5, 2, by =.001)
 dd <- power.t.test(delta = 2, sd = 1, sig.level = 0.05, power = 0.8)
@@ -512,8 +529,8 @@ layout: false
 
 An interaction may arise when considering the relationship <br/>
 among three or more variables, and describes a situation in <br/>
-which the effect of one causal variable on an outcome depends <br/>
-on the state of a second causal variable.
+which the effect of one causal variable on an outcome<br/>
+depends on the state of a second causal variable.
 
 --
 
@@ -525,6 +542,7 @@ on the state of a second causal variable.
 [Medical Statistics - University of Sheffield]
 ]
 
+.footnote[three or more variables - one coutcome variable and two or more causal variables.]
 --
 
 - Quantitative interaction
@@ -546,23 +564,9 @@ on the state of a second causal variable.
 
 ---
 
-# Outlook - Causality
+# Outlook
 
-Assess whether a particular __agent__ 
-
-caused or influenced a particular __outcome__ 
-
-$~$
-
-$~$
-
---
-
-What would be the __agent__ and __outcome__ in label free quantification?
-
---
-
-_agent_ - medication or drug or treatment and confounding factors
-
-_outcome_ - peptide and protein quantification values
-
+- More on sample size estimation.
+- How to test Hypothesis
+- How to analyse repeated measurments and different designs.
+- Multiple Testing.

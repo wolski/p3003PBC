@@ -49,6 +49,15 @@ library(tidyverse)
 ```
 
 ---
+# Overview
+
+- Creating the analysis protocol
+- Sample QC
+- Data preprocessing
+- Sample size estimation and power calculation
+
+
+---
 
 # The workflow - bioinformatics part
 
@@ -68,22 +77,17 @@ library(tidyverse)
 
 # Kickoff meeting - bioinformatics
 
-- Keep it short (15-30 minutes) by following an __agenda__
-- Give _statistical_ guidance
-- Get all the information we need to perform an analysis
+- Aim
+  - Keep it short (15-30 minutes) by following an __agenda__
+  - Give _statistical_ guidance
+  - Get all the information we need to perform an</br> analysis
+- Use of an Agenda
+  - helps to prepare for the meeting
+  - focuses on points relevant to the data analysis <br/>__blinding__ (minimize __bias__)
+  - streamlines discussion and saves time 
+  - Improve quality of services
+  - Ensures reproducibility
 
-## Use of an Agenda
-
-- helps to prepare for the meeting
-- focuses on points relevant to the data analysis <br/>__blinding__ (minimize __bias__)
-- streamlines discussion and saves time 
-- Improve quality of services
-- Ensures reproducibility
-
-
-## Motivation
-
-- Incomplete information causes that analysis is delayed or has to be redone.
 
 .img-right[
 ![](../inst/images/Meeting_Agenda_p1.png)
@@ -96,10 +100,10 @@ layout: false
 ## Document
 
 - which protein database to use
-- which condition and how many samples to use for the QC
+- which and how many samples to use for the QC
 - collect all the parameters for sample size estimation
-- specify the hypothesis to be tested
-- specify the design of the main experiment
+- specify the design of the main experiment <br/>
+and the hypothesis to be tested
 - document all the names of the factors and factor levels
 
 ## Conclusion
@@ -182,6 +186,8 @@ What is the error of the sample size estimate?
 
 # Sample size estimation report
 
+.footnote[We simulate 1000 samples of size 4 from normal and determine the standard deviation of each sample. For each standard deviation we computed the sample size.]
+
 .left-code[
 ```{r sampleSize_error, eval=FALSE}
 sd <- sapply(1:1000,
@@ -196,7 +202,8 @@ tmp <- sapply(sd,
                              power=0.8)$n})
 par(mfrow=c(2,1))
 hist(sd)
-plot(table(ceiling(tmp)), ylab="#", xlab="sample size estimate")
+plot(table(ceiling(tmp)),
+     ylab="#", xlab="sample size estimate")
 ```
 ]
 
@@ -209,9 +216,20 @@ plot(table(ceiling(tmp)), ylab="#", xlab="sample size estimate")
 
 # Sample size estimation report
 
-In the LFQ experiment you have measured 1000 of proteins, so the error of the median standard deviation should be small and the sample size estimate OK.
+For a given protein your uncertainty of the standard deviation and the required sample size is large.
+In an LFQ experiment you measure 1000 of proteins and determinded their variance. The error of the median standard deviation will be small and the sample size estimate OK.
 
---
+```{r}
+power.t.test(sd=median(sd), d = 0.59, sig.level=0.05,power=0.8)$n
+```
+
+where the standar error of the median is:
+
+$$SE(median) = (\pi/2) \cdot SE(\bar{y})$$ for normal $y$, with $SE(\bar{y})$ is the standard error of the mean, i.e.  $$SE(\bar{y}) = \sqrt{\frac{var(y)}{n}}$$
+.footnote[more details about the [median](https://en.wikipedia.org/wiki/Median)]
+---
+
+# Calculating Observed Power
 
 You run a test and you have the estimates of the $sd$, $p.value$ and fold change $d$.
 We could compute the power by taking the _estimates_ obtained by the test.
@@ -225,23 +243,23 @@ How good might this power estimate be?
 ---
 
 
-# Data preprocessing
+# Data preprocessing - Normalizing Intensities
 
 - log2 transform the data
 - apply robust z-transformation
 $$I^n_i = \frac{I^t_i - med(I^t_i)}{mad(I^t_i)} \cdot \sum_{i=1}^N mad(I^t_i)/N$$
 All samples have the same deviation $$mad(I^t_1) = mad(I^t_2)$$ equal to the average original variance of all samples.
 
-.footnote[[Benchmarking of normalziation methods - Elo _et al._](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5862339/)]
+.footnote[More methods fo data normalization are discussed here: [Elo _et al._](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5862339/)]
 
 ---
 
-# Data preprocessing
+# Data preprocessing - Protein Intensities
 
-Since we want the sample size estimates on _protein level_ we need to infer the protein intensity
+Since we want the sample size estimates on _protein level_ we need to infer the protein intensity from peptide intensities.
 
 There are many methods to infer the protein intensity
-- aggregate all peptides
+- aggregate all peptides (e.g. MaxQuant proteinGroups.txt)
 - aggregate not more than the top n peptides (e.g. top 3).
 - tukey median polish - a two-way decomposition of a 2D matrix.
 
@@ -252,7 +270,9 @@ It is also used in the [MSstats](http://msstats.org/) package.
 
 ---
 
-# Data preprocessing - Tukey Median Polish
+# Data preprocessing -  Protein Intensities
+
+.footnote[Tukey median polish example]
 
 .left-code[
 ```{r echo=FALSE}
@@ -270,16 +290,18 @@ dimnames(peptides_hemo) <-
 
 ```{r}
 peptides_hemo
+med.d <- medpolish(peptides_hemo, #<<
+                   trace.iter = FALSE)
+med.d$overall + med.d$col
 ```
 ]
 
-.pull-left[
+.pull-right[
 ```{r}
-med.d <- medpolish(peptides_hemo,trace.iter = FALSE)
-med.d$overall + med.d$col
 as.matrix(med.d$overall + med.d$row)
 ```
 ]
+
 
 ---
 layout: false
@@ -293,7 +315,9 @@ layout: false
 ]
 --
 
-- visualize standard deviation of proteins
+- visualize the distribution of standard deviation</br> of all proteins
+  - using the density function and<br/> the empirical cumulative density function (ecdf)
+  
 .img-right[
 ![](../inst/images/QC_SD_distribution_function.png)
 ]
@@ -307,15 +331,16 @@ layout: false
 --
 
 - give sample size estimates for parameters</br> specified in protocol<br/>
-  power 0.8<br/>
-  significance level 0.05<br/>
-  standard deviation taken from proteins<br/>
+  _power_ 0.8<br/>
+  _significance level_ 0.05<br/>
+  and standard deviation taken from proteins<br/>
 
 --
 
-- ignores multiple testing probles
-- we will be updating it with FDR controlled power/sample size estimation
-    
+- this sample size calculation ignores multiple testing problems
+
+.footnote[we will be updating our report with FDR controlled power/sample size estimation]
+
 .img-right[
 ![](../inst/images/QC_SD_SampleSize_Estimates.png)
 ]
@@ -339,11 +364,13 @@ Work by Witek Wolski and Lucas Kook
 
 ---
 
-# Sample size estimation report - Conclusion
+# Conclusion
 
-- Sample size __estimate__
-- take a sample size a bit larger than estimated
-- try to understand the sources of variance 
+- Sample size calculation is based on the standard deviation estimate (sd)
+  - sd estimate for single protein have a large error
+  - small errors for the median (sd) of all proteins
+- Calculating Observed Power Is Just Transforming Noise
+- Understand the sources of variance <br/>(by running QC experiment or including technical and biochemical replicate in your main experiment)
   - technical (check QC)
   - biochemical
   - biological

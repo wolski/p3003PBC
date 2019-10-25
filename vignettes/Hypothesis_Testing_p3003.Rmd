@@ -50,6 +50,22 @@ library(tidyverse)
 
 ---
 
+# Introduction
+
+- What is a hypothesis and how it can be tested
+- What is a test statistic
+- how to generate the distribution of the test statistic if null true
+- one sample t-test
+- what happens if assumptions are not met
+- central limit theorem
+- assymptotic tests
+- non parametric tests - randomization test
+- comparing parametric, non parametric and assymptotic tests
+- paired t-test
+- equivalence of t-test and linear models
+
+---
+
 #  Lady tasting tea
 
 Dr. Muriel Bristol, a female colleague of Fisher claimed to be able to tell whether the tea or the milk was added first to a cup.
@@ -89,7 +105,7 @@ plot(nulldistr, xlab="nr correct")
 # Lady tasting tea
 
 ```{r}
-probs <- nulldistr / sum(nulldistr)
+probs <- nulldistr / sum(nulldistr) # compute probabilities
 probs <- round(probs, digits=3)
 probs
 ```
@@ -102,17 +118,6 @@ If she would have 3 right would you accept the null hypothesis?
 
 $P(x > 3) = `r probs[5]` + `r probs[4]` = `r probs[5] +  probs[4]`$.
 
----
-
-# Hypothesis testing - Long version
-
-- State the relevant null and alternative hypotheses. _This is important, as mis-stating the hypotheses will muddy the rest of the process._
-- Consider the statistical assumptions being made about the sample. _e.g., statistical independence, distributions of the observations. invalid assumptions will mean that the results of the test are invalid._
-- State the relevant test statistic T (Decide which test is appropriate).
-- Derive the distribution of the test statistic under the null hypothesis. _e.g., the test statistic follow's a Student's t distribution_
-- Select a significance level $\alpha$, which defines the critical region of null distribution.
-- Compute from the observations the observed value $t_{obs}$ of the test statistic T.
-- Reject the null hypothesis if the observed value $t_{obs}$ is in the critical region.
 
 ---
 layout: false
@@ -160,6 +165,18 @@ text(4, 0.1, expression(t[obs]), srt=90)
 ```
 ]
 
+---
+
+# Hypothesis testing - Long version
+
+- State the relevant null and alternative hypotheses. _This is important, as mis-stating the hypotheses will muddy the rest of the process._
+- Consider the statistical assumptions being made about the sample. _e.g., statistical independence, distributions of the observations. invalid assumptions will mean that the results of the test are invalid._
+- State the relevant test statistic T (Decide which test is appropriate).
+- Derive the distribution of the test statistic under the null hypothesis. _e.g., the test statistic follow's a Student's t distribution_
+- Select a significance level $\alpha$, which defines the critical region of null distribution.
+- Compute from the observations the observed value $t_{obs}$ of the test statistic T.
+- Reject the null hypothesis if the observed value $t_{obs}$ is in the critical region.
+
 
 ---
 
@@ -175,7 +192,7 @@ text(4, 0.1, expression(t[obs]), srt=90)
 --
   
   - Observations are independent, identically distributed (iid)
-  - Normal. $x \sim N(\mu, \sigma)$.
+  - $x \sim N(\mu, \sigma)$.
 - State the relevant test statistic T?
 --
 
@@ -213,10 +230,12 @@ getBreaks <- function(T0,by=0.1){
 
 ```{r simulateData, eval=FALSE}
 # Simulating data from Null
-N <- 1000; N_obs <- 4; mu <- 0; sigma <- 1
+N <- 1000; N_obs <- 4;
+mu <- 0; sigma <- 1
 bb <- function(y){
   x <- rnorm( N_obs, mu, sigma )
-  data.frame(mean = mean( x ), sd = sd(x)) 
+  data.frame(mean = mean( x ),
+             sd = sd(x)) 
 }
 res <- purrr::map_df(1:N, bb)
 res %>% tidyr::gather() %>%
@@ -235,14 +254,15 @@ ggplot(aes(x = value)) +
 
 ---
 
-# Mean = $\mu$? What is the distribution of T?
+# Mean = $\mu$? What is the distribution of T under null?
 
 .left-code[
 if $\sigma$ known
 
 ```{r simulatingH0SigmaK, eval=FALSE, size="footnotesize"}
 T0 <- mu - res$mean
-hist(T0, breaks=getBreaks(T0, by=0.05),
+hist(T0, 
+     breaks=getBreaks(T0, by=0.05),
      probability = T,
      main="")
 x <- seq(-10,10,0.01)
@@ -258,7 +278,7 @@ $T|H_0 \sim N(0,\sigma/\sqrt(N_{obs}))$
 ]
 
 .right-plot[
-```{r simulatingH0SigmaK-out, ref.label="simulatingH0SigmaK", echo=FALSE}
+```{r simulatingH0SigmaK-out, ref.label="simulatingH0SigmaK", echo=FALSE, out.width="100%"}
 ```
 ]
 
@@ -268,11 +288,12 @@ $T|H_0 \sim N(0,\sigma/\sqrt(N_{obs}))$
 
 # Improved test statistic T*
 
+The __t-statistic__
 
 $$T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$$
 Z- transformed data $\sim WN(0,1)$.
 
-The variance of the sampling distribution of the mean is the population variance divided by $n$ ($iid$ assumption).
+The variance of the sampling distribution of the mean is the population variance divided by $n$ (given $iid$ data).
 
 $$\sigma^2_{mean} = \sigma^2/n$$
 
@@ -286,7 +307,8 @@ if $\sigma$ known
 ```{r simulatingH0SigmaKTnew, eval=FALSE, size="footnotesize"}
 T0 <- (mu - res$mean)/
   (sigma/sqrt(N_obs)) #<<
-hist(T0, breaks=getBreaks(T0, by=0.05),
+hist(T0, 
+     breaks=getBreaks(T0, by=0.05),
      probability = T,
      main="")
 x <- seq(-10,10,0.01)
@@ -300,7 +322,7 @@ $T|H_0 \sim N(0,1)$
 ]
 
 .right-plot[
-```{r simulatingH0SigmaKTnew-out, ref.label="simulatingH0SigmaKTnew", echo=FALSE}
+```{r simulatingH0SigmaKTnew-out, ref.label="simulatingH0SigmaKTnew", echo=FALSE, out.width="100%"}
 ```
 ]
 
@@ -309,20 +331,18 @@ $T|H_0 \sim N(0,1)$
 # Mean = $\mu$? Unknown Variance
 
 .left-code[
-
 if $\sigma$ UNKNOWN
-
 ```{r simulatingH0SigmaUK, eval = FALSE}
 T0 <- (mu - res$mean) /
   (res$sd/sqrt(N_obs)) #<<
-hist(T0, breaks=getBreaks(T0),probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
-
+hist(T0,
+     breaks=getBreaks(T0),
+     probability = T, xlim=c(-6,6),
+     ylim=c(0,0.4),main="")
 x <- seq(-10,10,0.1)
-lines(x, 
-      dnorm(x),#<<
+lines(x, dnorm(x),#<<
       col="red")
-lines(x,
-      dt(x,df = N_obs), #<<
+lines(x,dt(x,df = N_obs), #<<
       type="l",col="green",lwd=2)
 
 ```
@@ -333,7 +353,7 @@ $T|H_0 \sim T(\mu=0,df=N_{obs})$
 
 
 .right-plot[
-```{r simulatingH0SigmaUK-out, ref.label="simulatingH0SigmaUK", echo=FALSE}
+```{r simulatingH0SigmaUK-out, ref.label="simulatingH0SigmaUK", echo=FALSE, out.width="100%"}
 ```
 ]
 
@@ -344,15 +364,19 @@ $T|H_0 \sim T(\mu=0,df=N_{obs})$
 .left-code[
 
 ```{r simulatingH0withWrongAssumptions, eval=FALSE}
-N <- 10000;N_obs <- 4;rate <- 1
+N <- 10000;rate <- 1;
+N_obs <- 4;
 bb_exp <- function(y){
   x <- rexp( N_obs, rate=rate )-1 #<<
-  data.frame(mean = mean( x ), sd = sd(x)) 
+  data.frame(mean = mean( x ),
+             sd = sd(x)) 
   }
 res <- purrr::map_df(1:N, bb_exp)
 T0 <- (res$mean - mu)/ #<<
   (res$sd/sqrt(N_obs)) #<<
-hist(T0, breaks=getBreaks(T0), probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
+hist(T0, breaks=getBreaks(T0),
+     probability = T, xlim=c(-6,6),
+     ylim=c(0,0.4), main="")
 lines(x,
       dt(x,df = N_obs), #<<
       type="l",col="green",lwd=2)
@@ -361,9 +385,12 @@ lines(x,
 
 
 .right-plot[
-```{r simulatingH0withWrongAssumptions-out, ref.label="simulatingH0withWrongAssumptions", echo=FALSE}
+```{r simulatingH0withWrongAssumptions-out, ref.label="simulatingH0withWrongAssumptions", echo=FALSE, out.width="100%"}
 ```
 ]
+
+.footnote[Assumption is that $x$ is generated using a normal distribution. But this time we simulate $4$ datapoints from an exponential distribution.]
+
 
 ---
 
@@ -373,7 +400,8 @@ lines(x,
 
 ```{r simulatingH0withWrongAssumptionsN12, eval=FALSE}
 # Simulating data from Null
-N <- 10000;N_obs <- 40;rate <- 1
+N <- 10000;rate <- 1
+N_obs <- 40 #<<
 bb_exp <- function(y){
   x <- rexp( N_obs, rate=rate )-1
   data.frame(mean = mean( x ), sd = sd(x)) 
@@ -381,8 +409,11 @@ bb_exp <- function(y){
 res <- purrr::map_df(1:N, bb_exp)
 T0 <- res$mean/
   (res$sd/sqrt(N_obs))
-hist(T0, breaks=getBreaks(T0), probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
-lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
+hist(T0, breaks=getBreaks(T0),
+     probability = T,   xlim=c(-6,6),
+     ylim=c(0,0.4), main="")
+lines(x,dt(x,df = N_obs),type="l",
+      col="green",lwd=2)
 ```
 ]
 
@@ -392,6 +423,9 @@ lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
 ```
 ]
 
+.footnote[Assumption is that $x$ is generated using a normal distribution. But this time we simulate $40$ datapoints from an exponential distribution.]
+
+
 ---
 
 # Mean = $\mu$? $x \sim Exp(1)$ but with $N_obs = 100$
@@ -400,7 +434,8 @@ lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
 
 ```{r simulatingH0withWrongAssumptionsN100, eval=FALSE}
 # Simulating data from Null
-N <- 10000;N_obs <- 100;rate <- 1
+N <- 10000;rate <- 1
+N_obs <- 100 #<<
 bb_exp <- function(y){
   x <- rexp( N_obs, rate=rate )-1
   data.frame(mean = mean( x ), sd = sd(x)) 
@@ -408,8 +443,11 @@ bb_exp <- function(y){
 res <- purrr::map_df(1:N, bb_exp)
 T0 <- res$mean/
   (res$sd/sqrt(N_obs))
-hist(T0, breaks=getBreaks(T0), probability = T, xlim=c(-6,6),ylim=c(0,0.4), main="")
-lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
+hist(T0, breaks=getBreaks(T0),
+     probability = T, xlim=c(-6,6),
+     ylim=c(0,0.4), main="")
+lines(x,dt(x,df = N_obs),type="l",
+      col="green",lwd=2)
 ```
 ]
 
@@ -419,6 +457,7 @@ lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
 ```
 ]
 
+.footnote[Assumption is that $x$ is generated using a normal distribution. But this time we simulate $100$ datapoints from an exponential distribution.]
 
 ---
 
@@ -432,7 +471,7 @@ lines(x,dt(x,df = N_obs),type="l",col="green",lwd=2)
 
 --
 
-- Many tests rely on __asymptotic properties__
+- Some methods rely on __asymptotic properties__  (e.g. `multomp` p-value compua)
 
 ---
 
@@ -504,7 +543,7 @@ test statistic $T_{obs}$ is:
 
 $$\frac{1}{B} \sum^B_{i=0} I_{T_i} >= |T_{obs}|$$
 
-
+.footnote[Step 1-3 generates a sample from the null distribution.]
 ---
 
 ```{r fun_def, echo=FALSE, include=FALSE}
@@ -544,8 +583,8 @@ sample_stats <- function(N_obs = 12, dist1, dist2, samples = 100){
 
 .pull-left[
 
-- Simulate data <br/> $x_1 \sim N(0,1)$ and $x_2\sim N(1.3,1.3)$
-- compute p-value:
+- Simulate data from <br/> $x_1 \sim N(0,1)$ and $x_2\sim N(1.3,1.3)$ <br/> (10 each)
+- compute p-values using:
   - randomization test
   - t-test
   - asymptotic test <br/> (T under null $\sim N(\mu, \sigma)$)
@@ -561,11 +600,11 @@ xx <- sample_stats(N=10,
 
 par(mfrow=c(2,1))
 
-plot(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", ylab="t.test", xlab="randomization test", pch=16,cex=0.5)
+plot(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", ylab="log(p.value) t.test", xlab="log(p.value) randomization test", pch=16,cex=0.5)
 abline(c(0,1), col="blue")
 abline(h=0.01,v=0.01, col="gray")
 
-plot(xx$res_p[,"asymp.test"], xx$res_p[,"t.test"], log="xy",  xlab="asymptotic test",ylab="t.test", pch=16,cex=0.5)
+plot(xx$res_p[,"asymp.test"], xx$res_p[,"t.test"], log="xy",  xlab="log(p.value) asymptotic test",ylab="log(p.value) t.test", pch=16,cex=0.5)
 abline(c(0,1), col="blue")
 abline(h=0.01,v=0.01, col="gray")
 
@@ -579,13 +618,14 @@ abline(h=0.01,v=0.01, col="gray")
 ]
 
 ---
+
 # Compare tests
 
 ```{r}
 cbind( coin = table(xx$res_p[,"coin"] < 0.01),
 t.test = table(xx$res_p[,"t.test"] < 0.01),
 asymp.test = table(xx$res_p[,"asymp.test"] < 0.01)) -> x
-rownames(x) <- c("Accept","Reject H0")
+rownames(x) <- c("Accept", "Reject H0")
 knitr::kable(x, format="html")
 ```
 
@@ -598,14 +638,22 @@ knitr::kable(x, format="html")
 old_mar <- par()$mar
 par(mfrow=c(3,1), mar=c(4,4,0,0))
 plot(extra ~ group, data = sleep) #<<
-sleep %>% tidyr::spread(group, extra) -> sleepwide
-colnames(sleepwide) <- make.names(colnames(sleepwide))
-plot(sleepwide$X1, sleepwide$X2) #<<
-legend("topleft", legend = paste("cor = ",round(cor(sleepwide$X1, sleepwide$X2), digits=2)))
+sleep %>% tidyr::spread(group, extra) -> 
+  sleepwide
+colnames(sleepwide) <- make.names(
+  colnames(sleepwide)
+  )
+plot( sleepwide$X1, sleepwide$X2) #<<
+legend("topleft", legend = 
+       paste("cor = ",
+       round(
+         cor(sleepwide$X1, sleepwide$X2),
+         digits=2)))
 sleepwide <- sleepwide %>% 
-  dplyr::mutate(diff = X2-X1) #<<
+  dplyr::mutate(diff = X2-X1) 
 boxplot(sleepwide$diff) #<<
 par(mar = old_mar)
+
 ```
 ]
 
@@ -614,6 +662,8 @@ par(mar = old_mar)
 ```
 ]
 
+.footnote[To see `sleep` dataset documentation run `?sleep` in R.]
+
 
 ---
 
@@ -621,17 +671,14 @@ par(mar = old_mar)
 
 - test-statistics two groups
 
-$$
-t_{unpaired} = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{s^2(\frac{1}{n_1} + \frac{1}{n_2})}}
-$$
+$$t_{unpaired} = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{s^2(\frac{1}{n_1} + \frac{1}{n_2})}}$$
 
 
 - test-statistics paired
 
-$$
-t_{paired} = \frac{\bar{d}}{\frac{s_d}{\sqrt{n}}}
-$$
+$$t_{paired} = \frac{\bar{d}}{\frac{s_d}{\sqrt{n}}}$$
 
+with $\bar{d}$ the mean of the differences $d_i$ with $i \in (1,\dots, n)$, and $d_i = x_{2i} - x_{1i}$ (the correlated samples in condtion $1$ and $2$).
 ---
 
 
@@ -653,6 +700,8 @@ diff.p =
 )
 
 ```
+
+.footnote[Top code block - two sample t-test, middle code block - paired t-test, bottom code - one sample t.test on differences. Note that the paired t-test gives the same results as the one sample t.test of differences]
 ]
 
 .pull-right[
@@ -675,15 +724,19 @@ tryCatch(
   error = function(e) e)
 ```
 
+.footnote[running the paired t-test with missing data fails.]
+
 ---
 
 # Linear models
 
 .left-code[
 ```{r}
-lm1 <- lm(extra ~ group, data = sleep)
-lm2 <- lm(extra ~ group + ID, data = sleep)
-lmermod <- lmerTest::lmer(extra ~ group + (1|ID), data = sleep)
+lm1 <- lm(extra ~ group, data = sleep) #<<
+lm2 <- lm(extra ~ group + ID, data = sleep) #<<
+lmermod <- 
+  lmerTest::lmer(extra ~ group + (1|ID),
+                 data = sleep) #<<
 
 
 x <- bind_rows(
@@ -692,8 +745,11 @@ broom::tidy(anova(lm2))[1,],
 broom::tidy(anova(lmermod))[1,],
 )
 
-xx <- add_column(x, model = c("lm_1","lm_2","lmer"), .before = 1) %>%
-  dplyr::select(model, p.value) %>% mutate(p.value = signif(p.value, digits=2))
+xx <- add_column(x, model = 
+        c("lm_1","lm_2","lmer"),
+        .before = 1) %>%
+  dplyr::select(model, p.value) %>%
+  mutate(p.value = signif(p.value, digits=2))
   
 ```
 ]
@@ -704,6 +760,8 @@ knitr::kable(xx, format="html")
 ```
 ]
 
+.footnote[performing the same t-tests but using linear models and mixed effect linear models produces same result.]
+
 ---
 
 # Linear models - missing data
@@ -711,19 +769,24 @@ knitr::kable(xx, format="html")
 
 .left-code[
 ```{r}
-lm1 <- lm(extra ~ group,
+lm1 <- lm(extra ~ group, #<<
           data = sleepless) #<<
-lm2 <- lm(extra ~ group + ID, data = sleepless)
-lmermod <- lmerTest::lmer(extra ~ group + (1|ID), data = sleepless)
-
+lm2 <- lm(extra ~ group + ID, #<<
+          data = sleepless) #<<
+lmermod <- lmerTest::lmer( #<<
+  extra ~ group + (1|ID), #<<
+  data = sleepless) #<<
 x <- bind_rows(
 broom::tidy(anova(lm1))[1,],
 broom::tidy(anova(lm2))[1,],
 broom::tidy(anova(lmermod))[1,],
 )
 
-xx <- add_column(x, model = c("lm_1","lm_2","lmer"), .before = 1) %>%
-  dplyr::select(model, p.value) %>% mutate(p.value = signif(p.value, digits=2))
+xx <- add_column(x, 
+        model = c("lm_1","lm_2","lmer"),
+        .before = 1) %>%
+  dplyr::select(model, p.value) %>%
+  mutate(p.value = signif(p.value, digits=2))
 ```
 ]
 
@@ -734,14 +797,17 @@ knitr::kable(xx, format="html")
 ```
 ]
 
+.footnote[Linear models do work also with missing data.]
 ---
 
 
 # Conclusion
 
-- Null and alternative hypothesis
-- What is a test statistic and the null distribution
-- There are parametric tests and there might be no non-parametric alternative.
-- Parametric tests make assumptions about the data.
-- Asymptotic properties are used (CLT) to derive null distributions for complex models.
-- In practice, if you are not sure about meeting assumptions, rely on effect sizes, confidence intervals and back them up with degrees of freedom.
+- Determing null distribution is difficult
+- If assumptions in parametric tests are not met null distribution is wrong
+- Parametric tests do not make assumptions about the data
+- there might be no non-parametric alternatives
+- Understand CLT and what assymptotic properties are
+- Asymptotic properties are sometimes used to derive null distributions for complex models. If that is the case and your sample sizes are small be carefull.
+
+

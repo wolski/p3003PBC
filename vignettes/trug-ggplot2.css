@@ -47,6 +47,7 @@ body {
   width: 45%;
   height: 92%;
   float: left;
+  font-size: 20px;
 }
 
 .right-plot {
@@ -85,10 +86,10 @@ body {
 }
 
 .img-right{
-  height: 300px;
-  width: 300px;
+  height: 500px;
+  width: 400px;
   top: 25%;
-  left: 65%;
+  left: 60%;
   position: absolute;
 }
 
