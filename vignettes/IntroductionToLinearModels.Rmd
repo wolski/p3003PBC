@@ -50,6 +50,16 @@ library(tidyverse)
 ```
 
 
+---
+# Overview
+
+- What is a linear model
+- How to estimate coefficients
+- What are contrasts
+- How to determine the error of the coefficients, test statistics and p-values
+- What are interactions in linear models
+- Example: Yeast data with batches
+- Protein level vs peptide level modelling
 
 ---
 # lm intro
@@ -231,6 +241,7 @@ with~~~ \sigma^2 &= \sum e^2 / (n-p)
 $$
 ]
 
+.footnote[LSE = least square estimate]
 ---
 
 # lm intro - computing the test statistic
@@ -454,16 +465,25 @@ The protein fold change can be computed by:
 $$\textrm{fc}_{glucose - ethanol} = \alpha_{glucose} - \alpha_{ethanol}$$
 ---
 
-# Conclusion
+# Conclusions
 
 
-On request we can also perform:
+- Linear models allow for
+  - calculation of fold changes, but also of differences between fold changes
+  - modelling of interactions between factors 
+- Modelling on peptide level potentially is more sensitive and specific than modelling on protein level
+- If measurements are correlated i.e. multiple peptides of a protein, than mixed effect linear models can be used
+
+---
+
+# Outlook
+
+- mixed effect model analysis with lmer.
 - protein level analysis with moderated p.values (LIMMA).
   - aggregate all peptides
   - top 3 peptides
   - tukey median polish
 - peptide level analysis using the ROPECA approach.
-- we do not support MSqRob - it does not support modelling of interactions.
 
 Handouts_services/p2370_Analysis/results_modelling
 Handouts_services/p2691_Analysis/results_modelling
@@ -474,4 +494,5 @@ MSqRob - Geomine, Gevaert and Clement 2016 PMID: 26566788<br/>
 LIMMA - Ritchie, Smyth at al. 2015 PMID: 25605792<br/>
 mapDIA - Teo, Kim et al. 2016 PMID: PMID: 26381204
 ]
+
 
