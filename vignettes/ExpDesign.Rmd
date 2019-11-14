@@ -2,7 +2,7 @@
 title: "Experimental Design"
 subtitle: "FGCZ Protein Informatics Training"
 author: "Witold Wolski wew@fgcz.ethz.ch"
-date: "2019-10-21"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -47,10 +47,56 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 ```
 
 ---
+# LFQ a success story
+
+
+--
+
+- Novel aquisition methods (DIA vs DDA)
+
+.img-right[
+![](../inst/images/DIA_vs_LFQ.jpg)
+]
+
+--
+
+- improvements in feature detection and extraction
+
+.img-right[
+![](../inst/images/IonStar_MQ_PD.jpg)
+]
+
+--
+
+- a zoo of data <br/> transformation, pretreatment, imputation methods
+
+.img-right[
+![](../inst/images/LFQ_Improvement.jpg)
+]
+
+
+--
+
+- improvements in fold change estimation
+
+.img-right[
+![](../inst/images/Ropeca.png)
+]
+
+
+
+.footnote[
+[Extending the Limits of Quantitative Proteome](https://www.mcponline.org/content/14/5/1400);
+[Ionstar](https://www.pnas.org/content/115/21/E4767);
+[Simultaneous Improvement in the Precision...](https://www.mcponline.org/content/18/8/1683);
+[Ropeca](https://www.nature.com/articles/s41598-017-05949-y)
+]
+
+---
 
 # Overview
 
-- Sientific method
+- Scientific method
 - Causality and Bradford Hill criteria
 - Study Types
 - Randomized Controlled Trial
@@ -66,11 +112,11 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 
 1. __Question__
 2. __Hypothesis__
-3. Experiment <br/> ordered investigation that attempts to prove or disprove a hypothesis
+3. __Experiment__ <br/> ordered investigation that attempts to prove or disprove a hypothesis
   - must show if hypothesis is supported or not.
   - results must be measurable
   - experiment must be repeatable
-4. Observation <br/> make observations about results of experiment
+4. __Observation__ <br/> make observations about results of experiment
 5. __Analysis__ <br/> run test
 6. __Conclusion__ <br/> significant result
 
@@ -79,44 +125,71 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 
 # Question - Causality
 
-
+.pull-left[
 Assess whether a particular __agent__ 
 
-_(e.g. a medication or drug or treatment regime or exposure to an environmental factor or genetic background)_
-
 caused or influenced a particular __outcome__ 
+]
 
-_(e.g. cure of disease, reduction in pain, medical condition, change in protein expression etc.)_
+.right-plot[
+![](../inst/images/CausalNetworkSignalTransduction.png)
+]
+
 
 ---
 
-# Question - Causality - Bradford-Hill Criteria
+# Causality - How to prove cause and effect?
+
+.right-plot[
+![](../inst/images/BuehlmanCausality.png)
+]
+
+.footnote[[Peter Buehlmann "Invariance, Causality and Robustness"](https://arxiv.org/pdf/1812.08233.pdf)]
+
+---
+
+# Causality - Bradford-Hill Criteria
+
 
 
 1.  __Strength of association__ – (effect size) the greater the effect compared with those not
 exposed to the agent the more plausible is the association
 2. __Consistency__ – (reproducibility) does it happen in other groups of people – both men and
 women, different countries
-3. __Specificity__ – no other likely explanations - Causation is likely if there is a very specific population at a specific site and disease with no other likely explanation.
+3. __Specificity__ – no other likely explanations
 4. __Temporality__ – effect follows cause, and if expected delay, effect must occur after that delay
-5.  __Biological gradient__ – the stronger the agent the greater the effect – 
-response follow dose but also inverse effects possible
+5.  __Biological gradient__ – the stronger the agent the greater the effect
 6.  __Plausibility__ – is there a possible biological mechanism that could explain the effect
 7. __Coherence__ – do different types of study result in similar conclusions – e.g., controlled trials and observational studies
-8. ...
+8. __Experiment__ "Occasionally it is possible to appeal to experimental evidence".
 <!-- 9. Analogous results found elsewhere – do similar agents have similar results?-->
+
+.footnote[
+Sir Austin Bradford Hill CBE FRS was an English epidemiologist and statistician, pioneered the randomized clinical trial (use of streptomycin in treating tuberculosis) and, together with Richard Doll, demonstrated the connection between cigarette smoking and lung cancer (case-control study).
+]
+
+---
+
+# Bradford-Hill Criteria
+
+.pull-left[Plausibility<br/>
+![](../inst/images/BH_Plausibility.png)]
+
+.pull-right[Specificity<br/>
+![](../inst/images/BH_Specificity.png)]
+
+.footnote[[Explaining Hill Criteria using xkcd](https://www.kdnuggets.com/2017/02/hill-data-scientist-xkcd-story.html)<br/>
+[The Bradford Hill Criteria Don't Hold Up](https://lesslikely.com/statistics/bradford-hill-criteria-dont-hold/)
+]
 
 
 ---
 
 # Question - Causality - Bradford-Hill Criteria
 
-- Are there other scientifically relevant questions than causality?
 - Does establishing all Bradford-Hill criteria prove cause and effect?
---
+- Which Bradford-Hill criteria do you aim to meet in your study?
 
-- What is __your__ research question?
-- Which Bradford-Hill criteria do you aim to meet?
 
 ---
 
@@ -132,31 +205,17 @@ response follow dose but also inverse effects possible
 .right-plot[
 ![](../inst/images/Causality_fromData.jpg)
 
+]
+.footnote[[CausalDisco](https://github.com/annennenne/causalDisco/blob/master/slides/causaldisco_ahp_user2019.pdf)
+an overview of methods (implemented in R) to infer causal networks from data <br/>
 
-[CausalDisco](https://github.com/annennenne/causalDisco/blob/master/slides/causaldisco_ahp_user2019.pdf)
-an overview of methods to infer causal networks from data
+Judea Pearl "The Book of Why: The New Science of Cause and Effect"<br/>
+
 ]
 
 
 
----
 
-
-
-# Study Types 
-
-.pull-left[
-## Observational study
-- subjects are observed in order to determine both their exposure and their outcome (e.g. healthy, cancer)
-- not randomized to the exposed or unexposed groups
-- The exposure status is not determined by the researcher
-]
-
-.pull-right[
-## Experimental Intervention
-- experiment must be repeatable
-- subjects are randomized to the exposed and unexposed groups
-]
 
 ---
 
@@ -164,32 +223,65 @@ an overview of methods to infer causal networks from data
 
 .pull-left[
 ## Observational study
-- Case-control study -  only individuals with a specific characteristic (disease and similar individuals without disease)
+- Case-control study -  individuals with a specific characteristic (disease and similar individuals without disease)
 - Cross-sectional study - aim to provide data on the entire population under study
 - Longitudinal study - repeated observations of the same variables (e.g., people) over short or long periods of time
 ]
 
 .pull-right[
 ## Experimental Intervention
-- randomized controlled trials
+- randomized controlled trials  <br/>
+(randomize subjects into two groups, placebo and treatment group)
 ]
 
+
+---
+
+
+# Study Types - Pros and cons
+
+.pull-left[
+## Observational study
+pros:
+- May require less resources
+- Less ethical considerations (e.g. smokers)
+- Good if outcome of interest is rare
+
+cons:
+- difficult to determine causality
+- no randomization or blinding
+- The exposure status is not determined by the researcher
+]
+
+.pull-right[
+## Experimental Intervention
+pros:
+- More validity
+- Can determine causality
+- Randomized and blinded
+
+
+cons:
+- may require more resources
+- Ethical concerns for certain exposures
+- Difficult if outcome studied is rare
+]
 
 ---
 
 # Randomized controlled trial
 
 This year’s Laureates have introduced<br/>
-a new approach to obtaining reliable answers</br>
+a new approach to obtaining reliable answers<br/>
 about the best ways to fight global poverty. 
 
-In brief, it involves __dividing this issue into</br>
-smaller, more manageable, questions__ – for example,</br>
-the most effective interventions for improving educational</br>
+In brief, it involves __dividing this issue into<br/>
+smaller, more manageable, questions__ – for example,<br/>
+the most effective interventions for improving educational<br/>
 outcomes or child health. 
 
-They have shown that these smaller, more precise,</br>
-questions are often best answered via carefully</br>
+They have shown that these smaller, more precise,<br/>
+questions are often best answered via carefully<br/>
 __designed experiments__<br/>
 among the people who are most affected.
 
@@ -202,18 +294,38 @@ among the people who are most affected.
 ---
 layout: false
 
-# Randomized controlled trial
+# Randomized controlled trial - Randomization
 
-Aims to reduce certain sources of __bias__
+A randomized controlled trial is a type of scientific experiment that aims to reduce certain sources of __bias__ when testing the effectiveness of new treatments.
 
-"Bias is an inclination towards something, or a predisposition,<br/> partiality, prejudice, preference, or predilection." (Wikipedia)
+- __selection bias__
 
---
+sample obtained is _not representative_ of the population intended to be analyzed.
+
+
+- __allocation bias__
+
+_systematic difference_ in how participants are assigned to treatment groups and comparison groups
+
+__Randomly allocate subjects to two or more groups__
+
+
+.footnote[
+
+https://en.wikipedia.org/wiki/Randomized_controlled_trial</br>
+https://en.wikipedia.org/wiki/Bias]
+
+---
+
+# Bias
 
 - Confirmation bias,<br/> tendency to favor information that confirm hypothesis
+
 .img-right[
 ![](../inst/images/Man_In_The_Moon_1.png)
 ]
+
+
 --
 
 - Funding bias,<br/> bias relative to the commercial interests of a study's <br/> financial sponsor
@@ -227,70 +339,45 @@ Aims to reduce certain sources of __bias__
 ![](../inst/images/Man_In_The_Moon_3.png)
 ]
 
-(wiki commons licence)
+.footnote[
+Are you more inclined to examine a sample for a technical problem which <br/>
+does not fit your hypothesis?
+]
 
 ---
 
-# Randomized controlled trial
+# Randomized controlled trial - Blinding
 
-Aims to reduce certain sources of __bias__
+ - Information which may influence the participants</br>
+ is withheld until after the experiment is completed
+ - A blind can be imposed on any participant<br/>
+ of an experiment, including<br/> 
+ __subjects, researchers, technicians,<br> data analysts, and evaluators__
 
-- Randomly allocate subjects to two or more groups
- - _selection_ and _allocation_ bias
-- Blinding
- - Information which may influence the participants is withheld until after the experiment is completed
- - A blind can be imposed on any participant of an experiment, including<br/> __subjects, researchers, technicians, data analysts, and evaluators__
-
-
----
-
-# Bias
-
-What is __selection bias__?
-
---
-
-sample obtained is _not representative_ of the population intended to be analyzed
-
---
-
-What is __allocation bias__?
-
---
-
-_systematic difference_ in how participants are assigned to treatment groups and comparison groups
-
----
-
-# Bias
-
-Examples
-
-
-- more care when processing treated samples than controls
-- _adjusting_ thresholds till obtaining significant results
-- ?
-
---
-
-How could you improve you experiment by _blinding_ ?
---
-
-- Do not transfer information unnecessary to perform a task,<br/>
-   e.g. use uninformative sample and group labels
-- Define analysis parameters beforhand
-
---
-
-In clinical Trials double blind trials should be used where possible
+- In clinical Trials double blind trials should <br/>
+be used where possible
   - Single blind – either patient or evaluator blind.
   - Double blind – both patient and evaluator blind
+
+.img-right[![](../inst/images/blind_trials.png)]
+
+---
+
+
+Did you apply _blinding_ or _randomization_ in your experiments?
+
+
+
 
 ---
 
 # Confounders
 
-Correlation does not imply causation but causation may imply correlation
+
+
+Correlation does not imply causation but causation may imply correlation.
+
+__Confounder__ - is a variable that influences both the dependent variable and independent variable, causing a spurious association.
 
 __Reichenbach's common cause principle:__ <br/>
 A correlation occurs due to one of the three possible mechanisms
@@ -298,8 +385,7 @@ A correlation occurs due to one of the three possible mechanisms
 ![](../inst/images/Causality_Mechanisms_3.png)
 ]
 
-
-__Confounder__ - is a variable that influences both the dependent variable and independent variable, causing a spurious association.
+.footnote[[Mediators, confounders, colliders – a crash course in causal inference](https://theoreticalecology.wordpress.com/2019/04/14/mediators-confounders-colliders-a-crash-course-in-causal-inference/)]
 
 <!--
 .img-right[
@@ -310,18 +396,16 @@ __Confounder__ - is a variable that influences both the dependent variable and i
 ---
 layout: false
 
-# Confounders
-
-- Avoid batch effects:
-    - process all samples in parallel
+# Controlling for Confounders
 
 - Randomize over biological and<br/>  technical co-variates. <br/> 
   e.g. run Id, age.
-
-- If randomization is not possible, choose a<br/>
+- Avoid batch effects:
+    - process all samples in parallel
+- block confounders <br/> 
 _complete block design_, i.e.,<br/> 
-all batch groups are present in each treatment<br/>
-group in equal numbers.
+all treatments are present in each batch<br/>
+in equal numbers.
 
 .img-right[
 ![How to avoid](../inst/images/BatchEffect.png)
@@ -331,39 +415,48 @@ How to avoid confounding by batch
 
 ---
 
-# Confounders
+# Confounders - Reporting
 
-Document any possible co-variate, e.g.,
+Document possible co-variates, e.g.,
 
 .pull-left[
 
-
 - Human subjects:
-  - age, 
-  - bmi, 
-  - gender, 
-  - ethnicity, 
-  - tissue, 
-  - medical center
+  - age
+  - bmi 
+  - gender 
+  - ...
 ]
 
 .pull-right[
 -  Biochemical/Technical: 
-   - batch, 
+   - batch 
    - run Id
-   - reagent lot no,
-   - chromatographic column,
-   - name of technician,
-   - instrument,
+   - instrument
+   - ...
+]
+
+Report your research so that it can be reviewed, reproduced and analysed.
+Do not overinterpret your results.
+
+
+.footnote[
+[Overinterpretation and misreporting of prognostic factor
+studies in oncology: a systematic review](https://www.nature.com/articles/s41416-018-0305-5.pdf)<br/>
+http://www.equator-network.org/<br/>
+https://www.ncbi.nlm.nih.gov/pubmed/29873743
 ]
 
 
+
 ---
+
 
 # Ethical considerations
 
 - It is agreed that it is __unethical__ _to conduct research which is badly planned or
 executed_.
+
 -  It is unethical to perform a trial which:
   - has many more subjects than are needed to reach a conclusion.
   - has little prospect of reaching any conclusion, </br> e.g. because 
@@ -377,7 +470,7 @@ executed_.
 
 ---
 
-
+<!--
 
 # Types of error
 
@@ -398,6 +491,7 @@ is to __increase the sample size__, and this may not be feasible.
 .img-right[
 ![](../inst/images/hl_nullhypo_errors.png)
 ]
+-->
 
 ---
 
@@ -428,7 +522,7 @@ $\sigma^2$ of replicates:
 
 ---
 
-# Sample size calculations 
+# Sample size calculation
 
 .footnote[Top - greater standard deviation requires larger sample sizes, Bottom - smaller effect size requires larger sample sizes]
 
@@ -467,7 +561,7 @@ plot(delta, resdelta, xlab = "mu", ylab="N", type="l", log="xy", main = "sd=1, p
 
 ---
 
-# Design
+# Experimental Design
 
 The key technical issue is whether comparisons are made __between__ or __within__ subjects.
 
@@ -488,30 +582,43 @@ Within (repeated/paired)
 
 Are combinations of both possible?
 
+.footnote[Ronald Fisher (1890 - 1962) "The Arrangement of Field Experiments" (1926) and "The Design of Experiments" (1935).]
+
 ---
 
 # Factorial Design vs Parallel group
 
-40 patients, Placebo, drug A and drug B.
-
-How would you allocate these patients?
-
---
 .pull-left[
-Factorial
+Parallel (one factor)
 
-- drug A + drug B 10
-- plac A + drug B 10
-- drug A + plac B 10
-- plac A + plac B 10
-
-Compare:
-- 20 drug A vs 20 plac A
-- 20 drug B vs 20 plac B 
+- drug A
+- drug B
+- plac
 ]
 
 .pull-right[
-Parallel
+Factorial (2 or more factors)
+
+- Factor A
+  - drug A
+  - plac A
+- Factor B
+  - drug B
+  - plac B
+]
+
+40 patients, Placebo, drug A and drug B.
+How would you allocate these patients?
+
+
+.footnote[Ronald Fisher pioneered the use of factorial experiments instead of the one-factor-at-a-time method.]
+
+---
+
+# Factorial Design vs Parallel group
+
+.pull-left[
+Parallel (one factor)
 
 - drug A 13
 - drug B 13
@@ -522,15 +629,32 @@ Compare:
 - 13 drug B vs 14 plac
 ]
 
+.pull-right[
+Factorial (2 or more factors)
+
+- drug A + drug B - 10
+- plac A + drug B - 10
+- drug A + plac B - 10
+- plac A + plac B - 10
+
+Compare:
+- 20 drug A vs 20 plac A
+- 20 drug B vs 20 plac B 
+]
+
+
 ---
 layout: false
 
-# Interactions
+# Factorial Design - Interactions
 
-An interaction may arise when considering the relationship <br/>
-among three or more variables, and describes a situation in <br/>
-which the effect of one causal variable on an outcome<br/>
-depends on the state of a second causal variable.
+Factorial Designs are efficient at evaluating<br/>
+the effects and possible interactions of<br/> 
+several factors (independent variables).
+
+
+
+.footnote[https://en.wikipedia.org/wiki/Design_of_experiments]
 
 --
 
@@ -542,7 +666,7 @@ depends on the state of a second causal variable.
 [Medical Statistics - University of Sheffield]
 ]
 
-.footnote[three or more variables - one coutcome variable and two or more causal variables.]
+
 --
 
 - Quantitative interaction
@@ -564,9 +688,7 @@ depends on the state of a second causal variable.
 
 ---
 
-# Outlook
+# Tweet
 
-- More on sample size estimation.
-- How to test Hypothesis
-- How to analyse repeated measurments and different designs.
-- Multiple Testing.
+![](../inst/images/Final_Tweet.jpg.png)
+
