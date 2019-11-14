@@ -1,11 +1,42 @@
 Package: p3003PBC
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Slides and R exercises for FGCZ Bioinformatics course
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: witek wolski (wewolski@gmail.com)
+Maintainer: The package maintainer <wewolski@gmail.com>
+Description: Several lectures ranging from experimental design up to multiplicity correction.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
+VignetteBuilder: knitr
+URL: https://github.com/wolski/p3003PBC
+BugReports: https://github.com/wolski/p3003PBC/issues
+Imports:
+    asympTest,
+    broom,
+    coin,
+    dplyr,
+    flextable,
+    ggplot2,
+    ggbeeswarm,
+    ggfortify,
+    glue,
+    GGally,
+    kableExtra,
+    lme4,
+    lmerTest,
+    magrittr,
+    multcomp,
+    purrr,
+    readxl,
+    stringr,
+    tidyverse,
+    tidyr,
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat
+Remotes:
+    protViz/quantable,
+    statOmics/MSqRob,
+    bioc::3.9/limma
