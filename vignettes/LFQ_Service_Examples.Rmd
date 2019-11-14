@@ -2,7 +2,7 @@
 title: "Quantitative Proteomics - Service"
 subtitle: "FGCZ Protein Informatics Training"
 author: "Witold Wolski wew@fgcz.ethz.ch"
-date: "2019-10-21"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   xaringan::moon_reader:
     lib_dir: libs
