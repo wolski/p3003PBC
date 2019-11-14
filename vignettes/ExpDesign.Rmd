@@ -15,10 +15,15 @@ output:
       slideNumberFormat: "%current%"
 editor_options:
   chunk_output_type: console
+vignette: >
+  %\VignetteIndexEntry{Experimental Design} 
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+  
 ---
 
 class: fullscreen, inverse, top, center, text-black
-background-image: url("chairDesign.jpg")
+background-image: url("../inst/images/many-black-chair-backs.jpg")
 
 .font150[**design**]
 

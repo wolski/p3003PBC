@@ -15,6 +15,11 @@ output:
       slideNumberFormat: "%current%"
 editor_options:
   chunk_output_type: console
+vignette: >
+  %\VignetteIndexEntry{Multiple Testing} 
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+
 ---
 
 class: fullscreen, inverse, top, center, text-white
@@ -87,7 +92,7 @@ Not quite significant at the $5%$ level!
 
 .left-code[
 
-```{r}
+```{r computingPvals}
 2*(1- pt(1.84, df = 250-1))
 2*(1- pnorm(1.84, 0,1))#<<
 (1 - pt(1.84, df = 250-1)) #<<
@@ -101,8 +106,9 @@ Not quite significant at the $5%$ level!
 
 .footnote[Example from  Andersen (1990)</br> 
 assymptotic tests - does not "help" (and is biased).<br/>
-1-sided test is not acceptable! Why?
-]
+1-sided test is not acceptable! Why?]
+
+
 ---
 layout: false
 
@@ -220,7 +226,7 @@ Solving for $\alpha$ gives approx $$\epsilon = \alpha/k$$ or exact result $$\eps
 
 .left-code[
 Model with NO interactions
-```{r}
+```{r fittingswiss}
 lmod <- lm(Fertility ~ ., #<<
            data = swiss)
 lmtable <- broom::tidy(summary(lmod))
@@ -238,7 +244,7 @@ colnames(comp)[c(2,3)] <-
 
 
 .pull-right[
-```{r  results='asis', echo=FALSE}
+```{r comparepVals ,results='asis', echo=FALSE}
 knitr::kable(comp, format="html", caption="compare p.value and adjusted p.value")
 ```
 ]
@@ -288,10 +294,10 @@ pvals24 <- sapply(1:m, simulate.p.values,
 
 ```{r pValScenariosHist, echo=FALSE, eval=FALSE}
 par(mfrow=c(2,2))
-hist(pvals00,breaks=50, ylim=c(0,300), main="A")
-hist(pvals21,breaks=50,ylim=c(0,300) ,main ="B")
-hist(pvals22,breaks=50,ylim=c(0,300), main="C")
-hist(pvals42,breaks=50,ylim=c(0,300) , main="D")
+hist(pvals00, breaks=50, ylim=c(0,300), main="A")
+hist(pvals21, breaks=50, ylim=c(0,300), main ="B")
+hist(pvals22, breaks=50, ylim=c(0,300), main="C")
+hist(pvals24, breaks=50, ylim=c(0,300), main="D")
 
 ```
 ]
@@ -339,7 +345,7 @@ $$FDR = \frac{FP}{FP + TP}$$
 
 Definition of FDR as given in the Benjamini and Hochberg paper 1995.
 
-```{r results='asis', echo=FALSE}
+```{r BHTable, results='asis', echo=FALSE}
 table <- data.frame( c("Reject H0","Accept H0", "Total"), matrix(c("V (FP)","S (TP)","R","U (TN)","T (FN)","m-R","m_0","m-m_0","m"), ncol=3, byrow=T))
 colnames(table) <- c("R/C","H0 TRUE", "HA", "Total")
 knitr::kable(table, format="html")
@@ -405,7 +411,7 @@ abline(0,i/m*alpha, col=2)
 ---
 # FDR - Benjamini Hochberg - procedure
 .right-code[
-```{r}
+```{r BHRcode}
 p.adjust.BH <- function (p,  n = length(p))
 {
   nm <- names(p)
@@ -425,6 +431,8 @@ p.adjust.BH <- function (p,  n = length(p))
 }
 ```
 ]
+
+.footnote[Do not use this but run p.adjust]
 
 ---
 

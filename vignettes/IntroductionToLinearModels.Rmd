@@ -15,6 +15,11 @@ output:
       slideNumberFormat: "%current%"
 editor_options:
   chunk_output_type: console
+vignette: >
+  %\VignetteIndexEntry{Introduction to Linear Models} 
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+  
 ---
 
 class: fullscreen, inverse, top, center, text-black
