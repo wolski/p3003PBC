@@ -3,9 +3,7 @@ body {
 }
 
 .title-slide {
-  background-image: url(images/hex-ggplot2.png);
-  background-size: 25%;
-  background-position: 88% 70%;
+  background-image: url(../inst/images/brussels.jpg);
 }
 
 .footnote {
@@ -50,6 +48,14 @@ body {
   font-size: 20px;
 }
 
+.right-code {
+  color: #777;
+  width: 45%;
+  height: 92%;
+  float: right;
+  font-size: 20px;
+}
+
 .right-plot {
   width: 50%;
   float: right;
@@ -81,6 +87,8 @@ body {
   color: #FFF;
 }
 
+
+
 .text-black {
   color: #000;
 }
@@ -92,6 +100,15 @@ body {
   left: 60%;
   position: absolute;
 }
+
+.img-left{
+  height: 500px;
+  width: 400px;
+  top: 15%;
+  left: 10%;
+  position: absolute;
+}
+
 
 .img-right img {
   width: 100%;
