@@ -31,6 +31,8 @@ vignette: >
 
 
 ```{r setup, include=FALSE}
+library(tidyverse)
+library(flextable)
 knitr::opts_chunk$set(fig.width=4.25, fig.height=3.5, fig.retina=3,
 message=FALSE, warning=FALSE, cache = TRUE,
 autodep = TRUE, hiline=TRUE)
