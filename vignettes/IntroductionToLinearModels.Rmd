@@ -115,19 +115,24 @@ knitr::kable(coefs, format ="html", caption = "coefficients")
 
 .left-code[
 ```{r parameterEstimates, echo=TRUE , eval=FALSE}
-stripchart(Bodyweight ~ Diet,
-           data = dat , vertical=TRUE, method="jitter",
-           main="Bodyweight over Diet", ylim=c(0,40), xlim=c(0,3))
+stripchart(Bodyweight ~ Diet, #<<
+           data = dat , vertical=TRUE,
+           method="jitter",
+           main="Bodyweight over Diet",
+           ylim=c(0,40), xlim=c(0,3))
 a <- -0.25
 lgth <- .1
 library(RColorBrewer)
 cols <- brewer.pal(3,"Dark2")
 abline(h=0)
-arrows(1+a,0,1+a,coefs[1],lwd=3,col=cols[1],length=lgth)
+arrows(1+a,0,1+a,coefs[1],lwd=3,
+       col=cols[1],length=lgth)
 abline(h=coefs[1],col=cols[1])
-arrows(2+a,coefs[1],2+a,coefs[1]+coefs[2],lwd=3,col=cols[2],length=lgth)
+arrows(2+a,coefs[1],2+a,coefs[1]+coefs[2],
+       lwd=3,col=cols[2],length=lgth)
 abline(h=coefs[1]+coefs[2],col=cols[2])
-legend("right",names(coefs),fill=cols,cex=.75,bg="white")
+legend("right",names(coefs),fill=cols,
+       cex=.75,bg="white")
 ```
 ]
 
@@ -308,6 +313,7 @@ knitr::kable(lfq,format = "html" , caption ="LFQService",digits = 2)
 
 .left-code[
 ```{r}
+library(multcomp)
 multcomp <- summary(
   glht(lm1, rbind(linfct, contrasts))) %>% #<<
   broom::tidy() %>%
