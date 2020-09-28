@@ -78,10 +78,12 @@ for various contrasts (comparisons of treatments)
 
 # Pathway analysis
 
+[Pathway analysis](https://en.wikipedia.org/wiki/Pathway_analysis) uses a priori gene sets that have been grouped together by their involvement in the same biological pathway, or by proximal location on a chromosome. Examples of gene set database are Gene Ontology (GO), KEGG, Reactome and many more.
+
+
 - Over-Represenation Analysis (ORA)
 - Gene Set Enrichment Analysis (GSEA)
 
-[Pathway analysis](https://en.wikipedia.org/wiki/Pathway_analysis) uses a priori gene sets that have been grouped together by their involvement in the same biological pathway, or by proximal location on a chromosome. Examples of gene set database are Gene Ontology (GO), KEGG, Reactome and many more.
 
 
 ---
@@ -112,7 +114,7 @@ cat("p-value:", round(fisher.test(tab)$p.value, 5))
 
 # Gene Set Enrichment Analysis (GSEA)
 
-- Ranked list (no threshold required)
+- Protein ID's ranked by fold change,<br/> t-statistics
 - locate genes of genesets in ranked list
 - compute enrichment score
 
@@ -247,11 +249,13 @@ opt <- docopt(doc)
 
 # HTML outputs - Multiple Contrasts and Targets
 
-- creates folder structure with HTML files<br/> 
-visualizing the ORA and GSEA results:
-  - For all contrasts<br/>
+- For all contrasts<br/>
 e.g. t - v, 8wk - 1wk etc.
-  - and all selected target<br/> 
+- and all selected target<br/> 
+
+- creates folder structure with HTML files<br/> 
+visualizing the ORA and GSEA results
+
 e.g. GO Bioprocess, GO Molecular Function
 - These files are linked from an `index.html`
 - can easily be stored and delivered as part of analysis.
@@ -282,9 +286,12 @@ background-image: url("../inst/images/brussels.jpg")
 
 ## Outlook
 
+- specify user stories
+  - I want to compare multiple GSEA outputs
+  - I have my own gene sets
 - Standardize R-API interface
-- Standardize return values and reports.
-- add one or two more packages (`edgeR`, `topGO`, ?)
+- Standardize return values and reports
+- add one or two more packages (`enrichr`, `topGO`, ?)
 
 
 ## THANK YOU!
