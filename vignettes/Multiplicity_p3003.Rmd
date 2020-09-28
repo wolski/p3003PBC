@@ -269,7 +269,7 @@ of multiplicity,
 
 # FDR Motivation
 
-.footnote[Simulating pvalues Figure A) 1000 p-values where H0 true, B) 900 p-values where H0 true and 100 HA true, C) 800 p-values where H0 true and 200 HA true
+.footnote[Simulating p-values Figure A) 1000 p-values where H0 true, B) 900 p-values where H0 true and 100 HA true, C) 800 p-values where H0 true and 200 HA true
 D) 700 p-values where H0 true and 300 HA true.]
 
 .left-code[
@@ -312,7 +312,7 @@ hist(pvals24, breaks=50, ylim=c(0,300), main="D")
 ---
 # False Discovery Rate (FDR)
 
-- Figrue A (previous slide) shows that even if only H0 true we have some p-values which are below the significance threshold. These are false postives (FP).
+- Figure A (previous slide) shows that even if only H0 true we have some p-values which are below the significance threshold. These are false positives (FP).
 - In Figure B-C we have p-values less than significance threshold where H0 is true (FP) and an increasing proportion of those where HA is true (TP).
 
 - FDR-controlling procedures are designed to control the expected __proportion of "discoveries"__ (rejected null hypotheses) __that are false__ (incorrect rejections).
