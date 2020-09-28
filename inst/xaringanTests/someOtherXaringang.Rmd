@@ -15,6 +15,10 @@ countIncrementalSlides: false
 slideNumberFormat: "%current%"
 editor_options:
   chunk_output_type: console
+vignette: >
+  %\VignetteIndexEntry{A Gentle Guide to the Grammar of Graphics<br>with `ggplot2`} 
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
   class: fullscreen, inverse, top, center, text-white
