@@ -22,18 +22,19 @@ Imports:
     ggfortify,
     glue,
     GGally,
-    kableExtra,
     lme4,
     lmerTest,
     magrittr,
     multcomp,
     purrr,
+    pwr,
     readxl,
     stringr,
     tidyverse,
     tidyr,
 Suggests:
     knitr,
+    kableExtra,
     rmarkdown,
     testthat
 Remotes:
