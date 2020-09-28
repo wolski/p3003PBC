@@ -18,8 +18,8 @@ editor_options:
 vignette: >
   %\VignetteIndexEntry{Introduction to Linear Models} 
   %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
   
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 class: fullscreen, inverse, top, center, text-black
