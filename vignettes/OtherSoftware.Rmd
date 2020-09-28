@@ -1,8 +1,12 @@
 ---
-title: "LookIntoOtherSoftware"
+title: "Look Into Other Software"
 author: "Witold Wolski"
 date: "22/10/2019"
 output: html_document
+vignette: >
+  %\VignetteIndexEntry{Look Into Other Software} 
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r setup, include=FALSE}
