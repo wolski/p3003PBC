@@ -28,9 +28,16 @@ background-image: url("../inst/images/Comfortable_Chair.jpg")
 .font150[**Service**]
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(fig.width=4.25, fig.height=3.5, fig.retina=3,
-                      message=FALSE, warning=FALSE, cache = TRUE,
-                      autodep = TRUE, hiline=TRUE)
+knitr::opts_chunk$set(
+  fig.width = 4.25,
+  fig.height = 3.5,
+  fig.retina = 3,
+  message = FALSE,
+  warning = FALSE,
+  cache = TRUE,
+  autodep = TRUE,
+  hiline = TRUE
+)
 knitr::opts_hooks$set(fig.callout = function(options) {
   if (options$fig.callout) {
     options$echo <- FALSE
@@ -159,7 +166,7 @@ a significance level of $0.05$ and a power of 0.8 given a standard deviation of 
 
 
 ```{r}
-power.t.test(n=10,sd=0.5,power=0.8,sig.level=0.05)
+power.t.test(n = 10, sd = 0.5,power = 0.8,sig.level = 0.05)
 ```
 
 
