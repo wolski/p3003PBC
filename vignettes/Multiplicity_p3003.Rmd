@@ -164,6 +164,7 @@ result.
   - many outcome measures to asses an intervention. <br/>
   In mass spectrometry: _MS1 intensity and MS2 intensity (DIA)_.
   - Solution : ajdust p-values, choose primary outcome, multivariate analysis.
+
 --
 
 - __Interim Analysis__
@@ -229,14 +230,14 @@ Model with NO interactions
 ```{r fittingswiss}
 lmod <- lm(Fertility ~ ., #<<
            data = swiss)
-lmtable <- broom::tidy(summary(lmod))
+lmtable <- broom::tidy(lmod)
 K <- diag(length(coef(lmod)))[-1,] #<<
 rownames(K) <- names(coef(lmod))[-1] #<<
 adjusted <- broom::tidy(summary( 
   multcomp::glht(lmod, linfct = K))) #<<
 comp <- inner_join(lmtable[-1,-c(2,3,4)],
                    adjusted[-c(2,3,4,5)],
-                   by=c("term"="lhs"))
+                   by = c("term" = "contrast"))
 colnames(comp)[c(2,3)] <-
   c("p.value","p.adjusted")
 ```
@@ -318,7 +319,7 @@ hist(pvals24, breaks=50, ylim=c(0,300), main="D")
 
 $$FDR = \frac{FP}{FP + TP}$$
 
-- Particularily usefull in the discovery fase where even FDR's of up to 50% are feasible.
+- Particularly useful in the discovery fase where even FDR's of up to 50% are feasible.
 
 ---
 layout: false
