@@ -28,10 +28,17 @@ background-image: url("../inst/images/Linear_chair.jpg")
 .font150[**linear models (lm)**]
 
 ```{r setup, include=FALSE}
-rm(list=ls())
-knitr::opts_chunk$set(fig.width=4.25, fig.height=3.5, fig.retina=3,
-                      message=FALSE, warning=FALSE, cache = TRUE,
-                      autodep = TRUE, hiline=TRUE)
+rm(list = ls())
+knitr::opts_chunk$set(
+  fig.width = 4.25,
+  fig.height = 3.5,
+  fig.retina = 3,
+  message = FALSE,
+  warning = FALSE,
+  cache = TRUE,
+  autodep = TRUE,
+  hiline = TRUE
+)
 knitr::opts_hooks$set(fig.callout = function(options) {
   if (options$fig.callout) {
     options$echo <- FALSE
@@ -49,7 +56,7 @@ knitr::knit_hooks$set(source = function(x, options) {
   hook_source(x, options)
 })
 options(htmltools.dir.version = FALSE, width = 90)
-as_table <- function(...) knitr::kable(..., format='html', digits = 3)
+as_table <- function(...) knitr::kable(..., format = 'html', digits = 3)
 
 library(tidyverse)
 ```
@@ -89,7 +96,7 @@ stripchart(Bodyweight ~ Diet,
 # lm intro
 
 .left-code[
-```{r}
+```{r lmintroleft}
 meansum <- 
   dat %>%
   group_by(Diet) %>%
@@ -103,7 +110,7 @@ $$y = b_0X_0 + b_1 X_1 + \epsilon$$
 ]
 
 .pull-right[
-```{r  results='asis', echo=FALSE}
+```{r lmintroright,  results='asis', echo=FALSE}
 knitr::kable(meansum, format ="html", caption = "group means")
 knitr::kable(coefs, format ="html", caption = "coefficients")
 ```
@@ -287,7 +294,7 @@ $$
 # lm intro - getting the p-values
 
 .left-code[
-```{r}
+```{r lmintropValleft}
 lfq <- 
   LFQService::my_contrast( lm1, #<<
   rbind(linfct, contrasts)) %>% #<<
@@ -302,7 +309,7 @@ lfq <-
 
 
 .pull-left[
-```{r results="asis", echo=FALSE}
+```{r lmintropValright, results="asis", echo=FALSE}
 knitr::kable(lfq,format = "html" , caption ="LFQService",digits = 2)
 ```
 ]
@@ -317,18 +324,22 @@ library(multcomp)
 multcomp <- summary(
   glht(lm1, rbind(linfct, contrasts))) %>% #<<
   broom::tidy() %>%
-  dplyr::select(lhs, estimate,
+  dplyr::select(contrast, estimate,
                 std.error, statistic ,
-                p.value) %>%
-  mutate(p.value =
-           round(p.value,digits=3))
+                adj.p.value)
+  
+multcomp <- multcomp %>%  mutate(p.value =
+           round(adj.p.value,digits = 3))
 ```
 ]
   
   
 .pull-left[
 ```{r results="asis", echo=FALSE}
-knitr::kable(multcomp, format = "html", caption="multcomp", digits=2)
+knitr::kable(multcomp,
+             format = "html",
+             caption = "multcomp",
+             digits = 2 )
 ```
 ]
 
@@ -338,7 +349,7 @@ knitr::kable(multcomp, format = "html", caption="multcomp", digits=2)
 
 ## Model without interaction
 
-```{r eval=FALSE}
+```{r lminteractionleft, eval=FALSE}
 lm(friction ~ type + leg, data = spider)
 ```
 
