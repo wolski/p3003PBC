@@ -28,9 +28,15 @@ background-image: url("../inst/images/many-black-chair-backs.jpg")
 .font150[**design**]
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(fig.width=4.25, fig.height=3.5, fig.retina=3,
-                      message=FALSE, warning=FALSE, cache = TRUE,
-                      autodep = TRUE, hiline=TRUE)
+knitr::opts_chunk$set(fig.width = 4.25,
+                      fig.height = 3.5,
+                      fig.retina = 3,
+                      message = FALSE,
+                      warning = FALSE,
+                      cache = TRUE,
+                      autodep = TRUE,
+                      hiline = TRUE)
+
 knitr::opts_hooks$set(fig.callout = function(options) {
   if (options$fig.callout) {
     options$echo <- FALSE
