@@ -123,6 +123,10 @@ body {
   width: 100%;
 }
 
+.image-50 img {
+  width: 50%;
+}
+
 .plot-my {
   top: 25%;
   position: absolute;

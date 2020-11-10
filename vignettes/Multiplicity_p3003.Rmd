@@ -6,7 +6,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: ["default", "metropolis", "metropolis-fonts", "trug-ggplot2.css"]
+    css: ["trug-ggplot2.css", "default", "metropolis", "metropolis-fonts"]
     nature:
       ratio: 16:9
       highlightStyle: github
@@ -93,9 +93,12 @@ Not quite significant at the $5%$ level!
 .left-code[
 
 ```{r computingPvals}
-2*(1- pt(1.84, df = 250-1))
-2*(1- pnorm(1.84, 0,1))#<<
-(1 - pt(1.84, df = 250-1)) #<<
+2*(1 - pt(1.84, df = 250 - 1))
+
+2*(1 - pnorm(1.84, 0,1)) #<<
+# Asymptotic test
+(1 - pt(1.84, df = 250 - 1)) #<<
+# one sided tests
 ```
 ]
 
@@ -104,9 +107,9 @@ Not quite significant at the $5%$ level!
 ![](../inst/images/Multi_Test_Weight_example_1.png)
 ]
 
-.footnote[Example from  Andersen (1990)</br> 
-assymptotic tests - does not "help" (and is biased).<br/>
-1-sided test is not acceptable! Why?]
+.footnote[
+Assymptotic test - does not "help" (and is biased); smaller sample size larger bias.<br/>
+]
 
 
 ---
@@ -114,16 +117,23 @@ layout: false
 
 # Weight loss example
 
-Can anything be done to get a significant result</br>
-out of this study?</br>
+## Why is the 1-sided test not acceptable?
+
+You use a one-tailed test to improve the test's ability to learn whether the new diet is better. 
+
+However, that's unethical because the test cannot determine whether it is less effective. You risk missing valuable information by testing in only one direction.
+
+---
+
+# Weight loss example
+
+Can anything be done to get a significant result<br/>
+out of this study?<br/>
 --
 
-_How about introducing additional factor?_</br>
+- Look at subgroups of the data <br/> by their sign of the zodiac. <br/> (additional factor)
+- *12* instead of *1* test
 --
-
-Look at subgroups of the data by their sign of the Zodiac.</br>
---
-
 
 
 .img-right[
@@ -132,43 +142,44 @@ Look at subgroups of the data by their sign of the Zodiac.</br>
 
 --
 
-- __Conclusions:__ those born under the sign of Aries</br> are particularly suited to this new dietary control.
+- Conclusion: Those born under the sign of Aries<br/> are particularly suited to this new dietary control.
 
 ---
 
 # Weight loss example
 
-
 What is the problem of this approach?
 
 --
 
-Hypothesis that Aireans are good dieters
-was only suggested by the data and the fact that it gave an apparently significant
-result.
+- Hypothesis that Arieans are good dieters was suggested by the fact that it gave an *apparently* significant result.
+- By increasing the number of tests you increase the chance of false positive results (type I error).
 
+.footnote[Data vs. Hypothesis driven research. Data driven use exploratory and descriptive tools. Hypothesis driven use tests.] 
 
-- What difference would it make if you designed your experiment with that hypothesis in mind?
---
-
-  - Plausibility - possible biological mechanism which suggest the hypothesis.
-  - You would test this hypothesis by having two groups Aries and Control group.
-  - Larger sample sizes per group.
-  
 
 ---
+
+# ACNE example
+
+
+.image-50[![](../inst/images/JellyBeans_significant.png)]
+
+.footnote[https://xkcd.com/882/]
+
+---
+
 
 # Where does multiplicity arise
 
 - __Multiple endpoints__
   - many outcome measures to asses an intervention. <br/>
   In mass spectrometry: _MS1 intensity and MS2 intensity (DIA)_.
-  - Solution : ajdust p-values, choose primary outcome, multivariate analysis.
-
+  - Solution : choose primary outcome, adjust p-values,  multivariate analysis.
 --
 
 - __Interim Analysis__
-  - analyze the data from a trial _periodically_ as it becomes available
+  - analyse the data from a trial _periodically_ as it becomes available
   - Solution: adjust p-values
 
 ---
@@ -176,24 +187,41 @@ result.
 # Where does multiplicity arise
 
 
-- __Subgroup comparison__
-  - sample is subdivided on baseline factors : gender, age-groups, sign of zodiac
-  - Solution : adjust p-values, Anova
 - __Repeated measures__
-  - e.g. blood concentration of some metabolite at baseline and then at intervals of 1, 3, 6, 12 and 24 hours after ingestion of a drug. <br/>
-  Use two-sample t-tests on the measures at each time point in sequence.
-  - Solution: adjust p.value, use summary measure (e.g. fit line and test line coefficients), Multivariate analysis  
+  - e.g. protein abundance at intervals of 1, 3, 6, 12 and 24 hours after ingestion of a drug. <br/>
+  - Solution: 
+      - two-sample t-tests at each time point in sequence,  adjust p.value
+      - use summary measure (e.g. fit line and test line coefficients)
+--
+
+- __Subgroup comparison__
+  - Samples are subdivided on baseline factors : gender, age-groups, sign of zodiac
+  - Solution : 
+      - adjust p-values 
+      - ANOVA analysis
+
+---
+
+# Where does multiplicity arise
+
 - __Multiple Regression__
   - regression analyses involving many explanatory variables
   - Solution: Use background knowledge to suggest possible models, include only few interaction terms, adjust p-values. 
 
 ---
 
-# P-value adjustment - Bonferroni correction
+# Family-wise error rate (FWER)
+
+Family-wise error rate is the probability of making one or more false discoveries, or Type I errors when performing multiple 
+hypotheses tests.
 
 If multiple hypotheses are tested, the chance of a rare event increases, and therefore, the likelihood of incorrectly rejecting a null hypothesis (i.e., making a Type I error) increases.
 
-The Bonferroni correction compensates for that increase by testing each individual hypothesis at a significance level of $\epsilon = \alpha /k$, $\alpha$  is the desired overall alpha level and $k$ is the number of hypotheses.
+---
+
+# P-value adjustment - Bonferroni correction
+
+The Bonferroni correction compensates for that increase by testing each individual hypothesis at a significance level of $\epsilon = \alpha /k$, $\alpha$  is the desired overall size of test and $k$ is the number of hypotheses.
 
 $$k=20; \alpha = 0.05,\epsilon = 0.05/20 = 0.0025$$
 
@@ -207,27 +235,30 @@ In R use `p.adjust` which transforms the p-values instead transforming the thres
 
 # P-value adjustment - Bonferroni correction
 
-Family Wise Error Rate (FWER) - control the probability of at least one Type I error
-Maths for Bonferroni
+Family Wise Error Rate (FWER) - control the probability of at least one Type I error.
+
 $$
 \begin{align}
-Pr(at~least~one~Type~I~error|H_0) = \epsilon &=  1 - Pr(no~rejections|H_0)\\
+Pr(\textrm{at least one Type I error}|H_0) = \epsilon &=  1 - Pr(\textrm{no rejections}|H_0)\\
 &= 1- \prod^k Pr(p_i > \alpha)\\
 &= 1- \prod^k (1-\alpha)\\
 &= 1-(1-\alpha)^k
 \end{align}
 $$
-Solving for $\alpha$ gives approx $$\epsilon = \alpha/k$$ or exact result $$\epsilon = 1- \exp(1/k\log(1-\alpha))$$.
+Solving for $\alpha$ gives $$\epsilon \approx \alpha/k$$ or exact $$\epsilon = 1 - \exp(1/k\log(1-\alpha))$$.
 
 
 .footnote[http://genomicsclass.github.io/book/pages/multiple_testing.html]
+
 ---
 
 # P-value adjustment - package `multcomp`
 
 .left-code[
 Model with NO interactions
+
 ```{r fittingswiss}
+#help(swiss) #<<
 lmod <- lm(Fertility ~ ., #<<
            data = swiss)
 lmtable <- broom::tidy(lmod)
@@ -246,24 +277,25 @@ colnames(comp)[c(2,3)] <-
 
 .pull-right[
 ```{r comparepVals ,results='asis', echo=FALSE}
-knitr::kable(comp, format="html", caption="compare p.value and adjusted p.value")
+knitr::kable(comp, format = "html", caption = "compare p.value and adjusted p.value")
 ```
 ]
 
-.footnote[multcomp: Simultaneous Inference in General Parametric Models by _Torsten Hothorn_, <br/>Mathematics and theory complex, uses assymptotic properties for some types of linear models to make it tractable. ]
+.footnote[multcomp: Simultaneous Inference in General Parametric Models by _Torsten Hothorn_, <br/>Mathematics and theory complex, uses **asymptotic** properties for to make it tractable. ]
 
 ---
+
 # Multiplicity conclusion (FWER)
 
-Multiplicity adjustment will demand a unrealistically
-small p-value. 
+Multiplicity adjustment, controlling the FWER, will demand a *unrealistically
+small p-value*. 
 
 In practice there are better ways of overcoming the problem
-of multiplicity, 
-- by limiting the number of tests (Test only 1 maximum 2 hypothesis)
-- by concentrating on the more important objectives
-- using a more sophisticated analysis (e.g. fitting time courses)
-- in the discovery fase using _False Discovery Rate_ instead of _Family Wise Error Rates_.
+of multiplicity: 
+- limit the number of tests. Concentrating on the more important objectives, what is causal relation.
+- Summarize your measurements e.g. fit time courses
+- in the discovery phase use _False Discovery Rate_ instead of _Family Wise Error Rates_.
+- If you want to examine many factors, use exploratory or descriptive data analysis (tabulating, dimensionality reduction, clustering).
 
 ---
 
@@ -276,29 +308,35 @@ D) 700 p-values where H0 true and 300 HA true.]
 ```{r pValScenarios, echo=TRUE, eval=TRUE}
 m <- 1000
 simulate.p.values <- function(
-  i, delta=2,fraction = 0.1){
+  i, delta = 2, fraction = 0.1){
   control <- rnorm(6,0,1)
   treatment <- rnorm(6,0,1)
-  if(runif(1) < fraction)
+  if (runif(1) < fraction)
    treatment <- treatment + delta
   return(t.test(treatment,control)$p.value)
 }
 pvals00 <- sapply(1:m, simulate.p.values,
                   delta = 0,fraction = 0 )
-pvals21 <- sapply(1:m, simulate.p.values,
-                  delta = 2,fraction = 0.1 )
-pvals22 <- sapply(1:m, simulate.p.values,
-                  delta = 2, fraction = 0.2 )
 pvals24 <- sapply(1:m, simulate.p.values,
                   delta = 2, fraction = 0.4 )
 ```
 
 ```{r pValScenariosHist, echo=FALSE, eval=FALSE}
-par(mfrow=c(2,2))
-hist(pvals00, breaks=50, ylim=c(0,300), main="A")
-hist(pvals21, breaks=50, ylim=c(0,300), main ="B")
-hist(pvals22, breaks=50, ylim=c(0,300), main="C")
-hist(pvals24, breaks=50, ylim=c(0,300), main="D")
+
+par(mfrow=c(1,3))
+hist(pvals00, breaks=20, ylim=c(0,300), main="A")
+abline(h=1000/20, col=3)
+abline(v = 0.05, col=2)
+text(x = c(0.02,0.02,0.1,0.1),y=c(30,100,30,100), labels=c("FP","TP","TN","FN"))
+hist(pvals24, breaks=20, ylim=c(0,300), main="B")
+abline(h=(1000-400)/20, col=3)
+abline(v = 0.05, col=2)
+text(x = c(0.02,0.02,0.1,0.1),y=c(30,100,30,100), labels=c("FP","TP","TN","FN"))
+
+hist(pvals24, breaks=20, ylim=c(0,300), xlim=c(0,0.2), main="D")
+abline(h=(1000-400)/20, col=3)
+abline(v = 0.05, col=2)
+text(x = c(0.02,0.02,0.1,0.1),y=c(30,100,30,100), labels=c("FP","TP","TN","FN"))
 
 ```
 ]
