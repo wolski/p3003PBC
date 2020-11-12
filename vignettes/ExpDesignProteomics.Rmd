@@ -192,12 +192,12 @@ The protein intensities in the KO samples are very different than in the other c
 
 
 .img-left[
-![after normalization](../inst/images_2/heatmapmodel1ALL_similarOnly.png)
+![after normalization all no outliers](../inst/images_2/heatmapmodel1ALL_similarOnly.png)
 ]
 
 
 .img-right[
-![after normalization2](../inst/images_2/heatmapAOVmodel1_SimilarOnly.png)
+![after normalization Anova significant](../inst/images_2/heatmapAOVmodel1_SimilarOnly.png)
 ]
 
 .footnote[Same samples except KO. Right - Proteins with a significant result in the ANOVA analysis.]
