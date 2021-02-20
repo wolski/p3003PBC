@@ -18,8 +18,8 @@ editor_options:
 vignette: >
   %\VignetteIndexEntry{Experimental Design} 
   %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
   
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 class: fullscreen, inverse, top, center, text-black
@@ -211,9 +211,10 @@ Sir Austin Bradford Hill CBE FRS was an English epidemiologist and statistician,
 
 
 - Protein Quantification 
-  - Control, C1, C2,
-  - Related but different mutations.
-  - Time course data
+  - Strength of association : Control, Treatment 1 $5 \mu g$, Treatmant $10 \mu g$
+  - Consistency : Different Genetic backgrounds, Control and Treatment
+  - Temporality : Time course data
+  - Specificity : ?
 
 
 
@@ -313,7 +314,7 @@ exclude: true
 
 # Randomized controlled trial
 
-This year’s Laureates have introduced<br/>
+"This year’s (2019) Laureates have introduced<br/>
 a new approach to obtaining reliable answers<br/>
 about the best ways to fight global poverty. 
 
@@ -325,7 +326,7 @@ outcomes or child health.
 They have shown that these smaller, more precise,<br/>
 questions are often best answered via carefully<br/>
 __designed experiments__<br/>
-among the people who are most affected.
+among the people who are most affected."
 
 
 .img-right[
@@ -342,21 +343,16 @@ layout: false
 
 A randomized controlled trial is a type of scientific experiment that aims to reduce certain sources of __bias__ when testing the effectiveness of new treatments.
 
-- __selection bias__
-
-sample obtained is _not representative_ of the population intended to be analyzed.
-
-
-- __allocation bias__
-
-_systematic difference_ in how participants are assigned to treatment groups and comparison groups
-
-__Randomly allocate subjects to two or more groups__
+- __selection bias__ 
+    - sample obtained is _not representative_ of the population intended to be analyzed.
+- __allocation bias__ 
+    - _systematic difference_ in how participants are assigned to treatment groups and comparison groups
+    - __Randomly allocate subjects to two or more groups__
 
 
 .footnote[
 
-https://en.wikipedia.org/wiki/Randomized_controlled_trial</br>
+https://en.wikipedia.org/wiki/Randomized_controlled_trial<br/>
 https://en.wikipedia.org/wiki/Bias]
 
 ---
@@ -392,7 +388,7 @@ does not fit your hypothesis?
 
 # Randomized controlled trial - Blinding
 
- - Information which may influence the participants</br>
+ - Information which may influence the participants<br/>
  is withheld until after the experiment is completed
  - A blind can be imposed on any participant<br/>
  of an experiment, including<br/> 
@@ -400,15 +396,18 @@ does not fit your hypothesis?
 
 - In clinical Trials double blind trials should <br/>
 be used where possible
-  - Single blind – either patient or evaluator blind.
-  - Double blind – both patient and evaluator blind
+  - __Single blind__ – either patient or evaluator blind.
+  - __Double blind__ – both patient and evaluator blind
 
 .img-right[![](../inst/images/blind_trials.png)]
 
 ---
 
+# Randomized controlled trial - Blinding
 
-Did you apply _randomization_ or _blinding_ in your experiments?
+Do you apply _blinding_ or _randomization_ in your experiments?
+
+- Use Random or Block Random order when processing samples. 
 
 
 ---
@@ -477,12 +476,12 @@ Document possible co-variates, e.g.,
    - ...
 ]
 
-Report your research so that it can be reviewed, reproduced and analysed.
-Do not overinterpret your results.
+- Report your research so that it can be reviewed, reproduced and analysed.
+- Do not over-interpret your results.
 
 
 .footnote[
-[Overinterpretation and misreporting of prognostic factor
+[Over-interpretation and misreporting of prognostic factor
 studies in oncology: a systematic review](https://www.nature.com/articles/s41416-018-0305-5.pdf)<br/>
 http://www.equator-network.org/<br/>
 https://www.ncbi.nlm.nih.gov/pubmed/29873743
@@ -500,7 +499,7 @@ executed_.
 
 -  It is unethical to perform a trial which:
   - has many more subjects than are needed to reach a conclusion.
-  - has little prospect of reaching any conclusion, </br> e.g. because 
+  - has little prospect of reaching any conclusion, <br/> e.g. because 
   of insufficient numbers of subjects (or some other aspect of poor design)
 
 - The local ethics committee has discretion on how it will supervise __non-interventional__ studies
@@ -509,7 +508,6 @@ executed_.
 
 [Declaration of Helsinki (1964+amendments))](https://www.wma.net/policies-post/wma-declaration-of-helsinki-ethical-principles-for-medical-research-involving-human-subjects/)
 
----
 
 
 # Types of error
@@ -660,9 +658,9 @@ How would you allocate these patients?
 .pull-left[
 Parallel (one factor)
 
-- drug A 13
-- drug B 13
-- plac 14
+- drug A (13)
+- drug B (13)
+- plac (14)
 
 Compare:
 - 13 drug A vs 14 plac
@@ -672,10 +670,10 @@ Compare:
 .pull-right[
 Factorial (2 or more factors)
 
-- drug A + drug B - 10
-- plac A + drug B - 10
-- drug A + plac B - 10
-- plac A + plac B - 10
+- drug A + drug B (10)
+- plac A + drug B (10)
+- drug A + plac B (10)
+- plac A + plac B (10)
 
 Compare:
 - 20 drug A vs 20 plac A
@@ -728,7 +726,19 @@ several factors (independent variables).
 
 ---
 
-# Tweet
+# All possible interactions
 
-![](../inst/images/Final_Tweet.jpg.png)
+
+- 1 = there was a main effect for IV1.
+- ~1 = there was not a main effect for IV1
+- 2 = there was a main effect for IV2
+- ~2 = there was not a main effect of IV2
+- 1x2 = there was an interaction 
+- ~1x2 = there was not an interaction
+
+.img-right[
+![](../inst/images/allInteractions2x2.png)
+]
+
+.footnote[https://crumplab.github.io/statistics/more-on-factorial-designs.html]
 
