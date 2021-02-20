@@ -59,13 +59,13 @@ library(tidyverse)
 
 - What is a hypothesis and how it can be tested
 - What is a test statistic
-- how to generate the distribution of the test statistic if null true
+- How to generate the distribution of the test statistic if null true
 - one sample t-test
 - what happens if assumptions are not met
-- central limit theorem
-- assymptotic tests
-- non parametric tests - randomization test
-- comparing parametric, non parametric and assymptotic tests
+- Central limit theorem
+- Asymptotic tests
+- Non parametric tests - randomization test
+- comparing parametric, non parametric and asymptotic tests
 - paired t-test
 - equivalence of t-test and linear models
 
@@ -111,7 +111,7 @@ plot(nulldistr, xlab="nr correct")
 
 ```{r}
 probs <- nulldistr / sum(nulldistr) # compute probabilities
-probs <- round(probs, digits=3)
+probs <- round(probs, digits = 3)
 probs
 ```
 
@@ -134,7 +134,7 @@ layout: false
 - Define test (T) statistic. 
 - Determine distribution of the test statistic<br/> under null hypothesis
 - Define Critical region.
-- Check if $T_{obs}$ is within the critical region.
+- Check if $T_{obs}$ is within the critical region - Answer is YES or NO.
 
 
 
@@ -171,13 +171,15 @@ text(4, 0.1, expression(t[obs]), srt=90)
 ]
 
 ---
+exclude: true
+b
 
 # Hypothesis testing - Long version
 
 - State the relevant null and alternative hypotheses. _This is important, as mis-stating the hypotheses will muddy the rest of the process._
 - Consider the statistical assumptions being made about the sample. _e.g., statistical independence, distributions of the observations. invalid assumptions will mean that the results of the test are invalid._
 - State the relevant test statistic T (Decide which test is appropriate).
-- Derive the distribution of the test statistic under the null hypothesis. _e.g., the test statistic follow's a Student's t distribution_
+- Derive the distribution of the test statistic under the null hypothesis. _e.g., the test statistic follows a Student's t distribution_
 - Select a significance level $\alpha$, which defines the critical region of null distribution.
 - Compute from the observations the observed value $t_{obs}$ of the test statistic T.
 - Reject the null hypothesis if the observed value $t_{obs}$ is in the critical region.
@@ -278,7 +280,7 @@ lines(x,
 
 ```
 
-$T|H_0 \sim N(0,\sigma/\sqrt(N_{obs}))$
+$T|H_0 \sim N(0,\sigma/\sqrt{N_{obs}})$
 
 ]
 
@@ -362,17 +364,46 @@ $T|H_0 \sim T(\mu=0,df=N_{obs})$
 ```
 ]
 
+
 ---
 
-# Mean = $\mu$? $x \sim Exp(1)$
+# Mean = $\mu$? if sampleing $x \sim Exp(1)$
+
+.left-code[
+Sampling from a skewed distribution.
+
+$$x \sim Exp(1)$$
+We know $\mu = \lambda = 1$
+
+```{r showdistributionExp, eval=FALSE}
+x <- seq(0,5,length = 100)
+plot(c(0,(x)),
+     c(0,dexp(x, rate = 1)),
+     type = "l")
+abline(h = 0)
+abline(v = 1)
+
+```
+]
+
+.right-plot[
+```{r showdistributionExp-out, ref.label="showdistributionExp", echo=FALSE, out.width="100%"}
+```
+]
+
+
+
+---
+
+# Mean = $\mu$? $x \sim Exp(1)$ with $N_{obs} = 4$
 
 .left-code[
 
 ```{r simulatingH0withWrongAssumptions, eval=FALSE}
 N <- 10000;rate <- 1;
-N_obs <- 4;
+N_obs <- 4; mu <- 1;
 bb_exp <- function(y){
-  x <- rexp( N_obs, rate=rate )-1 #<<
+  x <- rexp( N_obs, rate=rate ) #<<
   data.frame(mean = mean( x ),
              sd = sd(x)) 
   }
@@ -380,12 +411,16 @@ res <- purrr::map_df(1:N, bb_exp)
 T0 <- (res$mean - mu)/ #<<
   (res$sd/sqrt(N_obs)) #<<
 hist(T0, breaks=getBreaks(T0),
-     probability = T, xlim=c(-6,6),
+     probability = T, xlim=c(-12,6),
      ylim=c(0,0.4), main="")
+x <- seq(-10,10,0.1)
 lines(x,
       dt(x,df = N_obs), #<<
       type="l",col="green",lwd=2)
+abline(v = 0, col=2)
 ```
+
+We simulate $4$ datapoints from an exponential distribution. Observe how the Null distribution changed.
 ]
 
 
@@ -394,10 +429,11 @@ lines(x,
 ```
 ]
 
-.footnote[Assumption is that $x$ is generated using a normal distribution. But this time we simulate $4$ datapoints from an exponential distribution.]
+.footnote[]
 
 
 ---
+exclude: true
 
 # Mean = $\mu$? $x \sim Exp(1)$  with $N_{obs} = 40$
 
@@ -405,26 +441,30 @@ lines(x,
 
 ```{r simulatingH0withWrongAssumptionsN12, eval=FALSE}
 # Simulating data from Null
-N <- 10000;rate <- 1
+N <- 10000; rate <- 1
 N_obs <- 40 #<<
+mu <- 1
 bb_exp <- function(y){
-  x <- rexp( N_obs, rate=rate )-1
+  x <- rexp( N_obs, rate=rate )
   data.frame(mean = mean( x ), sd = sd(x)) 
 }
 res <- purrr::map_df(1:N, bb_exp)
-T0 <- res$mean/
+T0 <- (res$mean - mu)/
   (res$sd/sqrt(N_obs))
 hist(T0, breaks=getBreaks(T0),
-     probability = T,   xlim=c(-6,6),
+     probability = T, xlim=c(-6,6),
      ylim=c(0,0.4), main="")
+x <- seq(-10,10,0.1)
 lines(x,dt(x,df = N_obs),type="l",
       col="green",lwd=2)
+abline(v = 0, col=2)
+
 ```
 ]
 
 
 .right-plot[
-```{r simulatingH0withWrongAssumptionsN12-out, ref.label="simulatingH0withWrongAssumptionsN12", echo=FALSE}
+```{r simulatingH0withWrongAssumptionsN12-out, ref.label="simulatingH0withWrongAssumptionsN12", echo=FALSE, out.width="100%"}
 ```
 ]
 
@@ -433,7 +473,7 @@ lines(x,dt(x,df = N_obs),type="l",
 
 ---
 
-# Mean = $\mu$? $x \sim Exp(1)$ but with $N_obs = 100$
+# Mean = $\mu$? $x \sim Exp(1)$ but with $N_{obs} = 100$
 
 .left-code[
 
@@ -442,27 +482,30 @@ lines(x,dt(x,df = N_obs),type="l",
 N <- 10000;rate <- 1
 N_obs <- 100 #<<
 bb_exp <- function(y){
-  x <- rexp( N_obs, rate=rate )-1
+  x <- rexp( N_obs, rate=rate )
   data.frame(mean = mean( x ), sd = sd(x)) 
 }
 res <- purrr::map_df(1:N, bb_exp)
-T0 <- res$mean/
+T0 <- (res$mean - mu)/
   (res$sd/sqrt(N_obs))
 hist(T0, breaks=getBreaks(T0),
      probability = T, xlim=c(-6,6),
      ylim=c(0,0.4), main="")
 lines(x,dt(x,df = N_obs),type="l",
       col="green",lwd=2)
+abline(v=0, col=2)
 ```
+
+We simulate $100$ datapoints from an exponential distribution. Observe how the Null distribution changed.
+
 ]
 
 
 .right-plot[
-```{r simulatingH0withWrongAssumptionsN100-out, ref.label="simulatingH0withWrongAssumptionsN100", echo=FALSE}
+```{r simulatingH0withWrongAssumptionsN100-out, ref.label="simulatingH0withWrongAssumptionsN100", echo=FALSE, out.width="100%"}
 ```
 ]
 
-.footnote[Assumption is that $x$ is generated using a normal distribution. But this time we simulate $100$ datapoints from an exponential distribution.]
 
 ---
 
@@ -476,7 +519,19 @@ lines(x,dt(x,df = N_obs),type="l",
 
 --
 
-- Some methods rely on __asymptotic properties__  (e.g. `multomp` p-value compua)
+- Some methods rely on __asymptotic properties__  (e.g. `multcomp` p-value computation)
+
+
+
+---
+
+# CLT in Proteomics?
+
+Where it can be used?
+
+- The error of transformed intensities in an LFQ experiment is normally distributed because it is the sum of biological, biochemical, and technical variability.
+
+- Sample sizes are small. Therefore great care has to be taken to meet the requirement of normally distributed observations when using the t-test.
 
 ---
 
@@ -484,12 +539,13 @@ lines(x,dt(x,df = N_obs),type="l",
 
 - parametric tests e.g. t-test 
   - assume underlying statistical distributions in the data. 
-  - Therefore, several conditions of validity must be met so that the result of a parametric test is reliable.
-  - For example, Student’s $t-test$ for two independent samples is reliable only if each sample follows a normal distribution and if sample variances are homogeneous.  
+  - Therefore, several conditions of validity must be met so that the result of a parametric test is trustworthy
+  - For example, Student’s $t-test$ for two independent samples is reliable only if each sample follows a normal distribution and if sample variances are homogeneous.
 --
 
 - asymptotic tests
    - assume that methods which work for normal distributions work also elsewhere
+
 --
 
 - nonparametric tests e.g. randomization test
@@ -559,7 +615,7 @@ $$\frac{1}{B} \sum^B_{i=0} I_{T_i} >= |T_{obs}|$$
 
 .pull-left[
 
-- Simulate data from <br/> $x_1 \sim N(0,1)$ and $x_2\sim N(1.3,1.3)$ <br/> (10 each)
+- Simulate data from <br/> $x_1 \sim N(1,1)$ and $x_2\sim N(10,10)$ <br/> (10 each)
 - compute p-values using:
   - randomization test
   - t-test
@@ -567,21 +623,29 @@ $$\frac{1}{B} \sum^B_{i=0} I_{T_i} >= |T_{obs}|$$
 
 
 ```{r randomization_test, eval=FALSE, echo=FALSE}
-dist1 <- function(N){rnorm(N, 0, 1 )}
-dist2 <- function(N){rnorm(N, 1.3,1.3)}
+dist1 <- function(N){rnorm(N, 1, 1 )}
+dist2 <- function(N){rnorm(N, 10, 10)}
 
 xx <- p3003PBC::sample_stats(N=10,
                    dist1,
                    dist2,
                    samples = 100)
-
 par(mfrow=c(2,1))
 
-plot(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", ylab="log(p.value) t.test", xlab="log(p.value) randomization test", pch=16,cex=0.5)
+old <- c(5.1, 4.1, 4.1, 2.1)
+par(mar = c(5.1, 4.1, 1, 2.1))
+
+scatter.smooth(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", 
+               xlab="log(p.value) randomization test",
+               ylab="log(p.value) t.test",
+               pch=16,cex=0.5, ylim=c(1e-3,1))
+
 abline(c(0,1), col="blue")
 abline(h=0.01,v=0.01, col="gray")
 
-plot(xx$res_p[,"asymp.test"], xx$res_p[,"t.test"], log="xy",  xlab="log(p.value) asymptotic test",ylab="log(p.value) t.test", pch=16,cex=0.5)
+scatter.smooth(xx$res_p[,"coin"], xx$res_p[,"asymp.test"], log="xy", 
+               xlab="log(p.value) randomization test",
+               ylab="log(p.value) asymptotic test", pch=16,cex=0.5, ylim=c(1e-3,1))
 abline(c(0,1), col="blue")
 abline(h=0.01,v=0.01, col="gray")
 
@@ -590,7 +654,7 @@ abline(h=0.01,v=0.01, col="gray")
 
 
 .right-plot[
-```{r randomization_test-out, ref.label="randomization_test", echo=FALSE, fig.width=6, fig.height=8}
+```{r randomization_test-out, ref.label="randomization_test", echo=FALSE, fig.width=6, fig.height=6}
 ```
 ]
 
@@ -599,10 +663,12 @@ abline(h=0.01,v=0.01, col="gray")
 # Compare tests
 
 ```{r}
+
 cbind( coin = table(xx$res_p[,"coin"] < 0.01),
 t.test = table(xx$res_p[,"t.test"] < 0.01),
 asymp.test = table(xx$res_p[,"asymp.test"] < 0.01)) -> x
-rownames(x) <- c("Accept", "Reject H0")
+rownames(x) <- c("Accept H0", "Reject H0")
+
 knitr::kable(x, format="html")
 ```
 
@@ -665,11 +731,11 @@ with $\bar{d}$ the mean of the differences $d_i$ with $i \in (1,\dots, n)$, and 
 ```{r}
 test.p.values <- data.frame(
 unpaired.p = 
-  t.test(extra ~ group,#<<
-         data = sleep,#<<
+  t.test(extra ~ group, #<<
+         data = sleep, #<<
          paired = FALSE)$p.value, #<<
 paired.p = 
-  t.test(extra~group,#<<
+  t.test(extra~group, #<<
          data = sleep, #<<
          paired = TRUE)$p.value, #<<
 diff.p = 
@@ -683,7 +749,7 @@ diff.p =
 
 .pull-right[
 ```{r  results='asis', echo=FALSE}
-knitr::kable(signif(test.p.values, digits=2), format="html")
+knitr::kable(signif(test.p.values, digits=2), format = "html")
 ```
 
 ]
@@ -763,14 +829,14 @@ xx <- add_column(x,
         model = c("lm_1","lm_2","lmer"),
         .before = 1) %>%
   dplyr::select(model, p.value) %>%
-  mutate(p.value = signif(p.value, digits=2))
+  dplyr::mutate(p.value = signif(p.value, digits = 2))
 ```
 ]
 
 
 .pull-right[
 ```{r  results='asis', echo=FALSE}
-knitr::kable(xx, format="html")
+knitr::kable(xx, format = "html")
 ```
 ]
 
@@ -786,4 +852,7 @@ knitr::kable(xx, format="html")
 - Understand CLT and what assymptotic properties are
 - Asymptotic properties are sometimes used to derive null distributions for complex models. If this is the case and your sample sizes are small be carefull.
 
+.img-right[
+![](../inst/images/StatTIP_1.png)
+]
 

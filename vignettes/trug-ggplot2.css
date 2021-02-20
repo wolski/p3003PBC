@@ -101,6 +101,12 @@ body {
   position: absolute;
 }
 
+
+.img-right img {
+  width: 100%;
+}
+
+
 .img-left{
   height: 500px;
   width: 400px;
@@ -109,10 +115,6 @@ body {
   position: absolute;
 }
 
-
-.img-right img {
-  width: 100%;
-}
 
 .img-small{
   height: 300px;
@@ -124,8 +126,13 @@ body {
 }
 
 .image-50 img {
-  width: 50%;
+  width: 30%;
 }
+
+.image-70 img {
+  width: 70%;
+}
+
 
 .plot-my {
   top: 25%;

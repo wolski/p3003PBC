@@ -169,7 +169,6 @@ What is the problem of this approach?
 
 ---
 
-
 # Where does multiplicity arise
 
 - __Multiple endpoints__
@@ -185,7 +184,6 @@ What is the problem of this approach?
 ---
 
 # Where does multiplicity arise
-
 
 - __Repeated measures__
   - e.g. protein abundance at intervals of 1, 3, 6, 12 and 24 hours after ingestion of a drug. <br/>

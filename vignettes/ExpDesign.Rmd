@@ -57,11 +57,16 @@ options(htmltools.dir.version = FALSE, width = 90)
 as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 ```
 
+
 ---
+
+exclude: true
+
 # LFQ a success story
 
 
 --
+exclude: true
 
 - Novel aquisition methods (DIA vs DDA)
 
@@ -70,6 +75,7 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 ]
 
 --
+exclude: true
 
 - improvements in feature detection and extraction
 
@@ -78,6 +84,7 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 ]
 
 --
+exclude: true
 
 - a zoo of data <br/> transformation, pretreatment, imputation methods
 
@@ -87,6 +94,7 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 
 
 --
+exclude: true
 
 - improvements in fold change estimation
 
@@ -148,6 +156,7 @@ caused or influenced a particular __outcome__
 
 
 ---
+exclude: true
 
 # Causality - How to prove cause and effect?
 
@@ -160,7 +169,6 @@ caused or influenced a particular __outcome__
 ---
 
 # Causality - Bradford-Hill Criteria
-
 
 
 1.  __Strength of association__ – (effect size) the greater the effect compared with those not
@@ -202,6 +210,13 @@ Sir Austin Bradford Hill CBE FRS was an English epidemiologist and statistician,
 - Which Bradford-Hill criteria do you aim to meet in your study?
 
 
+- Protein Quantification 
+  - Control, C1, C2,
+  - Related but different mutations.
+  - Time course data
+
+
+
 ---
 
 # Question - Causality
@@ -226,7 +241,15 @@ Judea Pearl "The Book of Why: The New Science of Cause and Effect"<br/>
 
 
 
+---
 
+# Study Types
+
+“Test your servants for ten days: Give us nothing but vegetables to eat and water to drink. Then compare our appearance with that of the young men who eat the royal food, and decide what to do with us based on how we look.”
+
+Bible (see Daniel 1:1–16).
+
+Bregman, Rutger. Utopia for Realists (p. 206). Bloomsbury Publishing. Kindle Edition. 
 
 ---
 
@@ -235,8 +258,8 @@ Judea Pearl "The Book of Why: The New Science of Cause and Effect"<br/>
 .pull-left[
 ## Observational study
 - Case-control study -  individuals with a specific characteristic (disease and similar individuals without disease)
-- Cross-sectional study - aim to provide data on the entire population under study
-- Longitudinal study - repeated observations of the same variables (e.g., people) over short or long periods of time
+- Cross-sectional study - aim to provide data on the entire population under study.
+- Longitudinal study - repeated observations of the same variables (e.g., people) over short or long periods of time. They can also be structured as longitudinal randomized experiments, e.g. Mice aging.
 ]
 
 .pull-right[
@@ -248,6 +271,12 @@ Judea Pearl "The Book of Why: The New Science of Cause and Effect"<br/>
 
 ---
 
+# Study Types - Case control study
+.image-70[
+![](../inst/images/Study_Type_Case_Control.png)
+]
+
+---
 
 # Study Types - Pros and cons
 
@@ -280,6 +309,8 @@ cons:
 
 ---
 
+exclude: true
+
 # Randomized controlled trial
 
 This year’s Laureates have introduced<br/>
@@ -300,6 +331,8 @@ among the people who are most affected.
 .img-right[
 ![](../inst/images/Nobel2019.png)
 ]
+
+
 
 
 ---
@@ -375,15 +408,12 @@ be used where possible
 ---
 
 
-Did you apply _blinding_ or _randomization_ in your experiments?
-
-
+Did you apply _randomization_ or _blinding_ in your experiments?
 
 
 ---
 
 # Confounders
-
 
 
 Correlation does not imply causation but causation may imply correlation.
@@ -409,7 +439,7 @@ layout: false
 
 # Controlling for Confounders
 
-- Randomize over biological and<br/>  technical co-variates. <br/> 
+- Randomize over biological and <br/>  technical co-variates. <br/> 
   e.g. run Id, age.
 - Avoid batch effects:
     - process all samples in parallel
@@ -481,7 +511,6 @@ executed_.
 
 ---
 
-<!--
 
 # Types of error
 
@@ -502,7 +531,7 @@ is to __increase the sample size__, and this may not be feasible.
 .img-right[
 ![](../inst/images/hl_nullhypo_errors.png)
 ]
--->
+
 
 ---
 
