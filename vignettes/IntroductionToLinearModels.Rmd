@@ -78,7 +78,7 @@ library(tidyverse)
 
 .left-code[
 ```{r stripchart1, echo=TRUE, eval=FALSE}
-dat <- read.csv("femaleMiceWeights.csv") ##previously downloaded
+dat <- read.csv("femaleMiceWeights.csv")
 stripchart(Bodyweight ~ Diet, 
            data= dat, 
            vertical=TRUE, 
