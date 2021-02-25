@@ -18,8 +18,8 @@ editor_options:
 vignette: >
   %\VignetteIndexEntry{Hypothesis Testing} 
   %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
   
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 class: fullscreen, inverse, top, center, text-black
@@ -28,9 +28,9 @@ background-image: url("../inst/images/test_chair.jpeg")
 .font150[**hypothesis testing**]
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(fig.width=4.25, fig.height=3.5, fig.retina=3,
-                      message=FALSE, warning=FALSE, cache = TRUE,
-                      autodep = TRUE, hiline=TRUE)
+knitr::opts_chunk$set(fig.width = 4.25, fig.height = 3.5, fig.retina = 3,
+                      message = FALSE, warning = FALSE, cache = TRUE,
+                      autodep = TRUE, hiline = TRUE)
 knitr::opts_hooks$set(fig.callout = function(options) {
   if (options$fig.callout) {
     options$echo <- FALSE
@@ -55,19 +55,19 @@ library(tidyverse)
 
 ---
 
-# Introduction
+# Goals
 
-- What is a hypothesis and how it can be tested
-- What is a test statistic
-- How to generate the distribution of the test statistic if null true
-- one sample t-test
-- what happens if assumptions are not met
+- What is a hypothesis and how it can be tested?
+- What is a test statistic?
+- How to generate the distribution of the test statistic if null true?
+- One sample t-test?
+- What happens if assumptions are not met?
 - Central limit theorem
 - Asymptotic tests
 - Non parametric tests - randomization test
-- comparing parametric, non parametric and asymptotic tests
-- paired t-test
-- equivalence of t-test and linear models
+- Comparing parametric, non parametric and asymptotic tests
+- Paired t-test
+- Equivalence of t-test and linear models
 
 ---
 
@@ -77,13 +77,17 @@ Dr. Muriel Bristol, a female colleague of Fisher claimed to be able to tell whet
 
 --
 
-- The null hypothesis was that the Lady had no such ability.
+- The hypothesis was that the Lady had no such ability.
 --
 
-- The test statistic was a simple count of the number of successes<br/> in selecting the 4 cups out of 8.
-
+- The experiment was to prepare 8 cups of tea 4 with milk and 4 with tea first.
 --
-- What was the probability of getting the number she got correct (all correct)?
+
+- The test statistic was a simple count of the number of successes<br/>
+in selecting the 4 cups out of 8.
+--
+
+- She got all correct. What was the probability of getting all correct?
 
 ---
 
@@ -95,9 +99,15 @@ truth <- c(0,1,0,1,1,0,0,1)
 x <- combn(truth,4) #<<
 nrcor <- apply(x, 2, sum) #<<
 nulldistr <- table(nrcor)
-
+nulldistr
 plot(nulldistr, xlab="nr correct")
 ```
+
+There are 70 combinations of the elments in x taken m at a time.
+
+Count number of successes for each combination.
+
+Count how often 0, 1, 2, 3, 4 successes.
 ]
 
 
@@ -115,7 +125,7 @@ probs <- round(probs, digits = 3)
 probs
 ```
 
-Hence, on $\alpha = 0.05$ reject since getting 4 right is $P(x = 4) = `r probs[5]`$ 
+Hence, on $\alpha = 0.05$ reject hypothesis, that she can not recognize if milk or tea first, since getting 4 right is $P(x = 4) = `r probs[5]`$ 
 
 If she would have 3 right would you accept the null hypothesis?
 
@@ -130,11 +140,13 @@ layout: false
 # Hypothesis testing - Brief version
 
 - __State research hypothesis__
-- State Relevant Null and Alternative hypothesis
+- State Relevant Null and Alternative hypothesis.
 - Define test (T) statistic. 
-- Determine distribution of the test statistic<br/> under null hypothesis
+- Determine distribution of the test statistic<br/> under null hypothesis.
 - Define Critical region.
-- Check if $T_{obs}$ is within the critical region - Answer is YES or NO.
+- Check if $T_{obs}$ is within the critical region. 
+- Answer YES or NO. 
+- or $^\star$, $^{\star\star}$ or $^{\star\star\star}$ for 0.1 0.05 or 0.01
 
 
 
@@ -212,7 +224,7 @@ b
 
 ---
 
-#  mean is equal to $\mu$? Simulate data under null
+#  Mean is equal to $\mu$? Simulate data under null
 
 
 .left-code[
@@ -228,7 +240,7 @@ decimalplaces <- function(x) {
 }
 
 getBreaks <- function(T0,by=0.1){
-  res <- seq(round(min(T0), digits = decimalplaces(by))-by,round(max(T0), digits = decimalplaces(by))+by, by=by)
+  res <- seq(round(min(T0), digits = decimalplaces(by)) - by,round(max(T0), digits = decimalplaces(by)) + by, by = by)
   return(res)
 }
 
@@ -237,7 +249,7 @@ getBreaks <- function(T0,by=0.1){
 
 ```{r simulateData, eval=FALSE}
 # Simulating data from Null
-N <- 1000; N_obs <- 4;
+N <- 10000; N_obs <- 4;
 mu <- 0; sigma <- 1
 bb <- function(y){
   x <- rnorm( N_obs, mu, sigma )
@@ -248,7 +260,7 @@ res <- purrr::map_df(1:N, bb)
 res %>% tidyr::gather() %>%
 ggplot(aes(x = value)) +
   geom_histogram() +
-  facet_grid(~key)
+  facet_grid(~key,scales="free_x")
 ```
 ]
 
@@ -527,8 +539,6 @@ We simulate $100$ datapoints from an exponential distribution. Observe how the N
 
 # CLT in Proteomics?
 
-Where it can be used?
-
 - The error of transformed intensities in an LFQ experiment is normally distributed because it is the sum of biological, biochemical, and technical variability.
 
 - Sample sizes are small. Therefore great care has to be taken to meet the requirement of normally distributed observations when using the t-test.
@@ -545,19 +555,17 @@ Where it can be used?
 
 - asymptotic tests
    - assume that methods which work for normal distributions work also elsewhere
-
 --
 
 - nonparametric tests e.g. randomization test
    - do not rely on any distribution. They can thus be applied even if parametric conditions of validity are not met. 
+   - robust to outliers
    - Parametric tests __often__ have nonparametric equivalents. 
 
 
 ---
 
-# Two sample t-test
-
-There is a difference between the means of two samples.
+# Two sample t-test for equal means
 
 - Null hypothesis - there is no such difference
 
@@ -574,7 +582,7 @@ $\upsilon = \frac{(s^{2}_{1}/N_{1} + s^{2}_{2}/N_{2})^{2}} {(s^{2}_{1}/N_{1})^{2
 ---
 
 
-# Randomization tests
+# Two sample randomization tests for equal means
 
 1. Suppose the 10 individuals in the study have been labelled
 
@@ -605,31 +613,38 @@ test statistic $T_{obs}$ is:
 $$\frac{1}{B} \sum^B_{i=0} I_{T_i} >= |T_{obs}|$$
 
 .footnote[Step 1-3 generates a sample from the null distribution.]
+
 ---
 
-```{r fun_def, echo=FALSE, include=FALSE}
-
-```
-
-# Compare tests
+# Compare Tests
 
 .pull-left[
 
-- Simulate data from <br/> $x_1 \sim N(1,1)$ and $x_2\sim N(10,10)$ <br/> (10 each)
+- Simulate data from <br/> $x_1 \sim N(1,1)$ and $x_2\sim N(10,10)$ <br/> (5 each)
 - compute p-values using:
   - randomization test
   - t-test
   - asymptotic test <br/> (T under null $\sim N(\mu, \sigma)$)
 
 
-```{r randomization_test, eval=FALSE, echo=FALSE}
+```{r tablecompare, eval=TRUE, echo=FALSE}
 dist1 <- function(N){rnorm(N, 1, 1 )}
 dist2 <- function(N){rnorm(N, 10, 10)}
 
-xx <- p3003PBC::sample_stats(N=10,
+xx <- p3003PBC::sample_stats(N = 10,
                    dist1,
                    dist2,
                    samples = 100)
+cbind( coin = table(xx$res_p[,"coin"] < 0.01),
+t.test = table(xx$res_p[,"t.test"] < 0.01),
+asymp.test = table(xx$res_p[,"asymp.test"] < 0.01)) -> x
+rownames(x) <- c("Accept H0", "Reject H0")
+knitr::kable(x, format="html")
+
+```
+
+
+```{r randomization_test, eval=FALSE, echo=FALSE}
 par(mfrow=c(2,1))
 
 old <- c(5.1, 4.1, 4.1, 2.1)
@@ -648,8 +663,10 @@ scatter.smooth(xx$res_p[,"coin"], xx$res_p[,"asymp.test"], log="xy",
                ylab="log(p.value) asymptotic test", pch=16,cex=0.5, ylim=c(1e-3,1))
 abline(c(0,1), col="blue")
 abline(h=0.01,v=0.01, col="gray")
-
 ```
+
+
+
 ]
 
 
@@ -660,17 +677,86 @@ abline(h=0.01,v=0.01, col="gray")
 
 ---
 
-# Compare tests
+# Types of error when testing hypothesis
 
-```{r}
+A __type I error__ (false positive) occurs when <br/> the null hypothesis (H0) is true, but is rejected.<br/> 
+The _type I error rate_ or __significance level__ (p-Value)<br/> is the probability of rejecting the<br/> 
+null hypothesis given that it is true.
 
+
+A __type II error__ (false negative) occurs when <br/> the null hypothesis
+is false,<br/> but erroneously fails to be rejected. <br/>
+The _the type II error rate_ is denoted by the Greek letter $\beta$<br/>
+and is related to the __power of a test__ (which equals $1−\beta$).
+
+For a given test, the only way to reduce both error rates<br/> 
+is to __increase the sample size__, and this may not be feasible.
+
+.img-right[
+![](../inst/images/hl_nullhypo_errors.png)
+]
+
+
+---
+
+# Increasing sample size
+
+.pull-left[
+
+- Simulate data from <br/> $x_1 \sim N(1,1)$ and $x_2\sim N(10,10)$ <br/> (20 each)
+- compute p-values using:
+  - randomization test
+  - t-test
+  - asymptotic test <br/> (T under null $\sim N(\mu, \sigma)$)
+
+
+```{r tablecompare2, eval=TRUE, echo=FALSE}
+dist1 <- function(N){rnorm(N, 1, 1 )}
+dist2 <- function(N){rnorm(N, 10, 10)}
+xx <- p3003PBC::sample_stats(N_obs = 40,
+                   dist1,
+                   dist2,
+                   samples = 100)
 cbind( coin = table(xx$res_p[,"coin"] < 0.01),
 t.test = table(xx$res_p[,"t.test"] < 0.01),
 asymp.test = table(xx$res_p[,"asymp.test"] < 0.01)) -> x
 rownames(x) <- c("Accept H0", "Reject H0")
+knitr::kable(x, format = "html")
 
-knitr::kable(x, format="html")
 ```
+
+
+```{r randomization_test2, eval=FALSE, echo=FALSE}
+par(mfrow=c(2,1))
+
+old <- c(5.1, 4.1, 4.1, 2.1)
+par(mar = c(5.1, 4.1, 1, 2.1))
+
+scatter.smooth(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", 
+               xlab="log(p.value) randomization test",
+               ylab="log(p.value) t.test",
+               pch=16,cex=0.5, ylim=c(1e-3,1))
+
+abline(c(0,1), col="blue")
+abline(h=0.01,v=0.01, col="gray")
+
+scatter.smooth(xx$res_p[,"coin"], xx$res_p[,"asymp.test"], log="xy", 
+               xlab="log(p.value) randomization test",
+               ylab="log(p.value) asymptotic test", pch=16,cex=0.5, ylim=c(1e-3,1))
+abline(c(0,1), col="blue")
+abline(h=0.01,v=0.01, col="gray")
+```
+
+
+
+]
+
+
+.right-plot[
+```{r randomization_test2-out, ref.label="randomization_test", echo=FALSE, fig.width=6, fig.height=6}
+```
+]
+
 
 ---
 
@@ -846,11 +932,15 @@ knitr::kable(xx, format = "html")
 
 # Conclusion
 
-- If assumptions in parametric tests are not met null distribution is wrong, hence p-value
-- parametric tests do not make assumptions about the data
-- there might be no non-parametric alternative to a parametric test
-- Understand CLT and what assymptotic properties are
-- Asymptotic properties are sometimes used to derive null distributions for complex models. If this is the case and your sample sizes are small be carefull.
+- What is a hypothesis test
+- How to report results of hypothesis tests? <br/>
+(you do not report p-values </br> 
+state if you reject null given your size of test $\alpha$ <br/>)
+- If assumptions in parametric tests are not met 
+  - null distribution is wrong =><br/> p-value estimate is wrong <br/>
+  Except? 
+- Understand CLT and what assymptotic properties are.
+- Parametric tests do not make as many assumptions <br/> about the data.
 
 .img-right[
 ![](../inst/images/StatTIP_1.png)
