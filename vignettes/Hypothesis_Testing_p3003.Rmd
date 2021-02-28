@@ -253,8 +253,9 @@ N <- 10000; N_obs <- 4;
 mu <- 0; sigma <- 1
 bb <- function(y){
   x <- rnorm( N_obs, mu, sigma )
-  data.frame(mean = mean( x ),
-             sd = sd(x)) 
+  # compute mean and sd
+  data.frame(mean = mean( x ), #<<
+             sd = sd(x))  #<<
 }
 res <- purrr::map_df(1:N, bb)
 res %>% tidyr::gather() %>%
@@ -279,6 +280,7 @@ ggplot(aes(x = value)) +
 if $\sigma$ known
 
 ```{r simulatingH0SigmaK, eval=FALSE, size="footnotesize"}
+# statistic
 T0 <- mu - res$mean
 hist(T0, 
      breaks=getBreaks(T0, by=0.05),
@@ -286,7 +288,9 @@ hist(T0,
      main="")
 x <- seq(-10,10,0.01)
 lines(x, 
+      # H_0 distribution
       dnorm(x,
+            # sigma is known
             sd= (sigma/sqrt(N_obs))), #<<
       col=2)
 
@@ -324,6 +328,7 @@ $$\sigma^2_{mean} = \sigma^2/n$$
 if $\sigma$ known
 
 ```{r simulatingH0SigmaKTnew, eval=FALSE, size="footnotesize"}
+# improved statistic
 T0 <- (mu - res$mean)/
   (sigma/sqrt(N_obs)) #<<
 hist(T0, 
@@ -331,6 +336,7 @@ hist(T0,
      probability = T,
      main="")
 x <- seq(-10,10,0.01)
+# simplifies H_0 distribution
 lines(x, 
       dnorm(x, 
             sd= 1), #<<
@@ -361,7 +367,7 @@ hist(T0,
 x <- seq(-10,10,0.1)
 lines(x, dnorm(x),#<<
       col="red")
-lines(x,dt(x,df = N_obs), #<<
+lines(x,dt(x,df = N_obs - 1), #<<
       type="l",col="green",lwd=2)
 
 ```
@@ -427,7 +433,7 @@ hist(T0, breaks=getBreaks(T0),
      ylim=c(0,0.4), main="")
 x <- seq(-10,10,0.1)
 lines(x,
-      dt(x,df = N_obs), #<<
+      dt(x,df = N_obs - 1), #<<
       type="l",col="green",lwd=2)
 abline(v = 0, col=2)
 ```
@@ -503,7 +509,7 @@ T0 <- (res$mean - mu)/
 hist(T0, breaks=getBreaks(T0),
      probability = T, xlim=c(-6,6),
      ylim=c(0,0.4), main="")
-lines(x,dt(x,df = N_obs),type="l",
+lines(x,dt(x,df = N_obs - 1),type="l",
       col="green",lwd=2)
 abline(v=0, col=2)
 ```
@@ -620,7 +626,9 @@ $$\frac{1}{B} \sum^B_{i=0} I_{T_i} >= |T_{obs}|$$
 
 .pull-left[
 
-- Simulate data from <br/> $x_1 \sim N(1,1)$ and $x_2\sim N(10,10)$ <br/> (5 each)
+- Simulate data from <br/> $x_1 \sim N(1,1)$ and $x_2\sim N(10,10)$ <br/>
+Null Hypothesis should be rejected
+<br/>(5 each)
 - compute p-values using:
   - randomization test
   - t-test
@@ -757,6 +765,42 @@ abline(h=0.01,v=0.01, col="gray")
 ```
 ]
 
+---
+
+# R data.frame and the R formula interface
+
+.left-code[
+
+```{r}
+?sleep # help(sleep)
+class(sleep)
+head(sleep, n = 4)
+table(sleep$group)
+table(sleep$ID)
+
+```
+]
+
+
+.right-code[
+```{r}
+# model extra as function of group
+a <- extra ~ group 
+# model extra as function of group and ID
+b <- extra ~ group + ID # 
+c <- extra ~ group + ID + group:ID
+d <- extra ~ group * ID
+e <- extra ~ group * ID - group:ID
+class(e)
+
+```
+
+Most functions in R work with the formula interface and data.frames
+
+```{eval=FALSE}
+some_function("formula" , data = "data.frame")
+```
+]
 
 ---
 
@@ -764,24 +808,18 @@ abline(h=0.01,v=0.01, col="gray")
 
 .left-code[
 ```{r corMeasures, eval=FALSE}
-old_mar <- par()$mar
 par(mfrow=c(3,1), mar=c(4,4,0,0))
 plot(extra ~ group, data = sleep) #<<
-sleep %>% tidyr::spread(group, extra) -> 
-  sleepwide
-colnames(sleepwide) <- make.names(
-  colnames(sleepwide)
-  )
-plot( sleepwide$X1, sleepwide$X2) #<<
+sleepwide <- tidyr::spread(sleep, group, extra)
+plot( sleepwide$`1`, sleepwide$`2`) #<<
 legend("topleft", legend = 
        paste("cor = ",
        round(
-         cor(sleepwide$X1, sleepwide$X2),
+         cor(sleepwide$`1`, sleepwide$`2`),
          digits=2)))
 sleepwide <- sleepwide %>% 
-  dplyr::mutate(diff = X2-X1) 
+  dplyr::mutate(diff = `2`-`1`) 
 boxplot(sleepwide$diff) #<<
-par(mar = old_mar)
 
 ```
 ]
@@ -828,6 +866,9 @@ diff.p =
   t.test(sleepwide$diff)$p.value #<<
 )
 
+# Traditional interface
+with(sleep, t.test(extra[group == 1 ], extra[group == 2] ))$p.value
+
 ```
 
 .footnote[Top code block - two sample t-test, middle code block - paired t-test, bottom code - one sample t.test on differences. Note that the paired t-test gives the same results as the one sample t.test of differences]
@@ -849,11 +890,16 @@ sleepless <- datasets::sleep
 sleepless$extra[c(1,4,6,12)] <- NA
 sleepless$extra[1:4]
 tryCatch(
-  t.test(extra ~ group, data = sleepless, paired =TRUE),#<<
+  t.test(extra ~ group, data = sleepless, paired = TRUE),#<<
   error = function(e) e)
+
+tryCatch(
+  t.test(extra ~ group, data = sleepless, paired = FALSE),#<<
+  error = function(e) e)
+
 ```
 
-.footnote[running the paired t-test with missing data fails.]
+.footnote[running the paired t-test with missing data fails. It can not be specified which observations are paired.]
 
 ---
 
@@ -867,18 +913,19 @@ lmermod <-
   lmerTest::lmer(extra ~ group + (1|ID),
                  data = sleep) #<<
 
-
+# collect coefficients into table
 x <- bind_rows(
 broom::tidy(anova(lm1))[1,],
 broom::tidy(anova(lm2))[1,],
 broom::tidy(anova(lmermod))[1,],
 )
-
+# format table
 xx <- add_column(x, model = 
         c("lm_1","lm_2","lmer"),
         .before = 1) %>%
   dplyr::select(model, p.value) %>%
-  mutate(p.value = signif(p.value, digits=2))
+  dplyr::mutate(p.value = 
+                  signif(p.value, digits=2))
   
 ```
 ]
@@ -889,7 +936,7 @@ knitr::kable(xx, format="html")
 ```
 ]
 
-.footnote[performing the same t-tests but using linear models and mixed effect linear models produces same result.]
+.footnote[The same test can be performed using linear model or mixed effects linear models.]
 
 ---
 
@@ -915,7 +962,8 @@ xx <- add_column(x,
         model = c("lm_1","lm_2","lmer"),
         .before = 1) %>%
   dplyr::select(model, p.value) %>%
-  dplyr::mutate(p.value = signif(p.value, digits = 2))
+  dplyr::mutate(p.value = 
+                  signif(p.value, digits = 2))
 ```
 ]
 
@@ -926,19 +974,20 @@ knitr::kable(xx, format = "html")
 ```
 ]
 
-.footnote[Linear models do work also with missing data.]
+.footnote[Linear models do work also with missing data. We can specify the pairing by `extra ~ group + ID`]
 ---
 
 
 # Conclusion
 
-- What is a hypothesis test
+- What is a hypothesis test? What is the Null Distribution?
+[https://en.wikipedia.org/wiki/Null_distribution]
 - How to report results of hypothesis tests? <br/>
-(you do not report p-values </br> 
-state if you reject null given your size of test $\alpha$ <br/>)
-- If assumptions in parametric tests are not met 
+You do not report p-values, </br> 
+state if you reject null given your size of test $\alpha$.
+- If assumptions not met 
   - null distribution is wrong =><br/> p-value estimate is wrong <br/>
-  Except? 
+  Except?
 - Understand CLT and what assymptotic properties are.
 - Parametric tests do not make as many assumptions <br/> about the data.
 
