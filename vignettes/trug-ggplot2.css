@@ -3,7 +3,7 @@ body {
 }
 
 .title-slide {
-  background-image: url(../inst/images/brussels.jpg);
+  background-image: url(../inst/images/IrchelFGCZ.jpg);
 }
 
 .footnote {
@@ -96,7 +96,7 @@ body {
 .img-right{
   height: 500px;
   width: 400px;
-  top: 15%;
+  top: 20%;
   left: 60%;
   position: absolute;
 }

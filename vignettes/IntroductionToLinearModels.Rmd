@@ -77,9 +77,14 @@ library(tidyverse)
 # lm intro
 
 .left-code[
-```{r stripchart1, echo=TRUE, eval=FALSE}
+```{r loadData}
 dat <- read.csv("femaleMiceWeights.csv")
-stripchart(Bodyweight ~ Diet, 
+head(dat)
+table(dat$Diet)
+```
+
+```{r stripchart1, echo=TRUE, eval=FALSE}
+stripchart(Bodyweight ~ Diet, # < formula interface
            data= dat, 
            vertical=TRUE, 
            method="jitter",
@@ -97,16 +102,23 @@ stripchart(Bodyweight ~ Diet,
 
 .left-code[
 ```{r lmintroleft}
+# summarize data
 meansum <- 
   dat %>%
   group_by(Diet) %>%
   summarise(mean = mean(Bodyweight))
+# linear model
 lm1 <- lm(Bodyweight ~ Diet, #<<
           data = dat) #<< 
 coefs <- coef(lm1)
 ```
 
 $$y = b_0X_0 + b_1 X_1 + \epsilon$$
+
+```{r, fig.height=2, fig.width=4, echo=FALSE}
+par(mar = c(2,4,1,2))
+plot(model.matrix(lm1), col=c("black","white"))
+```
 ]
 
 .pull-right[
@@ -127,18 +139,16 @@ stripchart(Bodyweight ~ Diet, #<<
            method="jitter",
            main="Bodyweight over Diet",
            ylim=c(0,40), xlim=c(0,3))
-a <- -0.25
-lgth <- .1
-library(RColorBrewer)
-cols <- brewer.pal(3,"Dark2")
+a <- -0.25; lgth <- .1
 abline(h=0)
 arrows(1+a,0,1+a,coefs[1],lwd=3,
-       col=cols[1],length=lgth)
-abline(h=coefs[1],col=cols[1])
+       col="green",length=lgth)
+abline(h=coefs[1],col="green")
 arrows(2+a,coefs[1],2+a,coefs[1]+coefs[2],
-       lwd=3,col=cols[2],length=lgth)
-abline(h=coefs[1]+coefs[2],col=cols[2])
-legend("right",names(coefs),fill=cols,
+       lwd=3,col="orange",length=lgth)
+abline(h=coefs[1]+coefs[2],col="orange")
+legend("right",names(coefs),
+       fill=c("green","orange"),
        cex=.75,bg="white")
 ```
 ]
@@ -154,14 +164,26 @@ legend("right",names(coefs),fill=cols,
 
 
 .left-code[
-```{r}
+```{r echo=FALSE}
+pmar <- par()$mar
+library('plot.matrix')
+```
+```{r, fig.width=3, fig.height=2}
 Y <- dat$Bodyweight
 X <- model.matrix(lm1)
-beta <- solve(t(X) %*% X) %*% t(X) %*% Y
+par(mar = c(2,2,1,1))
+plot(X, col=c("black", "white"), main="")
+beta <- solve(t(X) %*% X) %*% (t(X) %*% Y)
 epsilon <- Y - t(beta) %*% t(X)
 beta
 
+
 ```
+
+```{r echo=FALSE}
+par(mar = pmar)
+```
+
 ]
 
 .pull-right[
@@ -209,24 +231,34 @@ $$
 
 # lm intro - contrasts
 
+A contrast is a linear combination of variables (parameters or statistics) whose coefficients add up to zero, allowing comparison of different treatments.
+
 .left-code[
+
+$$
+Y_{chow - hf} = (1) \cdot Y_c + (-1) \cdot Y_h
+$$
+
+
 ```{r}
 contrasts <- rbind(
   "chow - hf" = 
-    linfct["chow",] - linfct["hf",] #<<
+    1 * linfct["chow",] + -1 * linfct["hf",] #<<
 )
+contrasts
 contrasts %*% coef(lm1)
 
 ```
-$$
-Y_{chow- hf} = b_0\cdot 0 + b_1\cdot (-1)
-$$
+
+
 ]
 
 .right-plot[
 ```{r parameterEstimates3-out, ref.label="parameterEstimates", echo=FALSE, fig.width=6, fig.height=6}
 ```
 ]
+
+.footnote
 
 ---
 
@@ -246,6 +278,7 @@ solve(t(X) %*% X) * sigma^2 #<<
 vcov(lm1) #<<
 ```
 ]
+.footnote[LSE = least square estimate]
 
 .pull-left[
 $$
@@ -258,7 +291,6 @@ with~~~ \sigma^2 &= \sum e^2 / (n-p)
 $$
 ]
 
-.footnote[LSE = least square estimate]
 ---
 
 # lm intro - computing the test statistic
@@ -285,10 +317,16 @@ t.statistic
 ]
 
 .pull-right[
+```{r}
+head(linfct)
+head(contrasts)
+```
+
 $$
 t_i = \frac{\beta_i}{se(\beta_i)}
 $$
 ]
+
 ---
 
 # lm intro - getting the p-values
@@ -296,7 +334,7 @@ $$
 .left-code[
 ```{r lmintropValleft}
 lfq <- 
-  LFQService::my_contrast( lm1, #<<
+  prolfqua::my_contrast( lm1, #<<
   rbind(linfct, contrasts)) %>% #<<
   dplyr::select(lhs, estimate,
                 std.error, 
@@ -310,7 +348,7 @@ lfq <-
 
 .pull-left[
 ```{r lmintropValright, results="asis", echo=FALSE}
-knitr::kable(lfq,format = "html" , caption ="LFQService",digits = 2)
+knitr::kable(lfq, format = "html" , caption ="prolfqua",digits = 2)
 ```
 ]
 
@@ -327,9 +365,6 @@ multcomp <- summary(
   dplyr::select(contrast, estimate,
                 std.error, statistic ,
                 adj.p.value)
-  
-multcomp <- multcomp %>%  mutate(p.value =
-           round(adj.p.value,digits = 3))
 ```
 ]
   
@@ -347,11 +382,17 @@ knitr::kable(multcomp,
 
 # lm intro - interactions
 
-## Model without interaction
 
-```{r lminteractionleft, eval=FALSE}
-lm(friction ~ type + leg, data = spider)
+.left-code[
+## Model without interaction
+```{r lminteractionleft, eval=TRUE}
+spider <- read.csv("spider_wolff_gorb_2013.csv"
+                   , skip = 1)
+table(spider$leg, spider$type)
+noI <- lm(friction ~ type + leg, data = spider)
+coef(noI)
 ```
+]
 
 .img-right[
 ![](../inst/images/interactions_and_contrasts-spider_interactions1.png)
@@ -363,11 +404,18 @@ lm(friction ~ type + leg, data = spider)
 
 # lm intro - interactions
 
-## Model with interaction
 
-```{r eval = FALSE}
-lm(friction ~ type + leg + type:leg, data=spider)
+.left-code[
+## Model with interaction
+```{r eval = TRUE}
+withI <- lm(friction ~ type + leg + type:leg,
+            data = spider)
+an <- anova(withI)
+broom::tidy(an)[1:3,c("term", "p.value")]
+coef(withI)
+
 ```
+]
 
 .img-right[
 ![](../inst/images/interactions_and_contrasts-spider_interactions2.png)
@@ -376,37 +424,92 @@ lm(friction ~ type + leg + type:leg, data=spider)
 
 ---
 
-# Yeast dataset analysis using linear models
+# Yeast analysis - batches
 
-Protein level model
+- Condition : enthanol and glucose
+- Batch: p2691 (CC 12 to 16 March 2018) and p2370 (March 2017)
 
-$y_{il} = \alpha_i + \epsilon_{il}$
+linear model:
 
-where $y_{il}$ the intensity of the protein in condition $i$ and replicate $l$.
-and $i \in \{ethanol, glucose\}$ and $\epsilon_{il} \in N(0,s_e)$.
+$$
+\begin{aligned}
+y_{ijkl} &= \alpha_i + \beta_j + \gamma_{ij} + \epsilon_{ijk}
+\end{aligned}
+$$
 
-Than the protein fold change can be computed by:
+with  $i \in \{ethanol, glucose\}$, $j \in \{p2370, p2691\}$,<br/>
+$\gamma_{ij}$ i.e. $ij = \{$ ethanol:p2370, ethanol:p2691, glucose:p2370, glucose:p2691 $\}$ ,
+$k \in {1:t}$ (replicate).
+
+and where: 
+$$\epsilon_{ijk} \propto N(0, s_e)$$
+R formula `lm(normalizedIntensity ~ Condition + Batch + Condition:Batch, data = proteinData)`
+---
+
+# Yeast analysis - both batches - model 1
+
+We are going to compute the following protein fold changes:
+
+$$
+\begin{aligned}
+\textrm{fc}_{glucose - ethanol}\\
+\textrm{fc}_{p2370- p2691}\\
+\textrm{fc}_{glucose:p2370 - ethanol:p2370}\\
+\textrm{fc}_{glucose:p2691 - ethanol:p2691}\\
+\textrm{fc}_{interaction} &= \textrm{fc}_{glucose:p2370 - ethanol:p2370} - \textrm{fc}_{glucose:p2691 - ethanol:p2691}\\
+\end{aligned}
+$$
+
+---
+
+# Yeast analysis - both batches - mixed linear model
+
+mixed effects linear model
+- fixed effects : Condition 
+- random effects : Batch
+
+
+$$y_{ijkl} = \alpha_i +  a_j + \epsilon_{ijk}$$
+where  $i \in \{ethanol, glucose\}$,  $j \in \{p2370, p2691\}$ and $k \in {1:t}$ (replicate)
+
+$$a_j \propto N(0, s_a);  ~ \epsilon_{ijk} \propto N(0, s_e)$$
+
+
+The protein fold change can be estmated from:
 
 $$\textrm{fc}_{glucose - ethanol} = \alpha_{glucose} - \alpha_{ethanol}$$
+R formula `lmer(normalizedIntensity ~ Condition + (1|Batch), data = proteinData)`
 
 ---
 
-# Peptide and Protein level models
+# Conclusions
 
-Series of publication showing that modelling __protein fold changes__<br/>
-by using __peptide level intensities__<br/>
-is more __sensitive__ and __specific__ than using __aggregated protein intensities__.
-
-
-_Peptide measurements are repeated measurements of the same protein._
-
-
-.footnote[Suomi and Elo 2017 PMID: 28724900</br>
-Geomine, Gevaert and Clement 2016 PMID: 26566788]
+- Linear models allow for
+  - calculation of fold changes using contrasts
+  - and of differences between fold changes (interactions).
+- If you model more than two conditions:
+  - Problems with missing data become more prominent.
+  - No observations in one of the conditions.
 
 ---
 
-# Yeast analysis - peptide level models
+# Outlook
+
+Other software for modelling fold changes used in Proteomics:
+
+- __limma__ - Ritchie, Smyth at al. 2015 PMID: 25605792
+- __MSStats__ https://www.bioconductor.org/packages/release/bioc/html/MSstats.html 
+- __ROPECA__ Suomi and Elo 2017 PMID: 28724900
+- __MSqRob__ - Geomine, Gevaert and Clement 2016 PMID: 26566788
+- __mapDIA__ - Teo, Kim et al. 2016 PMID: PMID: 26381204
+
+
+
+---
+
+exclude: true
+
+# Yeast Dataset 2 batches analysis - peptide level models
 
 Linear Mixed Effect Models
 
@@ -420,6 +523,7 @@ $Z$ is the design matrix for the random effects (describes the covariance struct
 .footnote[For more details see e.g.: [UCLA IDRE](https://stats.idre.ucla.edu/other/mult-pkg/introduction-to-linear-mixed-models/)]
 
 ---
+exclude: true
 
 # Yeast analysis - peptide level models
 
@@ -439,82 +543,4 @@ $$\textrm{fc}_{glucose - ethanol} = \alpha_{glucose} - \alpha_{ethanol}$$
 .footnote[model specification adapted from Geomine, Gevaert and Clement 2016 PMID: 26566788]
 
 ---
-
-# Yeast analysis - both batches - model 1
-
-mixed effects linear model
-- fixed effects : condition, batch
-- random effects : peptides
-
-$$y_{ijkl} = \alpha_i + \beta_j + \gamma_{ij} +  a_k + \epsilon_{ijkl}$$
-with  $i \in \{ethanol, glucose\}$, $j \in \{p2370, p2691\}$,<br/>
-$\gamma_{ij}$ i.e. $ij = \{$ ethanol:p2370, ethanol:p2691, glucose:p2370, glucose:p2691 $\}$ ,
-$l \in {1:t}$ (replicate) and $k$ iterates over all peptides of a protein.
-
-and where: 
-$$a_k \propto N(0, s_a); ~ \epsilon_{ijkl} \propto N(0, s_e)$$
----
-
-# Yeast analysis - both batches - model 1
-
-The protein fold change can be computed by:
-$$
-\begin{aligned}
-\textrm{fc}_{glucose - ethanol} &= \alpha_{glucose} - \alpha_{ethanol}\\
-\textrm{fc}_{p2370- p2691} &= \beta{p2370} - \alpha_{p2691}\\
-\textrm{fc}_{glucose:p2370 - ethanol:p2370} &= ... \\
-\textrm{fc}_{glucose:p2691 - ethanol:p2691} &= ...\\
-\textrm{fc}_{interaction} &= \textrm{fc}_{glucose:p2370 - ethanol:p2370} - \textrm{fc}_{glucose:p2691 - ethanol:p2691}\\
-\end{aligned}
-$$
----
-
-# Yeast analysis - both batches - model 2
-
-mixed effects linear model
-- fixed effects : condition 
-- random effects : batch, peptides
-
-
-$$y_{ijkl} = \alpha_i +  a_j + b_k + \epsilon_{ijkl}$$
-where  $i \in \{ethanol, glucose\}$,  $j \in \{p2370, p2691\}$, $l \in {1:t}$ (replicate), and $k$ iterates over all peptides of a protein and 
-
-$$a_j \propto N(0, s_a); ~ b_k \propto N(0, s_b); ~ \epsilon_{ijkl} \propto N(0, s_e)$$
-
-
-The protein fold change can be computed by:
-
-$$\textrm{fc}_{glucose - ethanol} = \alpha_{glucose} - \alpha_{ethanol}$$
----
-
-# Conclusions
-
-
-- Linear models allow for
-  - calculation of fold changes, but also of differences between fold changes
-  - modelling of interactions between factors 
-- Modelling on peptide level potentially is more sensitive and specific than modelling on protein level
-- If measurements are correlated i.e. multiple peptides of a protein, than mixed effect linear models can be used
-
----
-
-# Outlook
-
-- mixed effect model analysis with lmer.
-- protein level analysis with moderated p.values (LIMMA).
-  - aggregate all peptides
-  - top 3 peptides
-  - tukey median polish
-- peptide level analysis using the ROPECA approach.
-
-Handouts_services/p2370_Analysis/results_modelling
-Handouts_services/p2691_Analysis/results_modelling
-
-.footnote[
-ROPECA Suomi and Elo 2017 PMID: 28724900<br/>
-MSqRob - Geomine, Gevaert and Clement 2016 PMID: 26566788<br/>
-LIMMA - Ritchie, Smyth at al. 2015 PMID: 25605792<br/>
-mapDIA - Teo, Kim et al. 2016 PMID: PMID: 26381204
-]
-
 

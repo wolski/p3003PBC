@@ -23,7 +23,7 @@ vignette: >
 ---
 
 class: fullscreen, inverse, top, center, text-black
-background-image: url("../inst/images/many-black-chair-backs.jpg")
+background-image: url("../inst/images/Linear_chair.jpg")
 
 .font150[**design**]
 
@@ -211,10 +211,10 @@ Sir Austin Bradford Hill CBE FRS was an English epidemiologist and statistician,
 
 
 - Protein Quantification 
-  - Strength of association : Control, Treatment 1 $5 \mu g$, Treatmant $10 \mu g$
+  - Strength of association : Control, Treatment $5 \mu g$, Treatmant $10 \mu g$
   - Consistency : Different Genetic backgrounds, Control and Treatment
   - Temporality : Time course data
-  - Specificity : ?
+  - Specificity : e.g. test for interactions.
 
 
 
@@ -260,7 +260,7 @@ Bregman, Rutger. Utopia for Realists (p. 206). Bloomsbury Publishing. Kindle Edi
 ## Observational study
 - Case-control study -  individuals with a specific characteristic (disease and similar individuals without disease)
 - Cross-sectional study - aim to provide data on the entire population under study.
-- Longitudinal study - repeated observations of the same variables (e.g., people) over short or long periods of time. They can also be structured as longitudinal randomized experiments, e.g. Mice aging.
+- Longitudinal study - repeated observations of the same variables (e.g., people) over short or long periods of time. They can also be structured as longitudinal __randomized experiments__, e.g. Mice aging.
 ]
 
 .pull-right[
@@ -305,7 +305,7 @@ pros:
 cons:
 - may require more resources
 - Ethical concerns for certain exposures
-- Difficult if outcome studied is rare
+- Difficult if outcome studied is rare<br/> (e.g. Vaccination)
 ]
 
 ---
@@ -359,7 +359,7 @@ https://en.wikipedia.org/wiki/Bias]
 
 # Bias
 
-- Confirmation bias,<br/> tendency to favor information that confirm hypothesis
+- Confirmation bias,<br/> tendency to favor information that confirm hypothesis $^{\star}$
 
 .img-right[
 ![](../inst/images/Man_In_The_Moon_1.png)
@@ -374,14 +374,17 @@ https://en.wikipedia.org/wiki/Bias]
 ]
 --
 
-- Publication bias,<br/> bias towards publication of certain experimental results
+- Publication bias,<br/> bias towards publication of certain experimental results. $^{\star\star}$
+  
 .img-right[
 ![](../inst/images/Man_In_The_Moon_3.png)
 ]
 
 .footnote[
-Are you more inclined to examine a sample for a technical problem which <br/>
-does not fit your hypothesis?
+$^\star$ Do you examine an experiment for a technical problem which <br/>
+fits your hypothesis? </br>
+$^{\star\star}$ Over-interpretation of improvements of new methods.
+
 ]
 
 ---
@@ -400,14 +403,6 @@ be used where possible
   - __Double blind__ – both patient and evaluator blind
 
 .img-right[![](../inst/images/blind_trials.png)]
-
----
-
-# Randomized controlled trial - Blinding
-
-Do you apply _blinding_ or _randomization_ in your experiments?
-
-- Use Random or Block Random order when processing samples. 
 
 
 ---
@@ -452,6 +447,27 @@ in equal numbers.
 How to avoid confounding by batch
 ]
 
+
+.footnote[
+https://doi.org/10.1021/pr8010099]
+https://doi.org/10.1021/acs.jproteome.0c00536]
+]
+
+---
+
+# Controlling for Confounders
+
+## Queue Generator
+
+Use block random queue when processing samples to _block_ for changes in the chromatographic column over time.
+
+__Example:__
+
+\# of samples in each condition 3 x A, 3 x B, 2 x C, 2 x D. <br/>
+Blocks :  ABCD, BCDA, BA <br/>
+
+
+.footnote[http://fgcz-ms-shiny.uzh.ch:8080/queue_generator10/]
 
 ---
 
@@ -498,9 +514,9 @@ https://www.ncbi.nlm.nih.gov/pubmed/29873743
 executed_.
 
 -  It is unethical to perform a trial which:
-  - has many more subjects than are needed to reach a conclusion.
+  - has _many more subjects_ than are needed to reach a conclusion.
   - has little prospect of reaching any conclusion, <br/> e.g. because 
-  of insufficient numbers of subjects (or some other aspect of poor design)
+  of _insufficient numbers of subjects_ (or some other aspect of poor design)
 
 - The local ethics committee has discretion on how it will supervise __non-interventional__ studies
   -  US - Institutional Review Board (IRB)
@@ -508,20 +524,21 @@ executed_.
 
 [Declaration of Helsinki (1964+amendments))](https://www.wma.net/policies-post/wma-declaration-of-helsinki-ethical-principles-for-medical-research-involving-human-subjects/)
 
-
+---
 
 # Types of error
 
 
-A _type I error_ (false positive) occurs when the null hypothesis (H0) is true, but is rejected.<br/> 
-The _type I error rate_ or __significance level__ (p-Value) is the probability of rejecting the<br/> 
+A __type I error__ (false positive) occurs when<br/> the null hypothesis (H0) is true, but is rejected.<br/> 
+The _type I error rate_ or __significance level__ (p-Value)<br/> is the probability of rejecting the<br/> 
 null hypothesis given that it is true.
 
 
-A _type II error_ (false negative) occurs when the null hypothesis<br/>
-is false, but erroneously fails to be rejected. <br/>
+A __type II error__ (false negative) occurs when<br/> 
+the null hypothesis is false,<br/>
+but erroneously fails to be rejected. <br/>
 The _the type II error rate_ is denoted by the Greek letter $\beta$<br/>
-and related to the __power of a test__ (which equals $1−\beta$).
+and is related to the __power of a test__ (which equals $1−\beta$).
 
 For a given test, the only way to reduce both error rates<br/> 
 is to __increase the sample size__, and this may not be feasible.
@@ -557,6 +574,7 @@ $\sigma^2$ of replicates:
   - buy better instrument
 ]
 
+.footnote[measure 3 tech replicates, 3 tech+bio-chem replicates, 3 tech+bio-chem+biological replicates]
 
 ---
 
@@ -578,21 +596,21 @@ there exists a unique relation between:
 
 .right-plot[
 ```{r echo=FALSE}
-sd <- seq(0.5, 2, by =.001)
+sd <- seq(0.5, 2, by = .001)
 dd <- power.t.test(delta = 2, sd = 1, sig.level = 0.05, power = 0.8)
 powersd <- function(sd, delta = 1, sig.level = 0.05, power = 0.8){
   ceiling(power.t.test(delta = 2, sd = sd, sig.level = sig.level, power = power)$n)
 }
 
 ressd <- sapply(sd, powersd)
-power_delta <- function( delta, sd = 1, sig.level = 0.05, power = 0.8){
+power_delta <- function(delta, sd = 1, sig.level = 0.05, power = 0.8){
   ceiling(power.t.test(delta = delta, sd = sd, sig.level = sig.level, power = power)$n)
 }
 
 delta <- seq(0.5,6, by = 0.001)
 resdelta <- sapply(delta, power_delta)
-plot(sd, ressd, ylab="N", type="l", main = "mu=1, p=0.05, power = 0.8")
-plot(delta, resdelta, xlab = "mu", ylab="N", type="l", log="xy", main = "sd=1, p=0.05, power = 0.8")
+plot(sd, ressd, ylab = "N", type = "l", main = "mu=1, p=0.05, power = 0.8")
+plot(delta, resdelta, xlab = "mu", ylab = "N", type = "l", log = "xy", main = "sd=1, p = 0.05, power = 0.8")
 
 ```
 ]
@@ -725,6 +743,7 @@ several factors (independent variables).
 
 
 ---
+exclude: true
 
 # All possible interactions
 
@@ -741,4 +760,15 @@ several factors (independent variables).
 ]
 
 .footnote[https://crumplab.github.io/statistics/more-on-factorial-designs.html]
+
+---
+
+# Summary
+
+Did you observe bias in research?
+What is the type of your study?
+What are potential confounders?
+Which Bradford Hill Criteria are you examining and how?
+What is the Design of your experiment?
+
 

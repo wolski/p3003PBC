@@ -18,8 +18,8 @@ editor_options:
 vignette: >
   %\VignetteIndexEntry{Quantitative Proteomics - Service} 
   %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
   
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 class: fullscreen, inverse, top, center, text-black
@@ -154,7 +154,7 @@ layout: false
 ---
 # Sample size estimation report
 
-- There is an equivalance between linear models and the t.test </br>
+- There is an equivalence between linear models and the t.test </br>
   Therefore, we use the sample size estimation method `power.t.test`.
 
 ---

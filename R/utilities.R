@@ -4,12 +4,13 @@
 sample_stats <- function(N_obs = 12, dist1, dist2, samples = 100, trafo = identity){
 
 
-  res_p <- matrix(nrow=samples, ncol=4)
-  colnames(res_p) <- c("our","coin","t.test","asymp.test")
+  res_p <- matrix(nrow = samples, ncol = 3)
+  colnames(res_p) <- c("coin","t.test","asymp.test")
   means <- NULL
   h_0_norm <- NULL
   t_obs <- NULL
   for (i in 1:samples) {
+    message(i)
     sample <- data.frame(intensity = c(trafo(dist1(N_obs/2)), trafo(dist2(N_obs/2))),
                          treatment = c(rep("A", N_obs/2), rep("B", N_obs/2)), stringsAsFactors = TRUE)
 
@@ -23,16 +24,16 @@ sample_stats <- function(N_obs = 12, dist1, dist2, samples = 100, trafo = identi
       return(our)
     }
 
-    our <- mrand(N_obs, sample)
+    #our <- mrand(N_obs, sample)
 
-    resindtest <- coin::independence_test(intensity ~ treatment, data = sample ,distribution = coin::exact())
+    resindtest <- coin::independence_test(intensity ~ treatment, data = sample ,distribution = "approximate")
     coin <- coin::pvalue(resindtest)
-    t.test <- t.test(intensity~ treatment, data = sample)$p.value
-    asymp.test <- asympTest::asymp.test(intensity~ treatment, data = sample)$p.value
+    t.test <- t.test(intensity ~ treatment, data = sample)$p.value
+    asymp.test <- asympTest::asymp.test(intensity ~ treatment, data = sample)$p.value
 
-    res_p[i,] <- c(our, coin, t.test, asymp.test)
+    res_p[i,] <- c( coin, t.test, asymp.test)
   }
-  return(list(res_p = res_p, sample=sample , means=means, h_0_norm = h_0_norm, t_obs =t_obs))
+  return(list(res_p = res_p, sample = sample , means = means, h_0_norm = h_0_norm, t_obs = t_obs))
 }
 
 

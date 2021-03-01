@@ -55,11 +55,27 @@ library(tidyverse)
 ---
 # Overview
 
+- Traditional vs OMICS hypothesis testing
 
 - Where does multiplicity arise
-- What is Family Wise Error Rate (RWER)
+- What is Family Wise Error Rate (FWER)
+
 - What is FDR
-- How to control FWER and FDR
+
+---
+
+# Traditional vs OMICS hypothesis testing
+
+## Testing hypothesis for a single observation
+
+- Does diet impact weight of person
+- Is treatment preventing infection with COVID?
+- Does treatment changes the abundance of a specific protein?
+- Does the proteome of the muscle tissue and the liver tissue differ?
+
+## OMICS experiments
+- Which of the many proteins are differentially expressed because of treatment?
+- Which of the many groups of proteins are differentially expressed because of treatment?
 
 ---
 layout: false
@@ -154,21 +170,14 @@ What is the problem of this approach?
 - Hypothesis that Arieans are good dieters was suggested by the fact that it gave an *apparently* significant result.
 - By increasing the number of tests you increase the chance of false positive results (type I error).
 
+---
+exclude: true
 
 - Data vs. Hypothesis driven research. 
   - Data driven use exploratory and descriptive tools to generate hypothesis.
   - Hypothesis driven uses tests.
   - Large differences how you would report those results.
 
----
-
-# Thank you
-
-.img-right[
-![](../inst/images/JellyBeans_significant.png)
-]
-
-.footnote[https://xkcd.com/882/]
 
 ---
 
@@ -183,6 +192,11 @@ What is the problem of this approach?
 - __Interim Analysis__
   - analyse the data from a trial _periodically_ as it becomes available
   - Solution: adjust p-values
+--
+
+- __Multiple Regression__
+  - regression analysis involving many explanatory variables
+  - Solution: Use background knowledge to suggest possible models, include only few interaction terms, adjust p-values. 
 
 ---
 
@@ -191,23 +205,38 @@ What is the problem of this approach?
 - __Repeated measures__
   - e.g. protein abundance at intervals of 1, 3, 6, 12 and 24 hours after ingestion of a drug. <br/>
   - Solution: 
-      - two-sample t-tests at each time point in sequence, then  adjust p.value
+      - two-sample t-tests at each time point in sequence, e.g (3 vs 1, 6 vs 3 etc.) then  adjust p.value
       - use summary measure (e.g. fit line and test line coefficients)
 --
-
 - __Subgroup comparison__
   - Samples are subdivided on baseline factors : gender, age-groups, sign of zodiac
   - Solution : 
       - adjust p-values 
       - ANOVA analysis to test factors
+  
+.footnote[Example : 50 Control samples, 50 Treatment, no significant result. Split data into female and male, and young and old group. Four tests, instead of one and maybe one is significant.]
+
 
 ---
 
-# Where does multiplicity arise
+# Types of error when testing hypothesis
 
-- __Multiple Regression__
-  - regression analysis involving many explanatory variables
-  - Solution: Use background knowledge to suggest possible models, include only few interaction terms, adjust p-values. 
+A __type I error__ (false positive) occurs when <br/> the null hypothesis (H0) is true, but is rejected.<br/> 
+The _type I error rate_ or __significance level__ (p-Value)<br/> is the probability of rejecting the<br/> 
+null hypothesis given that it is true.
+
+
+A __type II error__ (false negative) occurs when <br/> the null hypothesis
+is false,<br/> but erroneously fails to be rejected. <br/>
+The _the type II error rate_ is denoted by the Greek letter $\beta$<br/>
+and is related to the __power of a test__ (which equals $1−\beta$).
+
+For a given test, the only way to reduce both error rates<br/> 
+is to __increase the sample size__, and this may not be feasible.
+
+.img-right[
+![](../inst/images/hl_nullhypo_errors.png)
+]
 
 ---
 
@@ -226,11 +255,9 @@ The Bonferroni correction compensates for that increase by testing each individu
 
 $$k=20;~ \alpha = 0.05;~~~~~~~\epsilon = 0.05/20 = 0.0025$$
 
-
 Bonferroni adjustments are typically very conservative (it assumes that the tests are independent - however they are frequently correlated) and more complex methods are usually used.
 
-- R function `p.adjust` transforms the p-values instead transforming the threshold.
-- see also R package `multcomp`
+- R function `p.adjust` transforms the p-values (makes them larger) instead transforming the threshold.
 
 .footnote[wikipedia, Medical Statistics - Sheffield University 2018] 
 
@@ -254,11 +281,12 @@ Solving for $\alpha$ gives $$\epsilon \approx \alpha/k$$ or exact $$\epsilon = 1
 .footnote[http://genomicsclass.github.io/book/pages/multiple_testing.html]
 
 ---
+exclude: true
 
-# P-value adjustment - package `multcomp`
+# FWER control using package `multcomp`
 
 .left-code[
-Model with NO interactions
+Model with NO interactions.
 
 ```{r fittingswiss}
 #help(swiss) #<<
@@ -288,17 +316,26 @@ knitr::kable(comp, format = "html", caption = "compare p.value and adjusted p.va
 
 ---
 
-# Multiplicity conclusion (FWER)
+# FWER - Conclusion
 
-Multiplicity adjustment, controlling the FWER, will demand a *unrealistically
+Controlling the FWER, will demand a *unrealistically
 small p-value*. 
 
-In practice there are better ways of overcoming the problem
-of multiplicity: 
-- limit the number of tests. Concentrating on the more important objectives, what is causal relation.
+- Limit the number of tests.
 - Summarize your measurements e.g. fit time courses
-- in the discovery phase use _False Discovery Rate_ instead of _Family Wise Error Rates_.
-- If you want to examine many factors, use exploratory or descriptive data analysis (tabulating, dimensionality reduction, clustering).
+- Use package `multcomp` to correct p-values
+  - takes correlation among observations into account
+  - uses asymptotic properties, not suited if sample sizes are small.
+
+---
+exclude: true
+
+
+- In the discovery phase use _False Discovery Rate_ instead of _Family Wise Error Rates_.
+- If you want to examine many factors, subgroups then:
+  - use exploratory or descriptive data analysis : tabulating, dimensionality reduction, clustering.
+  - Use GSEA or ORA analysis when contrasting subgroups.
+  - Do not report unadjusted p-values for proteins.
 
 ---
 
@@ -456,6 +493,9 @@ abline(0,i/m*alpha, col=2)
 
 
 ---
+exclude: true
+
+
 # FDR - Benjamini Hochberg - procedure
 .right-code[
 ```{r BHRcode}
@@ -506,20 +546,45 @@ distrubutions you might encounter when analysing <br/>
 data and how to treat them.
 
 .img-right[
-![](../inst/images/pValueDistribution/bimodal_pvalues-1.png)
-]
+![](../inst/images/pValueDistribution/bimodal_pvalues-1.png)]
+
+
 ---
 
 # Conclusions
 
-- Limit the number of hypothesis you test with the data
+- In case of multiplicity do not report unadjusted p-value.
 - _Family Wise Error Rates (FWER)_  
   - use to adjust for number of tests for single protein
   - Typical threshold for FWER are $0.05$ or $0.01$
 - _False Discovery Rate (FDR)_ 
-  - controls error rates when selecting proteins for follow up in discovery phase
+  - controls error rates when selecting proteins for follow up (OMICS experiments)
   - FDR's of $0.1$ or even $0.5$ are acceptable.
+- If you need a FDR estimate Limit the number of traditional hypothesis you test.
 
+
+---
+
+# Conclusions
+
+If you do subgroup analysis use<br/> __exploratory__ or __descriptive__ data analysis:   
+  - tabulating (e.g. venn diagrams) 
+  - dimensionality reduction (e.g, PCA)
+  - clustering of samples and proteins
+  (e.g, time series clustering)
+  - Use GSEA or ORA analysis to contrast subgroups.
+  - Do not over-interpret your findings <br/> by report FDR's (they are biased).
+  
+
+---
+
+# Thank you
+
+.img-small[
+![](../inst/images/JellyBeans_significant.png)
+]
+
+.footnote[https://xkcd.com/882/]
 
 
 

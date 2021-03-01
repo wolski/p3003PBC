@@ -1,0 +1,451 @@
+---
+title: "Sample Size Estimation"
+subtitle: "FGCZ Protein Informatics Training"
+author: "Witold Wolski wew@fgcz.ethz.ch"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "metropolis", "metropolis-fonts", "trug-ggplot2.css"]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "%current%"
+editor_options:
+  chunk_output_type: console
+vignette: >
+  %\VignetteIndexEntry{Sample Size Estimation} 
+  %\VignetteEncoding{UTF-8}
+  
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+class: fullscreen, inverse, top, center, text-black
+background-image: url("../inst/images/Comfortable_Chair.jpg")
+
+.font150[**Sample size estimation**]
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.width = 4.25,
+  fig.height = 3.5,
+  fig.retina = 3,
+  message = FALSE,
+  warning = FALSE,
+  cache = TRUE,
+  autodep = TRUE,
+  hiline = TRUE
+)
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo <- FALSE
+    options$out.height <- "99%"
+    options$fig.width <- 16
+    options$fig.height <- 8
+  }
+  options
+})
+hook_source <- knitr::knit_hooks$get('source')
+knitr::knit_hooks$set(source = function(x, options) {
+  if (!is.null(options$hiline) && options$hiline) {
+    x <- stringr::str_replace(x, "^ ?(.+)\\s?#<<", "*\\1")
+  }
+  hook_source(x, options)
+})
+options(htmltools.dir.version = FALSE, width = 90)
+as_table <- function(...) knitr::kable(..., format = 'html', digits = 3)
+
+library(tidyverse)
+```
+
+---
+# Overview
+
+- Workflow LFQ analysis at the FGCZ
+- Kickoff meeting
+- Sample size estimation (the `power.t.test` function)
+- Sample size estimation example (hands on)
+
+---
+
+# The LFQ workflow - bioinformatics part
+
+- __kickoff meeting__ - bioinformatics part
+  - [Agenda](https://wolski.github.io/prolfqua/articles/Auxiliary_ExDesignSurvey.html)
+- __QC experiment__
+  - to determine within group variability
+  - _Sample size QC_
+  - Fix sample sizes
+- __Main experiment__
+  - Data Analysis and _result delivery_ including linear modelling and ORA and GSEA analysis.
+  - meeting to discuss results
+  
+  
+
+---
+
+# Kickoff meeting - bioinformatics
+
+- Aim
+  - Improve quality of services
+  - Get all the information we need to perform analysis
+  - Give _statistical_ guidance
+  - Ensure reproducibility
+- Use of an Agenda
+  - helps to prepare for the meeting
+  - streamlines discussion 
+  - focuses on points relevant to the data analysis
+  - Keep meeting short (15-30 minutes)
+  - Ensure reproducibility
+
+.img-right[
+![](../inst/images/Meeting_Agenda_p1.png)
+]
+
+.footnote[https://wolski.github.io/prolfqua/articles/Auxiliary_ExDesignSurvey.html]
+
+---
+layout: false
+
+# Kickoff meeting - bioinformatics
+
+## Document
+
+- which protein database to use
+- which and how many samples to use for the QC
+- collect all the parameters for sample size estimation
+- specify the design of the main experiment <br/>
+and the hypothesis to be tested
+- document all the names of the factors and factor levels
+
+
+.img-right[
+![](../inst/images/Meeting_Agenda_p2.png)
+]
+
+.footnote[https://wolski.github.io/prolfqua/articles/Auxiliary_ExDesignSurvey.html]
+
+---
+layout: false
+
+# Sample size estimation
+
+- Hand in 4 samples of the same condition (ideally of condition with highest variability).
+- Estimate the variance of all measured protein.
+- Compute sample sizes for main experiment given:
+  - biologically relevant effect size
+  - power of the test
+  - observed variance
+  - size of test
+
+
+
+---
+
+# Types of error when testing hypothesis
+
+A __type I error__ (false positive) occurs when <br/> the null hypothesis (H0) is true, but is rejected.<br/> 
+The _type I error rate_ or __significance level__ (p-Value)<br/> is the probability of rejecting the<br/> 
+null hypothesis given that it is true.
+
+
+A __type II error__ (false negative) occurs when <br/> the null hypothesis
+is false,<br/> but erroneously fails to be rejected. <br/>
+The _the type II error rate_ is denoted by the Greek letter $\beta$<br/>
+and is related to the __power of a test__ (which equals $1−\beta$).
+
+For a given test, the only way to reduce both error rates<br/> 
+is to __increase the sample size__, and this may not be feasible.
+
+.img-right[
+![](../inst/images/hl_nullhypo_errors.png)
+]
+
+
+
+---
+# Sample size estimation
+
+- Because of the equivalence between linear models and the t-test </br>
+  we use the sample size estimation method `power.t.test`.
+
+---
+layout: false
+
+# Sample size estimation - esitmating difference $d$
+
+
+What __biologically relevant difference__ 
+can be detected with a two-sample t-test using 
+a significance level of $0.05$ and a power of $0.8$ 
+given a standard deviation of $0.5$ and group size of $10$?
+
+.remark-code[
+```{r}
+power.t.test(n = 10, sd = 0.5, power = 0.8, sig.level = 0.05)
+```
+]
+
+
+---
+
+# Sample size estimation - estimating power $d$
+
+__Power is the probability of rejecting the null hypothesis when, in fact, it is false.__<br/>
+What is __the power__ of the two-sample t-test using 
+a significance level of $0.05$ if we want to detect a biologically relevant difference of $0.59$
+given a standard deviation of $0.5$ and group size of $10$ samples?
+
+
+.remark-code[
+```{r}
+power.t.test(delta = 0.59, n = 10, sd = 0.5, sig.level = 0.05)
+```
+]
+
+.footnote[ Why `delta = 0.59`? It is log2(FC), and  `2^(0.59) = 1.505247`. ]
+
+---
+
+# Sample size estimation
+
+What is __the sample size__ of the two-sample t-test using 
+a significance level of $0.05$ if we want to detect a biologically relevant difference of $0.59$
+given a standard deviation of $0.5$ and a power of $0.8$?
+
+.remark-code[
+```{r}
+power.t.test(delta = 0.59, sd = 0.5, sig.level = 0.05, power = 0.8)
+
+```
+]
+
+
+---
+
+# Sample size estimation - error of
+
+
+.footnote[We simulate 1000 samples of size 4 from normal distribution and determine the standard deviation of each sample. For each standard deviation we computed the sample size.]
+
+
+.left-code[
+```{r sampleSize_error, eval=FALSE}
+sd <- sapply(1:1000,
+             function(x){
+               sd(rnorm(4,0,1))
+               })
+tmp <- sapply(sd,
+              function(x){
+                power.t.test(d = 0.59, #<<
+                             sd = x, #<<
+                             sig.level = 0.05,
+                             power = 0.8)$n})
+par(mfrow = c(2,1))
+hist(sd)
+plot(table(ceiling(tmp)),
+     ylab="#", xlab="sample size estimate")
+```
+]
+
+.right-plot[
+```{r sampleSize_error-out , ref.label="sampleSize_error", echo=FALSE, fig.width=6, fig.height=6}
+```
+]
+
+
+---
+
+# Sample size estimation - error of
+
+For a protein your uncertainty of the standard deviation and the required sample size is large when you measure 4 samples to estimate the $sd$.
+
+
+In an LFQ experiment you measure thousands of proteins and determine their variances.
+The error of the median standard deviation will be small and therefore the sample size estimate should be OK.
+
+```{r}
+power.t.test(sd = median(sd), d = 0.59, sig.level = 0.05, power = 0.8)$n
+```
+
+We assume that the true variance of the proteins is the same.<br/>
+Proteins will have __different__ true but unknown underlying variances.
+
+
+---
+
+exclude: true
+# Sample size estimation - standard error of median
+
+The standard error of the median is:
+
+$$
+SE(median) = (\pi/2) \cdot SE(\bar{y})
+$$ 
+
+for normal $y$, with $SE(\bar{y})$ is the standard error of the mean, i.e.  
+
+$$
+SE(\bar{y}) = \sqrt{\frac{var(y)}{n}}
+$$
+.footnote[more details about the [median](https://en.wikipedia.org/wiki/Median)]
+
+---
+
+# Calculating Observed Power
+
+You run a test and you have the __estimates__ of the $sd$, $p.value$ and fold change $delta$.<br/>
+We could compute the power by taking the _estimates_ obtained by the test.
+
+.remark-code[
+```{r, eval = FALSE}
+power.t.test(delta = estimated_fc, n = nr_samples_per_group,
+             sd = esitmated_sd,  sig.level = p.value)
+```
+]
+
+Some proteomics software is doing it (e.g. Progenesis).<br/>
+How good might this power estimate be?<br/>
+--
+How _good_ was the sample size estimate given an $sd$ estimate of a single protein?<br/>
+--
+[Calculating Observed Power Is Just Transforming Noise](https://lesslikely.com/statistics/observed-power-magic/)<br/>
+--
+How you report the power of your test?</br> 
+--
+State the parameters of the sample size estimation for your experiment (which includes power).
+
+ 
+---
+
+# Sample size estimation in practice
+
+- Data preprocessing
+- Checking assumptions
+- Sample size estimation using `prolfqua`
+
+https://wolski.github.io/prolfqua/articles/QualityControlAndSampleSizeEstimation.html
+
+
+---
+
+# Data preprocessing - Normalizing Intensities
+
+- log2 transform the data
+- apply robust z-transformation
+$$I^n_i = \frac{I^t_i - med(I^t_i)}{mad(I^t_i)} \cdot \sum_{i=1}^N mad(I^t_i)/N$$
+All samples have the same deviation $$mad(I^t_1) = mad(I^t_2)$$ equal to the average original variance of all samples.
+
+.footnote[More methods fo data normalization are discussed here: [Elo _et al._](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5862339/)]
+
+---
+
+# Data preprocessing - Protein Intensities
+
+Since we want the sample size estimates on _protein level_ we need to infer the protein intensity from peptide intensities.
+
+There are many methods to infer the protein intensity
+- aggregate all peptides (e.g. MaxQuant proteinGroups.txt)
+- aggregate not more than the top n peptides (e.g. top 3).
+- tukey median polish - a two-way decomposition of a 2D matrix.
+
+$$y_{ij} = b_0 + c_i + d_j + \epsilon_{ij}$$
+where $b_0$ - global intercept, $c_i, d_j$ denote the column and row effects, $\epsilon_{ij}$ - error.
+
+It is also used in the [MSstats](http://msstats.org/) package.
+
+---
+
+# Data preprocessing -  Protein Intensities
+
+.footnote[Tukey median polish example]
+
+.left-code[
+```{r echo=FALSE}
+peptides_hemo <- rbind(c(14,15,14),
+                  c( 7, 4, 7),
+                  c( 8, 2,10),
+                  c(15, 9,10),
+                  c( 0, 2, 0))
+dimnames(peptides_hemo) <-
+  list(c("MVLSPADK", "TNVK",
+         "AAWGK", "VGAHAGEYGAEALER",
+         "MFLSFPTTK"),
+       c("S1", "S2" ,"S3"))
+```
+
+```{r}
+peptides_hemo
+med.d <- medpolish(peptides_hemo, #<<
+                   trace.iter = FALSE)
+med.d$overall + med.d$col
+```
+]
+
+.pull-right[
+```{r}
+as.matrix(med.d$overall + med.d$row)
+```
+]
+
+
+---
+layout: false
+
+# Sample size estimation report
+
+- check if there are no technical problems
+- check if assumptions for data normalization are met.
+
+.img-right[
+![](../inst/images/QC_SD_Missigness_1.png)
+]
+--
+
+Visualize the distribution of standard deviation</br> of all proteins
+using the density function and<br/> the empirical cumulative density function (ecdf)
+  
+.img-right[
+![](../inst/images/QC_SD_distribution_function.png)
+]
+
+--
+
+.img-right[
+![](../inst/images/QC_SD_ECDF.png)
+]
+
+--
+
+Sample size estimates for parameters<br/> specified in protocol
+  - _power_ 0.8
+  - _significance level_ 0.05
+  - _delta_ $0.59, 1, 2$
+  - and standard deviation taken from proteins
+
+--
+
+
+.img-right[
+![](../inst/images/QC_SD_SampleSize_Estimates.png)
+]
+
+
+---
+
+# Conclusion
+
+- This sample size calculation ignores multiple testing problem
+- Works if _biological variability_ __>>__ _biochemical + technical variability_
+- Works if your observations are independent and identically distributed (and normally in addition).
+- To understand sources of variance measure technical and biochemical and biological replicates.
+  - technical coefficient of variation (CV)
+  - biochemical CV
+  - biological CV
+- Sample size calculation is based on the standard deviation estimate (sd)
+  - sd estimate for single protein have a large error
+  - small error for the median (sd) of all proteins
+- Calculating Observed Power Is Just Transforming Noise
+
