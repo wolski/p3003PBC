@@ -466,6 +466,7 @@ Sample size estimates for parameters<br/> specified in protocol
 ]
 
 ---
+layout: false
 
 # prolfqua
 
@@ -482,29 +483,35 @@ annotation <- readxl::read_xlsx(inputAnnotation)
 annotation$experiment = "p2691"
 head(annotation)
 
-startdata <- inner_join(annotation, startdata, by= "raw.file")
+startdata <- dplyr::inner_join(annotation, startdata, by= "raw.file")
+startdata <- startdata %>%
+  dplyr::select(c("raw.file", "Run_ID",
+                  "condition", "majority.protein.ids",
+                  "mq.protein.intensity" )) %>%
+  head(n = 4)
 
 ```
 
-
+.left-code[
 Hierarchy of the MS data:
 - protein "majority.protein.ids"
 - peptide
 - modified peptide
 - precursor
 
-Factors of analysis :
+Factors of analysis (explanatory variables):
 - condition
 - Run_ID
 
 Response:
 - Intensity "mq.protein.intensity" 
+]
 
-
+.right-code[
 ```{r}
-startdata %>% dplyr::select(c("raw.file", "Run_ID", "condition", "majority.protein.ids","mq.protein.intensity" )) %>% head(n=3)
+str(startdata)
 ```
-
+]
 
 .footnote[https://wolski.github.io/prolfqua, https://github.com/wolski/prolfqua]
 
