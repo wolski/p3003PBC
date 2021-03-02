@@ -17,6 +17,8 @@ body {
   font-size: 25px;
 }
 
+
+
 .remark-code {
   font-size: 0.8em;
 }
@@ -163,4 +165,8 @@ body {
 .top-right {
   top: 10%;
   right: 5%;
+}
+
+.my-one-page-font {
+  font-size: 20px;
 }

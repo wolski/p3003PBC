@@ -444,6 +444,7 @@ $k \in {1:t}$ (replicate).
 and where: 
 $$\epsilon_{ijk} \propto N(0, s_e)$$
 R formula `lm(normalizedIntensity ~ Condition + Batch + Condition:Batch, data = proteinData)`
+
 ---
 
 # Yeast analysis - both batches - model 1
@@ -459,6 +460,8 @@ $$
 \textrm{fc}_{interaction} &= \textrm{fc}_{glucose:p2370 - ethanol:p2370} - \textrm{fc}_{glucose:p2691 - ethanol:p2691}\\
 \end{aligned}
 $$
+
+
 
 ---
 
@@ -493,16 +496,19 @@ R formula `lmer(normalizedIntensity ~ Condition + (1|Batch), data = proteinData)
 
 ---
 
-# Outlook
+# Other Software
 
 Other software for modelling fold changes used in Proteomics:
 
+Using linear models
 - __limma__ - Ritchie, Smyth at al. 2015 PMID: 25605792
 - __MSStats__ https://www.bioconductor.org/packages/release/bioc/html/MSstats.html 
 - __ROPECA__ Suomi and Elo 2017 PMID: 28724900
 - __MSqRob__ - Geomine, Gevaert and Clement 2016 PMID: 26566788
-- __mapDIA__ - Teo, Kim et al. 2016 PMID: PMID: 26381204
 
+Other models
+- __mapDIA__ - Teo, Kim et al. 2016 PMID: PMID: 26381204
+- __tirqler__ - https://github.com/statisticalbiotechnology/triqler
 
 
 ---

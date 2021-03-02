@@ -163,35 +163,31 @@ is to __increase the sample size__, and this may not be feasible.
 ![](../inst/images/hl_nullhypo_errors.png)
 ]
 
-
-
 ---
-# Sample size estimation
+class: my-one-page-font
 
-- Because of the equivalence between linear models and the t-test </br>
-  we use the sample size estimation method `power.t.test`.
+# Two sample t-test
 
----
-layout: false
+Test statistic $$T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$$
+Null distribution $$T|H_{null} \sim T(0,1,df = N-1)$$
 
-# Sample size estimation - esitmating difference $d$
+where delta = $\bar{X}_2 - \bar{X}_1$, sd - standard deviation, df - depends on sample size
 
+Compute the power of the one- or two- sample t-test, or determine parameters to obtain a target power.
 
-What __biologically relevant difference__ 
-can be detected with a two-sample t-test using 
-a significance level of $0.05$ and a power of $0.8$ 
-given a standard deviation of $0.5$ and group size of $10$?
-
-.remark-code[
-```{r}
-power.t.test(n = 10, sd = 0.5, power = 0.8, sig.level = 0.05)
+```{r, eval = FALSE}
+power.t.test(n = NULL, delta = NULL, sd = 1, sig.level = 0.05,
+             power = NULL,
+             type = c("two.sample", "one.sample", "paired"),
+             alternative = c("two.sided", "one.sided"),
+             strict = FALSE, tol = .Machine$double.eps^0.25)
 ```
-]
 
+Relates the type-2 error to the other variables.
 
 ---
 
-# Sample size estimation - estimating power $d$
+# `power.t.test` - estimating power
 
 __Power is the probability of rejecting the null hypothesis when, in fact, it is false.__<br/>
 What is __the power__ of the two-sample t-test using 
@@ -207,6 +203,35 @@ power.t.test(delta = 0.59, n = 10, sd = 0.5, sig.level = 0.05)
 
 .footnote[ Why `delta = 0.59`? It is log2(FC), and  `2^(0.59) = 1.505247`. ]
 
+
+---
+layout: false
+
+# `power.t.test` - esitmating difference $d$
+
+
+What __biologically relevant difference__ (or greater)
+ can be detected with a two-sample t-test using 
+a significance level of $0.05$ and a power of $0.8$ 
+given a standard deviation of $0.5$ and group size of $10$?
+
+.remark-code[
+```{r}
+res <- power.t.test(n = 10, sd = 0.5, power = 0.8, sig.level = 0.05)
+res$delta
+2^res$delta
+```
+]
+
+$$
+\begin{aligned}
+log_2(x) = y&~~~\textrm{exactly if} ~~~ 2^y = x\\
+2^d &= I_1/I_2\\
+log_2(I_1/I_2) &= log2(I_1) - log2(I_2) = d\\
+\end{aligned}
+$$
+
+
 ---
 
 # Sample size estimation
@@ -217,9 +242,14 @@ given a standard deviation of $0.5$ and a power of $0.8$?
 
 .remark-code[
 ```{r}
-power.t.test(delta = 0.59, sd = 0.5, sig.level = 0.05, power = 0.8)
-
+res <- power.t.test(delta = 0.59, sd = 0.5, sig.level = 0.05, power = 0.8)
+res$n
+ceiling(res$n)
 ```
+
+n - number of observations (per group)
+
+
 ]
 
 
@@ -307,7 +337,7 @@ power.t.test(delta = estimated_fc, n = nr_samples_per_group,
 ]
 
 Some proteomics software is doing it (e.g. Progenesis).<br/>
-How good might this power estimate be?<br/>
+How good might this power __estimate__ be?<br/>
 --
 How _good_ was the sample size estimate given an $sd$ estimate of a single protein?<br/>
 --
@@ -320,7 +350,7 @@ State the parameters of the sample size estimation for your experiment (which in
  
 ---
 
-# Sample size estimation in practice
+# Sample size estimation in practice - hands on.
 
 - Data preprocessing
 - Checking assumptions
@@ -334,9 +364,9 @@ https://wolski.github.io/prolfqua/articles/QualityControlAndSampleSizeEstimation
 # Data preprocessing - Normalizing Intensities
 
 - log2 transform the data
-- apply robust z-transformation
+- apply robust z-transformation (to remove systematic differences among samples)
 $$I^n_i = \frac{I^t_i - med(I^t_i)}{mad(I^t_i)} \cdot \sum_{i=1}^N mad(I^t_i)/N$$
-All samples have the same deviation $$mad(I^t_1) = mad(I^t_2)$$ equal to the average original variance of all samples.
+After z-transform samples have the same deviation $$mad(I^t_1) = mad(I^t_2)$$ equal to the average original variance of all samples.
 
 .footnote[More methods fo data normalization are discussed here: [Elo _et al._](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5862339/)]
 
@@ -354,7 +384,7 @@ There are many methods to infer the protein intensity
 $$y_{ij} = b_0 + c_i + d_j + \epsilon_{ij}$$
 where $b_0$ - global intercept, $c_i, d_j$ denote the column and row effects, $\epsilon_{ij}$ - error.
 
-It is also used in the [MSstats](http://msstats.org/) package.
+.footnote[Tukeys median polish used by [MSstats](http://msstats.org/) package ]
 
 ---
 
@@ -380,13 +410,16 @@ dimnames(peptides_hemo) <-
 peptides_hemo
 med.d <- medpolish(peptides_hemo, #<<
                    trace.iter = FALSE)
-med.d$overall + med.d$col
+
+prot <- med.d$overall + med.d$col
+prot
 ```
 ]
 
-.pull-right[
+.right-code[
 ```{r}
-as.matrix(med.d$overall + med.d$row)
+matplot( t(peptides_hemo) , type="l")
+lines(1:3, prot, col = 2, lwd = 3, lty = 2)
 ```
 ]
 
@@ -432,18 +465,102 @@ Sample size estimates for parameters<br/> specified in protocol
 ![](../inst/images/QC_SD_SampleSize_Estimates.png)
 ]
 
+---
+
+# prolfqua
+
+Works with data in long format.
+
+```{r LoadDataAndConfigure, include = FALSE}
+datadir <- file.path(find.package("prolfquaData") , "quantdata")
+inputMQfile <-  file.path(datadir, "MAXQuant_ComboCourse_p2691_March_2018_WU183012.zip")
+inputAnnotation <- file.path(datadir, "annotation_ComboCourse_p2691_March_2018_WU183012.xlsx")
+
+startdata <- prolfqua::tidyMQ_ProteinGroups(inputMQfile)
+head(startdata)
+annotation <- readxl::read_xlsx(inputAnnotation)
+annotation$experiment = "p2691"
+head(annotation)
+
+startdata <- inner_join(annotation, startdata, by= "raw.file")
+
+```
+
+
+Hierarchy of the MS data:
+- protein "majority.protein.ids"
+- peptide
+- modified peptide
+- precursor
+
+Factors of analysis :
+- condition
+- Run_ID
+
+Response:
+- Intensity "mq.protein.intensity" 
+
+
+```{r}
+startdata %>% dplyr::select(c("raw.file", "Run_ID", "condition", "majority.protein.ids","mq.protein.intensity" )) %>% head(n=3)
+```
+
+
+.footnote[https://wolski.github.io/prolfqua, https://github.com/wolski/prolfqua]
+
+
+
+---
+
+# Conclusion
+
+.footnote[Top - greater standard deviation requires larger sample sizes, Bottom - smaller effect size requires larger sample sizes]
+
+.pull-left[
+For each statistical test,<br/> 
+there exists a unique relation between:
+
+- desired smallest detectable effect size $\mu$
+- sample variance $\sigma^2$
+- sample size $N$
+- critical p-value $p_0$
+- statistical power
+
+]
+
+.right-plot[
+```{r echo=FALSE}
+sd <- seq(0.5, 2, by = .001)
+dd <- power.t.test(delta = 2, sd = 1, sig.level = 0.05, power = 0.8)
+powersd <- function(sd, delta = 1, sig.level = 0.05, power = 0.8){
+  ceiling(power.t.test(delta = 2, sd = sd, sig.level = sig.level, power = power)$n)
+}
+
+ressd <- sapply(sd, powersd)
+power_delta <- function(delta, sd = 1, sig.level = 0.05, power = 0.8){
+  ceiling(power.t.test(delta = delta, sd = sd, sig.level = sig.level, power = power)$n)
+}
+
+delta <- seq(0.5,6, by = 0.001)
+resdelta <- sapply(delta, power_delta)
+plot(sd, ressd, ylab = "N", type = "l", main = "mu=1, p=0.05, power = 0.8")
+plot(delta, resdelta, xlab = "mu", ylab = "N", type = "l", log = "xy", main = "sd=1, p = 0.05, power = 0.8")
+
+```
+]
+
 
 ---
 
 # Conclusion
 
 - This sample size calculation ignores multiple testing problem
-- Works if _biological variability_ __>>__ _biochemical + technical variability_
 - Works if your observations are independent and identically distributed (and normally in addition).
-- To understand sources of variance measure technical and biochemical and biological replicates.
-  - technical coefficient of variation (CV)
-  - biochemical CV
-  - biological CV
+- Works if _biological variability_ __>>__ _biochemical + technical variability_
+  - To understand sources of variance measure technical and biochemical and biological replicates.
+    - technical coefficient of variation (CV)
+    - biochemical CV
+    - biological CV
 - Sample size calculation is based on the standard deviation estimate (sd)
   - sd estimate for single protein have a large error
   - small error for the median (sd) of all proteins
