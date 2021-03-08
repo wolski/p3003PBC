@@ -71,7 +71,9 @@ library(tidyverse)
 - How to determine the error of the coefficients, test statistics and p-values
 - What are interactions in linear models
 - Example: Yeast data with batches
-- Protein level vs peptide level modelling
+- limma - Empirical Bayes
+- Benchmarking
+- Conclusions
 
 ---
 # lm intro
@@ -427,7 +429,29 @@ coef(withI)
 # Yeast analysis - batches
 
 - Condition : enthanol and glucose
-- Batch: p2691 (CC 12 to 16 March 2018) and p2370 (March 2017)
+- Batch: p2691 (12 to 16 March 2018) and p2370 (March 2017)
+
+R linear model:
+
+`lm(normalizedIntensity ~ Condition + Batch + Condition:Batch, data = proteinData)`
+
+And we are going to compute the following contrasts ( $\log_2(FC)$ ):
+
+$$
+\begin{aligned}
+\textrm{fc}_{glucose - ethanol}\\
+\textrm{fc}_{p2370- p2691}\\
+\textrm{fc}_{glucose:p2370 - ethanol:p2370}\\
+\textrm{fc}_{glucose:p2691 - ethanol:p2691}\\
+\textrm{fc}_{interaction} &= \textrm{fc}_{glucose:p2370 - ethanol:p2370} - \textrm{fc}_{glucose:p2691 - ethanol:p2691}\\
+\end{aligned}
+$$
+
+
+---
+exclude: true
+
+# Yeast analysis - both batches - model 1
 
 linear model:
 
@@ -443,27 +467,11 @@ $k \in {1:t}$ (replicate).
 
 and where: 
 $$\epsilon_{ijk} \propto N(0, s_e)$$
-R formula `lm(normalizedIntensity ~ Condition + Batch + Condition:Batch, data = proteinData)`
-
----
-
-# Yeast analysis - both batches - model 1
-
-We are going to compute the following protein fold changes:
-
-$$
-\begin{aligned}
-\textrm{fc}_{glucose - ethanol}\\
-\textrm{fc}_{p2370- p2691}\\
-\textrm{fc}_{glucose:p2370 - ethanol:p2370}\\
-\textrm{fc}_{glucose:p2691 - ethanol:p2691}\\
-\textrm{fc}_{interaction} &= \textrm{fc}_{glucose:p2370 - ethanol:p2370} - \textrm{fc}_{glucose:p2691 - ethanol:p2691}\\
-\end{aligned}
-$$
 
 
 
 ---
+exclude: true
 
 # Yeast analysis - both batches - mixed linear model
 
@@ -485,14 +493,202 @@ R formula `lmer(normalizedIntensity ~ Condition + (1|Batch), data = proteinData)
 
 ---
 
+# limma - Empricial Bayes
+
+- In a mass spectrometric LFQ experiment, we measure hundreds of proteins in parallel. 
+- Hence, these measurements are correlated. 
+- Also, the analysis has a parallel structure, and we fit the same linear model to all protein.
+
+
+- Potentially we can transfer information from the measurement of one peptide/protein to the other. 
+- The empirical Bayes approach is used to improve the test statistic to test the null hypothesis $H_0$ : $\beta_{pj} = 0$.
+
+.footnote["Linear models and empirical bayes methods for assessing differential expression in microarray experiments" Gordon K. Smyth]
+
+---
+class: my-one-page-font
+
+# limma - Empirical Bayes
+
+
+Define the moderated t-statistic by:
+
+
+$$
+\begin{aligned}
+\tilde{t}_{pj} = \frac{\hat{\beta}_{pj}}{\tilde{s}_p \sqrt{ v_{pj}}}
+\end{aligned}
+$$
+with $p$ protein index $j$ parameter index, $v$ element of the variance covariance matrix, $\hat\beta$ model parameter, $\tilde s$ posterior standard error.
+
+The posterior values shrink the observed variances towards the prior values with the degree of shrinkage depending on the relative sizes of the observed and prior degrees of freedom.
+
+$$
+\begin{aligned}
+\tilde{s}^2_p = E(\sigma^2|s_p^2) = \frac{d_0s^2_0 + d_ps^2_p}{d_0+d_p} 
+\end{aligned}
+$$
+where $d$ are the degrees of freedom.
+
+This statistic represents a hybrid classical/Bayes approach in which the posterior variance $\$ has been substituted into the classical t-statistic in place of the usual sample variance.
+
+---
+
+# limma - Empirical bayes
+
+.pull-left[
+$$
+\begin{aligned}
+\tilde{s}^2_p = E(\sigma^2|s_p^2) = \frac{d_0s^2_0 + d_ps^2_p}{d_0+d_p} 
+\end{aligned}
+$$
+For $d_p << d_0$, $\tilde s \rightarrow s_0$</br>
+For $d_p >> d_0$, $\tilde s \rightarrow s_p$</br>
+
+$s_0$ is the same for all proteins in and experiment.
+
+What happens with the $correlation(T, d)$ for $d_p \rightarrow 0$ sample sizes?
+Where $T$ is the t-statistics and $d$ is the difference between samples.
+
+Hint: $T \propto d/\tilde{s}$
+
+
+
+]
+
+.right-code[
+```{r}
+d_0 = 4; s2_0 = 2;
+s2_p = 6;
+d_p = 4;
+(d_0*s2_0 + d_p*s2_p)/(d_0 + d_p)
+d_p = 8
+(d_0*s2_0 + d_p*s2_p)/(d_0 + d_p)
+d_p = 12
+(d_0*s2_0 + d_p*s2_p)/(d_0 + d_p)
+d_p = 1
+(d_0*s2_0 + d_p*s2_p)/(d_0 + d_p)
+```
+]
+
+
+---
+
+# Benchmarking
+
+The Ionstar dataset.
+
+.left-code[
+```{r echo = FALSE}
+library(tidyverse)
+x <- c(3,4.5,6,7.5,9)
+x <- data.frame(t(combn(x, 2)))
+colnames(x) <- c("c1","c2")
+x <- x %>% mutate(fc = round(c2/c1,digits=2)) %>% arrange(fc)
+
+prolfqua::table_facade(x, caption = "All possible pairs of E. coli concentrations with the expected fold-changes.")
+
+```
+]
+
+.img-right[
+![](../inst/images/IonstarExp.png)
+
+
+]
+
+.footnote[https://www.pnas.org/content/115/21/E4767]
+
+---
+
+# Benchmarking
+
+```{r confusionMatrix, echo=FALSE}
+table <- data.frame( c("beta != 0", "beta == 0", "Total"), matrix(c("TP","FP","R","FN","TN","","P","N","m"), ncol = 3, byrow = T))
+colnames(table) <- c("Prediction \\ Truth","E.coli", "H.sapiens", "Total")
+prolfqua::table_facade(table, caption = "Confusion matrix, TP - true positive, FP - false positive, FN - false negative, P - all positive cases (all E. coli proteins), N - all negative cases (all H. sapiens proteins), m- all proteins.")
+```
+
+$$
+\begin{aligned}
+TPR &= \frac{TP}{TP+FN} = \frac{TP}{P}\\
+FPR &= \frac{FP}{FP+TN} = \frac{FP}{N}\\
+FDP &= \frac{FP}{TP + FP} = \frac{FP}{R}\\
+\end{aligned}
+$$
+
+---
+
+# Benchmarking
+
+
+
+
+.img-left[
+![](../inst/images/IonStar_Statistics_brms_model.png)
+
+]
+
+
+
+```{r iluFDR, eval=FALSE, echo=FALSE}
+
+x <- seq(0,10,by = 0.1)
+y1 <- dnorm(x,mean = 3, sd = 1)
+y2 <- dnorm(x,mean = 5, sd = 1)
+plot(x, y1, type = "l", xlab = 'score', col="blue")
+lines(x, y2, col = "red")
+abline(v = 3.5, col = 1)
+text(c(2,4.2) , y = c(.2,.2), labels = c("TN","FP"), col = "blue")
+text(c(3,7) , y = c(.1,.1), labels = c("FN","TP"), col = "red")
+legend("topright", legend = c("H.Sapiens", "E.Coli"), lty = c(1,1), col = c("red","blue"))
+
+```
+
+
+.img-right[
+```{r iluFDR-out, ref.label="iluFDR", echo=FALSE,  out.width="100%"}
+```
+]
+
+.footnote[Compute the confusion matrix for each value of the score.]
+---
+
+
+# Benchmarking
+
+- By plotting the $TPR$ versus the $FPR$ we obtain the receiver operator characteristic curve (ROC curve). The area under the curve (AUC) or partial areas under the curve (pAUC), at various values of the $FPR$, are further measures of performance.
+
+- A further question we can examine using the benchmark data is, how well the false discovery estimate (FDR) obtained to from the statistical model matches the false discovery proportion (FDP). The FDR is the expected value of the false discovery proportion. Ideally, the FDR should be an unbiased estimate of the $FDP$. By plotting the FDR gainst the FDP we can asses visually if these assumptions are met. 
+
+
+---
+
+# Benchmarking
+
+.img-left[
+![](../inst/images/ROC_Curves.png)
+ROC curves]
+
+.img-right[
+![](../inst/images/FDR_vs_FDP.png)
+FDR vs FDP curves]
+
+
+
+---
+
 # Conclusions
 
-- Linear models allow for
-  - calculation of fold changes using contrasts
-  - and of differences between fold changes (interactions).
-- If you model more than two conditions:
-  - Problems with missing data become more prominent.
-  - No observations in one of the conditions.
+- Linear models allow to
+  - estimate fold changes between condition using contrasts
+  - but also test differences of fold changes (interactions).
+  - run ANOVA analysis
+- If you model more than two conditions
+  - Problems because of missing data are more prominent <br/>
+   (no observations in one of the conditions.)
+- p-value moderation improves the protein/peptide variance estimates, the t-statistics and p-values
+- Benchmark data is used to test analysis pipelines
 
 ---
 
@@ -548,5 +744,4 @@ $$\textrm{fc}_{glucose - ethanol} = \alpha_{glucose} - \alpha_{ethanol}$$
 
 .footnote[model specification adapted from Geomine, Gevaert and Clement 2016 PMID: 26566788]
 
----
 

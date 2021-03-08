@@ -765,10 +765,10 @@ exclude: true
 
 # Summary
 
-Did you observe bias in research?
-What is the type of your study?
-What are potential confounders?
-Which Bradford Hill Criteria are you examining and how?
-What is the Design of your experiment?
+- Did you observe bias in research?
+- What is the type of your study?
+- What are potential confounders?
+- Which Bradford Hill Criteria are you examining and how?
+- What is the Design of your experiment?
 
 
