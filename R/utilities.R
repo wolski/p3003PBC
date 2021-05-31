@@ -28,7 +28,7 @@ sample_stats <- function(N_obs = 12, dist1, dist2, samples = 100, trafo = identi
 
     resindtest <- coin::independence_test(intensity ~ treatment, data = sample ,distribution = "approximate")
     coin <- coin::pvalue(resindtest)
-    t.test <- t.test(intensity ~ treatment, data = sample)$p.value
+    t.test <- t.test(intensity ~ treatment, data = sample, var.equal = TRUE)$p.value
     asymp.test <- asympTest::asymp.test(intensity ~ treatment, data = sample)$p.value
 
     res_p[i,] <- c( coin, t.test, asymp.test)

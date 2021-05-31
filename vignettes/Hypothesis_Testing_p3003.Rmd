@@ -720,7 +720,7 @@ abline(h=0.01,v=0.01, col="gray")
   - randomization test
   - t-test
   - asymptotic test <br/> (T under null $\sim N(\mu, \sigma)$)
-
+  
 
 ```{r tablecompare2, eval=TRUE, echo=FALSE}
 dist1 <- function(N){rnorm(N, 1, 1 )}
@@ -770,6 +770,7 @@ abline(h=0.01,v=0.01, col="gray")
 ]
 
 ---
+exclude: true
 
 # R data.frame and the R formula interface
 
@@ -871,7 +872,10 @@ diff.p =
 )
 
 # Traditional interface
-with(sleep, t.test(extra[group == 1 ], extra[group == 2] ))$p.value
+with(sleep, 
+     t.test(
+       extra[group == 1 ],
+       extra[group == 2] ))$p.value
 
 ```
 
