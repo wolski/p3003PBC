@@ -1,0 +1,252 @@
+---
+title: "Introduction to R"
+subtitle: "FGCZ Protein Informatics Training"
+author: "Witold Wolski wew@fgcz.ethz.ch"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "metropolis", "metropolis-fonts", "trug-ggplot2.css"]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "%current%"
+editor_options:
+  chunk_output_type: console
+vignette: >
+  %\VignetteIndexEntry{Introduction to R} 
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+
+class: fullscreen, inverse, top, center, text-black
+background-image: url("../inst/images/R_logo.svg.png")
+
+.font150[**introduction to R**]
+
+---
+# Where can I learn R?
+
+- Online Courses :
+  - www.edx.org; udemy.com; coursera.org; codeacademy.org
+
+- Online books:
+
+  - [R Programming for Data Science](https://bookdown.org/rdpeng/rprogdatascience/)
+  - [Advanced R](https://adv-r.hadley.nz/)
+  - ...
+  
+- Introducing Variables, Types and Operators
+
+---
+# Variables, Types and Operators 
+
+.left-code[
+```{r addition, eval = TRUE}
+2 + 2
+a = 2; b = 3
+a + 2
+a * b
+a == b
+l <- a == b
+
+```
+]
+
+.right-code[
+```{r}
+s <- 'a'
+S <- "helloworld"
+s != S
+class(a); class(l); class(s); class(S) 
+
+```
+
+- a, b, s and S are variables
+- R is case sensitive `s != S`
+- variables have `types`, e.g. `numeric`, `character`.
+- Arithmetic Operators : `+`, `-`, `*`, `/`
+- Relational Operators : `<`, `>`, `<=`, `==`
+]
+
+---
+
+# Variables, Types and Operators 
+
+.left-code[
+
+```{r}
+a = 1
+class(a)
+a = 'a' #<<
+class(a)
+a == s
+?`==` #<<
+```
+
+- Dynamic typing
+- `?` getting help function, e.g. `?==`
+
+]
+
+.right-code[
+
+- NA - not available
+
+```{r eval = TRUE}
+a <- 1;length(a);class(a)
+b <- numeric();length(b);class(b)
+a + b
+c <- NA; class(c)
+a + c
+```
+]
+
+
+---
+
+# Composed data types - arrays and matrices
+
+.left-code[
+```{r}
+av <- c(1,2,3,4) #<<
+bv <- 1:4
+class(av); class(bv)
+av * 2
+length(av)
+av[1];av[2:4];av[-1] #<<
+```
+]
+
+.right-code[
+```{r}
+m <- matrix(1:4, ncol = 2) #<<
+m
+m[1,]; m[,2] #<<
+class(m);class(m[1,]);class(m[1,1])
+```
+]
+
+---
+
+# Composed data types - lists
+
+.left-code[
+```{r}
+a <- c(a = 1:4, b = c('a','b'));a
+l <- list(a = 1:4, b = c('a','b'));class(l) ;l#<<
+length(l)
+
+```
+]
+
+
+.right-code[
+```{r}
+l$a;l$b; class(l$a)
+l[1];class(l[1]); length(l[1])
+l[[1]];class(l[[1]]); length(l[[1]])
+
+```
+]
+
+---
+
+# Composed data types - data.frames
+
+.left-code[
+```{r}
+df <- data.frame(a = 1:5,
+                 b = c("a","b","b","c","d")) #<<
+df;
+colnames(df)
+class(df);class(df[1]);class(df[[1]])
+```
+]
+.right-code[
+```{r}
+df[1] #<< 
+df$a
+df[,1]
+df[[1]]
+```
+]
+
+---
+
+# Composed data types - data.frames
+
+
+
+.left-code[
+
+
+```{r eval = FALSE}
+?read.csv
+?readr:::read_tsv
+?readxl::read_xlsx
+```
+
+- csv, tsv, excel files are imported into R as `data.frames`
+- many functions in base R, e.g. `subset`, `aggregate`
+- [readr](https://readr.tidyverse.org/) & [tidyr](https://tidyr.tidyverse.org/) & [dplyr](https://dplyr.tidyverse.org/)
+
+]
+
+
+.right-code[
+```{r}
+subset(df, b == "b")
+subset(df,a < 2)
+
+aggregate(df, by = list(c = df$b), paste0)
+aggregate(df, by = list(c = df$b), mean)
+
+```
+]
+
+
+---
+
+# Functions and Scopes
+
+.left-code[
+
+```{r}
+rm(list=ls())
+a <- 23
+
+myfun <- function(x){
+  a <- 3
+  x <- x + 1
+  return(x)
+}
+
+b <- myfun(a)
+a == 23
+b
+
+```
+]
+
+
+.right-code[
+
+```{r}
+myfun
+?myfun
+?print
+
+```
+
+]
+
+---
+
+# Thank you for your attention
+
+
+

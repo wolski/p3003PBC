@@ -18,7 +18,6 @@ editor_options:
 vignette: >
   %\VignetteIndexEntry{Hypothesis Testing} 
   %\VignetteEncoding{UTF-8}
-  
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
@@ -62,7 +61,7 @@ library(tidyverse)
 - How to generate the distribution of the test statistic if null true?
 - One sample t-test?
 - What happens if assumptions are not met?
-- Central limit theorem
+- Central Limit Theorem
 - Asymptotic tests
 - Non parametric tests - randomization test
 - Comparing parametric, non parametric and asymptotic tests
@@ -75,12 +74,15 @@ library(tidyverse)
 
 Dr. Muriel Bristol, a female colleague of Fisher claimed to be able to tell whether the tea or the milk was added first to a cup.
 
+..img-right[
+![](../inst/images/Milk-Tea-2m.jpg)
+]
 --
 
-- The hypothesis was that the Lady had no such ability.
+- The null hypothesis was that the lady<br/> had no such ability.
 --
 
-- The experiment was to prepare 8 cups of tea 4 with milk and 4 with tea first.
+- The experiment was to prepare __8__ cups of tea __4__ with <br/> milk and __4__ with tea first.
 --
 
 - The test statistic was a simple count of the number of successes<br/>
@@ -89,6 +91,8 @@ in selecting the 4 cups out of 8.
 
 - She got all correct. What was the probability of getting all correct?
 
+
+
 ---
 
 # Lady tasting tea
@@ -96,7 +100,7 @@ in selecting the 4 cups out of 8.
 .left-code[
 ```{r teatasting, eval = FALSE}
 truth <- c(0,1,0,1,1,0,0,1)
-x <- combn(truth,4) #<<
+x <- combn(truth,m = 4) #<<
 nrcor <- apply(x, 2, sum) #<<
 nulldistr <- table(nrcor)
 nulldistr
@@ -184,7 +188,6 @@ text(4, 0.1, expression(t[obs]), srt=90)
 
 ---
 exclude: true
-b
 
 # Hypothesis testing - Long version
 
@@ -622,6 +625,29 @@ $$\frac{1}{B} \sum^B_{i=0} I_{T_i} >= |T_{obs}|$$
 
 ---
 
+
+# Types of error when testing hypothesis
+
+A __type I error__ (false positive) occurs when <br/> the null hypothesis (H0) is true, but is rejected.<br/> 
+The _type I error rate_ or __significance level__ (p-Value)<br/> is the probability of rejecting the<br/> 
+null hypothesis given that it is true.
+
+
+A __type II error__ (false negative) occurs when <br/> the null hypothesis
+is false,<br/> but erroneously fails to be rejected. <br/>
+The _the type II error rate_ is denoted by the Greek letter $\beta$<br/>
+and is related to the __power of a test__ (which equals $1−\beta$).
+
+For a given test, the only way to reduce both error rates<br/> 
+is to __increase the sample size__, and this may not be feasible.
+
+.img-right[
+![](../inst/images/hl_nullhypo_errors.png)
+]
+
+
+---
+
 # Compare Tests
 
 .pull-left[
@@ -636,8 +662,8 @@ Null Hypothesis should be rejected
 
 
 ```{r tablecompare, eval=TRUE, echo=FALSE}
-dist1 <- function(N){rnorm(N, 1, 1 )}
-dist2 <- function(N){rnorm(N, 10, 10)}
+dist1 <- function(N){rnorm(N, 10, 5 )}
+dist2 <- function(N){rnorm(N, 20, 10)}
 
 xx <- p3003PBC::sample_stats(N = 10,
                    dist1,
@@ -685,29 +711,7 @@ abline(h=0.01,v=0.01, col="gray")
 
 ---
 
-# Types of error when testing hypothesis
-
-A __type I error__ (false positive) occurs when <br/> the null hypothesis (H0) is true, but is rejected.<br/> 
-The _type I error rate_ or __significance level__ (p-Value)<br/> is the probability of rejecting the<br/> 
-null hypothesis given that it is true.
-
-
-A __type II error__ (false negative) occurs when <br/> the null hypothesis
-is false,<br/> but erroneously fails to be rejected. <br/>
-The _the type II error rate_ is denoted by the Greek letter $\beta$<br/>
-and is related to the __power of a test__ (which equals $1−\beta$).
-
-For a given test, the only way to reduce both error rates<br/> 
-is to __increase the sample size__, and this may not be feasible.
-
-.img-right[
-![](../inst/images/hl_nullhypo_errors.png)
-]
-
-
----
-
-# Increasing sample size
+# Compare Tests - Increasing sample size
 
 .pull-left[
 

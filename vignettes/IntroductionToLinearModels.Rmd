@@ -65,7 +65,7 @@ library(tidyverse)
 ---
 # Overview
 
-- What is a linear model
+- What is a linear regression model?
 - How to estimate coefficients
 - What are contrasts
 - How to determine the error of the coefficients, test statistics and p-values
@@ -74,6 +74,21 @@ library(tidyverse)
 - limma - Empirical Bayes
 - Benchmarking
 - Conclusions
+
+---
+# What is a linear regression model?
+
+By a model, we mean a mathematical representation about the process that generated our observed data. That is, how an outcome of interest $Y$ is related to one or more predictor $X$ variables.
+
+$Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \epsilon$
+
+Linear models, or regression models, trace the the distribution of the dependent variable $Y$ – or some characteristic of the distribution (the mean) – as a function of the independent variables $X$.I
+
+- simple linear regression - one explanatory variable; 
+- multiple linear regression - more than one explanatory variable
+
+
+.footnote[https://uvastatlab.github.io/phdplus/linearmodel.html]
 
 ---
 # lm intro
@@ -104,12 +119,12 @@ stripchart(Bodyweight ~ Diet, # < formula interface
 
 .left-code[
 ```{r lmintroleft}
-# summarize data
+# compute group means
 meansum <- 
   dat %>%
   group_by(Diet) %>%
   summarise(mean = mean(Bodyweight))
-# linear model
+# use linear model
 lm1 <- lm(Bodyweight ~ Diet, #<<
           data = dat) #<< 
 coefs <- coef(lm1)
@@ -193,7 +208,7 @@ $$
 \beta= (X^TX)^{−1} (X^TY)
 $$
 
-$\beta$ minimizes $$\sum(Y - \beta X)^2 = (Y-\beta X)(Y-\beta X)^T$$. 
+$\beta$ minimizes $$\sum(Y - X\beta )^2 = (Y- X\beta)(Y- X\beta)^T$$. 
 
 predicting Y
 $$\hat{Y} = X \beta = b_0X_0 + b_1X_1$$
@@ -205,7 +220,7 @@ $$e = Y - X\beta$$
 
 ---
 
-# lm intro - contrasts
+# lm intro - group mean
 
 .left-code[
 ```{r}
@@ -233,7 +248,7 @@ $$
 
 # lm intro - contrasts
 
-A contrast is a linear combination of variables (parameters or statistics) whose coefficients add up to zero, allowing comparison of different treatments.
+A contrast is a linear combination of variables (parameters or statistics) whose __coefficients add up to zero, allowing comparison of different treatments.
 
 .left-code[
 
@@ -260,7 +275,6 @@ contrasts %*% coef(lm1)
 ```
 ]
 
-.footnote
 
 ---
 
@@ -319,19 +333,24 @@ t.statistic
 ]
 
 .pull-right[
+
+$$
+t_i = \frac{\beta_i}{se(\beta_i)}
+$$
+
 ```{r}
 head(linfct)
 head(contrasts)
 ```
 
-$$
-t_i = \frac{\beta_i}{se(\beta_i)}
-$$
 ]
 
 ---
 
+
 # lm intro - getting the p-values
+
+.footnote[The p-value is a function of the t-statistics and the degrees of freedom.]
 
 .left-code[
 ```{r lmintropValleft}
@@ -354,15 +373,18 @@ knitr::kable(lfq, format = "html" , caption ="prolfqua",digits = 2)
 ```
 ]
 
+
 ---
 
 # lm intro - getting the p-values (adjusted)
+
+.footnote[Testing of many (multiple) contrasts, requires adjusting of p-values.]
 
 .left-code[
 ```{r}
 library(multcomp)
 multcomp <- summary(
-  glht(lm1, rbind(linfct, contrasts))) %>% #<<
+  multcomp::glht(lm1, rbind(linfct, contrasts))) %>% #<<
   broom::tidy() %>%
   dplyr::select(contrast, estimate,
                 std.error, statistic ,
@@ -382,11 +404,30 @@ knitr::kable(multcomp,
 
 ---
 
-# lm intro - interactions
+# lm intro - multiple linear regression
+
+.footnote[https://www.nature.com/articles/srep01101]
+
+- repsonse viariable $\mu$ friction coefficient
+- explanatory viariables: 
+  - leg with levels: L1 L2 L3 L4
+  - movement type with levels: push and pull
+
+.img-right[
+![](../inst/images/Spider.png)
+]
+
+
+
+---
+
+# lm intro - multiple linear regression
+
+.footnote[[genomicsclass interactions](http://genomicsclass.github.io/book/pages/interactions_and_contrasts.html)]
 
 
 .left-code[
-## Model without interaction
+## Data and Model with 2 factors 
 ```{r lminteractionleft, eval=TRUE}
 spider <- read.csv("spider_wolff_gorb_2013.csv"
                    , skip = 1)
@@ -400,15 +441,49 @@ coef(noI)
 ![](../inst/images/interactions_and_contrasts-spider_interactions1.png)
 ]
 
-.footnote[[genomicsclass interactions](http://genomicsclass.github.io/book/pages/interactions_and_contrasts.html)]
+
+
+
 
 ---
+layout: false
+
+# lm intro - interactions
+
+.footnote[https://statisticsbyjim.com/regression/interaction-effects/]
+
+Think of interaction effects as an __"it depends"__ effect. <br/>
+--
+
+Q : "Do you prefer ketchup or chocolate <br/> sauce on your food?"
+
+--
+
+A : "__It depends__ on the type of food!" <br/>
+
+
+--
+
+You cannot answer the question without __more__ information <br/> about the other variable in the interaction term.<br/>
+
+
+.img-right[
+![](../inst/images/HotdogKetchup.jpg)
+]
+
+
+
+
+
+---
+
+
 
 # lm intro - interactions
 
 
 .left-code[
-## Model with interaction
+## Model with interactions
 ```{r eval = TRUE}
 withI <- lm(friction ~ type + leg + type:leg,
             data = spider)
@@ -446,7 +521,7 @@ $$
 \textrm{fc}_{interaction} &= \textrm{fc}_{glucose:p2370 - ethanol:p2370} - \textrm{fc}_{glucose:p2691 - ethanol:p2691}\\
 \end{aligned}
 $$
-
+For details see : https://wolski.github.io/prolfqua/articles/Modelling2Factors.html
 
 ---
 exclude: true
@@ -493,11 +568,26 @@ R formula `lmer(normalizedIntensity ~ Condition + (1|Batch), data = proteinData)
 
 ---
 
-# limma - Empricial Bayes
+# limma - Empirical Bayes
+
+.footnote[https://wolski.github.io/prolfqua/articles/Comparing2Groups.html]
+
+Both volcano plots are generated from same data.<br/>
+
+What is the difference between the two Volcanos? <br/>
+
+
+.img-right[
+![](../inst/images/Volcano2Moderation.png)
+]
+
+---
+
+# limma - Empircial Bayes
 
 - In a mass spectrometric LFQ experiment, we measure hundreds of proteins in parallel. 
-- Hence, these measurements are correlated. 
 - Also, the analysis has a parallel structure, and we fit the same linear model to all protein.
+- These measurements are correlated. 
 
 
 - Potentially we can transfer information from the measurement of one peptide/protein to the other. 
@@ -534,7 +624,7 @@ This statistic represents a hybrid classical/Bayes approach in which the posteri
 
 ---
 
-# limma - Empirical bayes
+# limma - Empirical Bayes
 
 .pull-left[
 $$
@@ -547,10 +637,10 @@ For $d_p >> d_0$, $\tilde s \rightarrow s_p$</br>
 
 $s_0$ is the same for all proteins in and experiment.
 
-What happens with the $correlation(T, d)$ for $d_p \rightarrow 0$ sample sizes?
-Where $T$ is the t-statistics and $d$ is the difference between samples.
+What happens with the $cor(T, \log_2FC)$ for $d_p \rightarrow 0$ sample sizes?
+Where $T$ is the t-statistics and $\log_2FC$ is the difference between samples.
 
-Hint: $T \propto d/\tilde{s}$
+Hint: $T \propto log_2FC/\tilde{s}$
 
 
 
@@ -574,9 +664,31 @@ d_p = 1
 
 ---
 
-# Benchmarking
+# What we learned so far
 
-The Ionstar dataset.
+For each protein we obtain 
+
+- $\log_2FC$
+- T-statistic
+- p-values
+- FDR
+
+What are each of these measures is good for?
+
+- $2 ^ {\log_2FC}$ and $95\%$ confidence intervals - have a biological interpretation. 
+
+
+- FDR can be used to select proteins for follow up experiments.
+- $\log_2FC$, T-statistic, p-value and FDR can be used to rank proteins for GSEA
+
+Is the FDR estimate correct?
+What measure is best to rank proteins for GSEA?
+
+
+---
+
+# Benchmarking - The Ionstar dataset
+
 
 .left-code[
 ```{r echo = FALSE}
@@ -593,8 +705,8 @@ prolfqua::table_facade(x, caption = "All possible pairs of E. coli concentration
 
 .img-right[
 ![](../inst/images/IonstarExp.png)
-
-
+- Human proteins $\beta =  0$
+- E. Coli $\beta \ne 0$
 ]
 
 .footnote[https://www.pnas.org/content/115/21/E4767]
@@ -604,7 +716,7 @@ prolfqua::table_facade(x, caption = "All possible pairs of E. coli concentration
 # Benchmarking
 
 ```{r confusionMatrix, echo=FALSE}
-table <- data.frame( c("beta != 0", "beta == 0", "Total"), matrix(c("TP","FP","R","FN","TN","","P","N","m"), ncol = 3, byrow = T))
+table <- data.frame( c("beta != 0", "beta = 0", "Total"), matrix(c("TP","FP","R","FN","TN","","P","N","m"), ncol = 3, byrow = T))
 colnames(table) <- c("Prediction \\ Truth","E.coli", "H.sapiens", "Total")
 prolfqua::table_facade(table, caption = "Confusion matrix, TP - true positive, FP - false positive, FN - false negative, P - all positive cases (all E. coli proteins), N - all negative cases (all H. sapiens proteins), m- all proteins.")
 ```
@@ -652,23 +764,43 @@ legend("topright", legend = c("H.Sapiens", "E.Coli"), lty = c(1,1), col = c("red
 ]
 
 .footnote[Compute the confusion matrix for each value of the score.]
----
-
-
-# Benchmarking
-
-- By plotting the $TPR$ versus the $FPR$ we obtain the receiver operator characteristic curve (ROC curve). The area under the curve (AUC) or partial areas under the curve (pAUC), at various values of the $FPR$, are further measures of performance.
-
-- A further question we can examine using the benchmark data is, how well the false discovery estimate (FDR) obtained to from the statistical model matches the false discovery proportion (FDP). The FDR is the expected value of the false discovery proportion. Ideally, the FDR should be an unbiased estimate of the $FDP$. By plotting the FDR gainst the FDP we can asses visually if these assumptions are met. 
-
 
 ---
 
-# Benchmarking
 
-.img-left[
-![](../inst/images/ROC_Curves.png)
+# Benchmarking - ROC curve
+
+
+By plotting the $TPR$ versus the $FPR$ we obtain <br/> 
+the __receiver operator characteristic__ curve (ROC curve).<br/> 
+The __area under the curve__ (AUC) or <br/> __partial areas under the curve__ (pAUC)<br/> 
+at various values of the $FPR$,<br/>  are further measures of performance.
+
+Greater Area under the ROC is better. <br/>
+$AUC = 1$ perfect separation<br/>
+of E.Coli and H.sapiens porteins. <br/>
+
+Conclusion:
+
+$log_2FC$ < T-statistic < sign$(log_2FC) \times$ p-value = FDR
+
+.img-right[
+![](../inst/images/ROC_CURVE_015.png)
 ROC curves]
+
+---
+
+# Benchmarking - FPR vs FDP
+
+Does the __false discovery estimate__ (FDR) <br/> 
+obtained to from the statistical model <br/>
+matches the false discovery proportion (FDP)?<br/>
+
+The FDR is the expected value of the FDP.<br/>
+The FDR should be an unbiased estimate of the $FDP$.<br/> 
+By plotting the FDR against the FDP we can see how well <br/>
+the FDR approximates the FDP. 
+
 
 .img-right[
 ![](../inst/images/FDR_vs_FDP.png)
