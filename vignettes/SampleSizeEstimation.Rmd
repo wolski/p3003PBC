@@ -638,6 +638,6 @@ str(startdata)
   - $sd$ estimate for single protein have a large error
   - small error for the median $sd$ of all proteins
 - Calculating Observed Power Is Just Transforming Noise
-- Sample size calculation ignores multiple testing problems.
-- Observations are _independent and identically distributed_ __iid__.
+- Sample size calculation using `power.t.test` function ignores multiple testing problems.
+- Observations need to be _independent and identically distributed_ __iid__.
 
