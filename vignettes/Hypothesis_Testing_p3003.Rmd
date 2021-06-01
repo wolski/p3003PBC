@@ -652,7 +652,7 @@ is to __increase the sample size__, and this may not be feasible.
 
 .pull-left[
 
-- Simulate data from <br/> $x_1 \sim N(1,1)$ and $x_2\sim N(10,10)$ <br/>
+- Simulate data from <br/> $x_1 \sim Exp(1)$ and $x_2\sim Exp(10)$ <br/>
 Null Hypothesis should be rejected
 <br/>(5 each)
 - compute p-values using:
@@ -662,8 +662,8 @@ Null Hypothesis should be rejected
 
 
 ```{r tablecompare, eval=TRUE, echo=FALSE}
-dist1 <- function(N){rnorm(N, 10, 5 )}
-dist2 <- function(N){rnorm(N, 20, 10)}
+dist1 <- function(N){rexp(N, 1)}
+dist2 <- function(N){rexp(N, 10)}
 
 xx <- p3003PBC::sample_stats(N = 10,
                    dist1,
@@ -715,7 +715,7 @@ abline(h=0.01,v=0.01, col="gray")
 
 .pull-left[
 
-- Simulate data from <br/> $x_1 \sim N(1,1)$ and $x_2\sim N(10,10)$ <br/> (20 each)
+- Simulate data from <br/> $x_1 \sim Exp(1)$ and $x_2\sim Exp(10)$ <br/> (10 each)
 - compute p-values using:
   - randomization test
   - t-test
@@ -723,9 +723,9 @@ abline(h=0.01,v=0.01, col="gray")
   
 
 ```{r tablecompare2, eval=TRUE, echo=FALSE}
-dist1 <- function(N){rnorm(N, 1, 1 )}
-dist2 <- function(N){rnorm(N, 10, 10)}
-xx <- p3003PBC::sample_stats(N_obs = 40,
+dist1 <- function(N){rexp(N, 1)}
+dist2 <- function(N){rexp(N, 10)}
+xx <- p3003PBC::sample_stats(N_obs = 20,
                    dist1,
                    dist2,
                    samples = 100)
@@ -739,6 +739,67 @@ knitr::kable(x, format = "html")
 
 
 ```{r randomization_test2, eval=FALSE, echo=FALSE}
+par(mfrow=c(2,1))
+
+old <- c(5.1, 4.1, 4.1, 2.1)
+par(mar = c(5.1, 4.1, 1, 2.1))
+
+scatter.smooth(xx$res_p[,"coin"], xx$res_p[,"t.test"], log="xy", 
+               xlab="log(p.value) randomization test",
+               ylab="log(p.value) t.test",
+               pch=16,cex=0.5, ylim=c(1e-3,1))
+
+abline(c(0,1), col="blue")
+abline(h=0.01,v=0.01, col="gray")
+
+scatter.smooth(xx$res_p[,"coin"], xx$res_p[,"asymp.test"], log="xy", 
+               xlab="log(p.value) randomization test",
+               ylab="log(p.value) asymptotic test", pch=16,cex=0.5, ylim=c(1e-3,1))
+abline(c(0,1), col="blue")
+abline(h=0.01,v=0.01, col="gray")
+```
+
+
+
+]
+
+
+.right-plot[
+```{r randomization_test2-out, ref.label="randomization_test", echo=FALSE, fig.width=6, fig.height=6}
+```
+]
+
+---
+
+# Compare Tests - log2 transforming
+
+.pull-left[
+
+- Simulate data from <br/> $x_1 \sim \log_2(Exp(1))$ and $x_2\sim \log_2(Exp(10))$ <br/>
+(5 each) and log2 transforming the data.
+- compute p-values using:
+  - randomization test
+  - t-test
+  - asymptotic test <br/> (T under null $\sim N(\mu, \sigma)$)
+  
+
+```{r tablecompare3, eval=TRUE, echo=FALSE}
+dist1 <- function(N){log2(rexp(N, 1))}
+dist2 <- function(N){log2(rexp(N, 10))}
+xx <- p3003PBC::sample_stats(N_obs = 10,
+                   dist1,
+                   dist2,
+                   samples = 100)
+cbind( coin = table(xx$res_p[,"coin"] < 0.01),
+t.test = table(xx$res_p[,"t.test"] < 0.01),
+asymp.test = table(xx$res_p[,"asymp.test"] < 0.01)) -> x
+rownames(x) <- c("Accept H0", "Reject H0")
+knitr::kable(x, format = "html")
+
+```
+
+
+```{r randomization_test3, eval=FALSE, echo=FALSE}
 par(mfrow=c(2,1))
 
 old <- c(5.1, 4.1, 4.1, 2.1)
