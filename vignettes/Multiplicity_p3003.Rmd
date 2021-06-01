@@ -372,7 +372,7 @@ abline(h=(1000-400)/20, col=3)
 abline(v = 0.05, col=2)
 text(x = c(0.02, 0.02, 0.2, 0.2),y=c(20,100,20,100), labels=c("FP","TP","TN","FN"))
 
-hist(pvals24, breaks=20, ylim=c(0,300), xlim=c(0,0.2), main="D")
+hist(pvals24, breaks=20, ylim=c(0,300), xlim=c(0,0.2), main="C")
 abline(h=(1000-400)/20, col=3)
 abline(v = 0.05, col=2)
 text(x = c(0.02,0.02,0.1,0.1),y=c(20,100,20,100), labels=c("FP","TP","TN","FN"))
@@ -390,7 +390,7 @@ text(x = c(0.02,0.02,0.1,0.1),y=c(20,100,20,100), labels=c("FP","TP","TN","FN"))
 # False Discovery Rate (FDR)
 
 - Figure A (previous slide) shows that even if only H0 true we have some p-values which are below the significance threshold. These are false positives (FP).
-- In Figure D we have p-values less than significance threshold where H0 is true (FP) and a proportion of those where HA is true (TP).
+- In Figure B and C we have p-values less than significance threshold where H0 is true (FP) and a proportion of those where HA is true (TP).
 
 - FDR-controlling procedures are designed to control the expected __proportion of "discoveries"__ (rejected null hypotheses) __that are false__ (incorrect rejections).
 
@@ -472,6 +472,9 @@ i = seq(along=pvals24)
 k <- max(which(sort(pvals24) < i/m*alpha)) #<<
 padj <- p.adjust(pvals24,method="BH") #<<
 
+# both return same number 
+stopifnot(k == sum(padj < 0.05)) #<< 
+
 par(mfrow=c(2,2))
 hist(pvals24, breaks=20)
 hist(padj , breaks = 20)
@@ -497,6 +500,7 @@ exclude: true
 
 
 # FDR - Benjamini Hochberg - procedure
+
 .right-code[
 ```{r BHRcode}
 p.adjust.BH <- function (p,  n = length(p))
@@ -529,7 +533,12 @@ p.adjust.BH <- function (p,  n = length(p))
 
 Although we will end up with more false positives, FDR gives us much more power. This makes it particularly appropriate for discovery phase experiments where we may accept FDR levels much higher than 0.05.
 
-The BH procedure is valid when the m tests are independent, and also in various scenarios of dependence, but is __not universally valid__. (e.g. gene sets.)
+The FDR has an interpretation in a Multiple testing setting, while an unadjusted p-value in a hight throughput setting has __NO__ explanation.
+
+The BH procedure is valid when the $m$ tests are independent, and also in various scenarios of dependence, but is __not universally valid__. (e.g. gene sets.)
+
+
+.footnote[@JG do not report p-values for OMICS data, just use a higher FDR threshold.]
 
 ---
 layout: false
@@ -555,12 +564,12 @@ data and how to treat them.
 
 - In case of multiplicity do not report unadjusted p-value.
 - _Family Wise Error Rates (FWER)_  
-  - use to adjust for number of tests for single protein
-  - Typical threshold for FWER are $0.05$ or $0.01$
+  - used to adjust for number of tests for a single outcome.
+  - Typical threshold for FWER are $0.05$.
 - _False Discovery Rate (FDR)_ 
   - controls error rates when selecting proteins for follow up (OMICS experiments)
-  - FDR's of $0.1$ or even $0.5$ are acceptable.
-- If you need a FDR estimate Limit the number of traditional hypothesis you test.
+  - FDR's of $0.1$, $0.25$ or even $0.5$ are acceptable.
+- Limit the number of hypothesis you test. 
 
 
 ---
@@ -568,12 +577,13 @@ data and how to treat them.
 # Conclusions
 
 If you do subgroup analysis use<br/> __exploratory__ or __descriptive__ data analysis:   
-  - tabulating (e.g. venn diagrams) 
+  - tabulating (e.g. Venn diagrams) 
   - dimensionality reduction (e.g, PCA)
   - clustering of samples and proteins
   (e.g, time series clustering)
   - Use GSEA or ORA analysis to contrast subgroups.
-  - Do not over-interpret your findings <br/> by report FDR's (they are biased).
+  - Do not over-interpret your findings.
+  
   
 
 ---
