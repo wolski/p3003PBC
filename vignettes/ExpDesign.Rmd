@@ -211,10 +211,10 @@ Sir Austin Bradford Hill CBE FRS was an English epidemiologist and statistician,
 
 
 - Protein Quantification 
-  - Strength of association : Control, Treatment $5 \mu g$, Treatmant $10 \mu g$
-  - Consistency : Different Genetic backgrounds, Control and Treatment
+  - Strength of association : Control, Treatment $5 \mu g$, Treatment $10 \mu g$
+  - Consistency : Different Genetic backgrounds, Control and Treatment (__it depends__)
   - Temporality : Time course data
-  - Specificity : e.g. test for interactions.
+  - Specificity : ?
 
 
 
@@ -765,10 +765,11 @@ exclude: true
 
 # Summary
 
-- Did you observe bias in research?
+- Did you observe bias in your research?
 - What is the type of your study?
 - What are potential confounders?
 - Which Bradford Hill Criteria are you examining and how?
 - What is the Design of your experiment?
 
 
+---
