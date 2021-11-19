@@ -26,6 +26,7 @@ Imports:
     lmerTest,
     magrittr,
     multcomp,
+    mvtnorm,
     purrr,
     pwr,
     readxl,
