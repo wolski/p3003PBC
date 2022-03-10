@@ -1,7 +1,7 @@
 ---
 title: "Multiple Testing"
 subtitle: "FGCZ Protein Informatics Training"
-author: "Witold Wolski wew@fgcz.ethz.ch"
+author: "Witold Wolski"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   xaringan::moon_reader:
@@ -75,7 +75,7 @@ library(tidyverse)
 
 ## OMICS experiments
 - Which of the many proteins are differentially expressed because of treatment?
-- Which of the many groups of proteins are differentially expressed because of treatment?
+- Which of groups of proteins (geneset) are differentially expressed because of treatment?
 
 ---
 layout: false
@@ -89,8 +89,9 @@ Experiment:
    - Weight at the start of the week
    - Weight at the end of week. 
 
-Average weight loss is $0.13$kg. Paired t-test for weight <br/>
-loss gives a t-statistic of $t=0.126/0.068=1.84$,</br>
+Average weight loss is $0.13$kg. <br/>
+Paired t-test for weight loss gives a <br/>
+t-statistic of $t=0.126/0.068=1.84$,</br>
 giving a p-value of $0.067$ (using a two-sided test).</br>
 Not quite significant at the $5%$ level!
 
@@ -109,11 +110,10 @@ Not quite significant at the $5%$ level!
 
 ```{r computingPvals}
 2*(1 - pt(1.84, df = 250 - 1))
-
-2*(1 - pnorm(1.84, 0,1)) #<<
 # Asymptotic test
-(1 - pt(1.84, df = 250 - 1)) #<<
+2*(1 - pnorm(1.84, 0,1)) #<<
 # one sided tests
+(1 - pt(1.84, df = 250 - 1)) #<<
 ```
 ]
 
@@ -136,7 +136,8 @@ layout: false
 
 You use a one-tailed test to improve the test's ability to learn whether the new diet is better. 
 
-However, that's unethical because the test cannot determine whether it is less effective. You risk missing valuable information by testing in only one direction.
+You risk missing valuable information by testing in only one direction.
+Test cannot determine whether diet is less effective (leads to weight gain).
 
 ---
 

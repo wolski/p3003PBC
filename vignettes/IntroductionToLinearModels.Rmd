@@ -1,7 +1,7 @@
 ---
 title: "Introduction to Linear Models"
 subtitle: "FGCZ Protein Informatics Training"
-author: "Witold Wolski wew@fgcz.ethz.ch"
+author: "Witold Wolski"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   xaringan::moon_reader:
@@ -76,13 +76,14 @@ library(tidyverse)
 - Conclusions
 
 ---
+
 # What is a linear regression model?
 
 By a model, we mean a mathematical representation about the process that generated our observed data. That is, how an outcome of interest $Y$ is related to one or more predictor $X$ variables.
 
 $Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \epsilon$
 
-Linear models, or regression models, trace the the distribution of the dependent variable $Y$ – or some characteristic of the distribution (the mean) – as a function of the independent variables $X$.I
+Linear models, or regression models, trace the distribution of the dependent variable $Y$ – or some characteristic of the distribution (the mean) – as a function of the independent variables $X$.
 
 - simple linear regression - one explanatory variable; 
 - multiple linear regression - more than one explanatory variable
@@ -121,8 +122,8 @@ stripchart(Bodyweight ~ Diet, # < formula interface
 ```{r lmintroleft}
 # compute group means
 meansum <- 
-  dat %>%
-  group_by(Diet) %>%
+  dat |>
+  group_by(Diet) |>
   summarise(mean = mean(Bodyweight))
 # use linear model
 lm1 <- lm(Bodyweight ~ Diet, #<<
@@ -131,9 +132,11 @@ coefs <- coef(lm1)
 ```
 
 $$y = b_0X_0 + b_1 X_1 + \epsilon$$
+Where $X_0$ - intercept and $X_1$ - diet.
 
 ```{r, fig.height=2, fig.width=4, echo=FALSE}
 par(mar = c(2,4,1,2))
+library(plot.matrix)
 plot(model.matrix(lm1), col=c("black","white"))
 ```
 ]
@@ -248,7 +251,7 @@ $$
 
 # lm intro - contrasts
 
-A contrast is a linear combination of variables (parameters or statistics) whose __coefficients add up to zero, allowing comparison of different treatments.
+A contrast is a linear combination of variables (parameters or statistics) whose __coefficients__ add up to zero, allowing comparison of different groups.
 
 .left-code[
 
@@ -356,10 +359,10 @@ head(contrasts)
 ```{r lmintropValleft}
 lfq <- 
   prolfqua::my_contrast( lm1, #<<
-  rbind(linfct, contrasts)) %>% #<<
+  rbind(linfct, contrasts)) |> #<<
   dplyr::select(lhs, estimate,
                 std.error, 
-                statistic, p.value) %>%
+                statistic, p.value) |>
   mutate(p.value =
            round(p.value,digits=3))
 
@@ -384,8 +387,10 @@ knitr::kable(lfq, format = "html" , caption ="prolfqua",digits = 2)
 ```{r}
 library(multcomp)
 multcomp <- summary(
-  multcomp::glht(lm1, rbind(linfct, contrasts))) %>% #<<
-  broom::tidy() %>%
+  multcomp::glht(
+    lm1, rbind(linfct, contrasts))
+  ) |> #<<
+  broom::tidy() |>
   dplyr::select(contrast, estimate,
                 std.error, statistic ,
                 adj.p.value)
@@ -583,7 +588,7 @@ What is the difference between the two Volcanos? <br/>
 
 ---
 
-# limma - Empircial Bayes
+# limma - Empirical Bayes
 
 - In a mass spectrometric LFQ experiment, we measure hundreds of proteins in parallel. 
 - Also, the analysis has a parallel structure, and we fit the same linear model to all protein.
@@ -696,7 +701,7 @@ library(tidyverse)
 x <- c(3,4.5,6,7.5,9)
 x <- data.frame(t(combn(x, 2)))
 colnames(x) <- c("c1","c2")
-x <- x %>% mutate(fc = round(c2/c1,digits=2)) %>% arrange(fc)
+x <- x |> mutate(fc = round(c2/c1,digits=2)) |> arrange(fc)
 
 prolfqua::table_facade(x, caption = "All possible pairs of E. coli concentrations with the expected fold-changes.")
 
@@ -782,11 +787,11 @@ of E.Coli and H.sapiens porteins. <br/>
 
 Conclusion:
 
-$log_2FC$ < T-statistic < sign$(log_2FC) \times$ p-value = FDR
+$log_2FC$ < T-statistic < sign $(log_2FC) \times$ p-value
 
-.img-right[
-![](../inst/images/ROC_CURVE_015.png)
-ROC curves]
+
+
+.img-right[![](../inst/images/ROC_CURVE_015.png)]
 
 ---
 

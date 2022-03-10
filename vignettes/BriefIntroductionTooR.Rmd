@@ -248,5 +248,11 @@ myfun
 
 # Thank you for your attention
 
+Seen on Twitter:
 
+- Why spend 4 minutes doing something in Excel when you can do it in R in 4 hours?
+
+--
+
+- Reply: Why wait at the red light when you can go straight through?
 

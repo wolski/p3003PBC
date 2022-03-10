@@ -1,7 +1,7 @@
 ---
 title: "Experimental Design"
 subtitle: "FGCZ Protein Informatics Training"
-author: "Witold Wolski wew@fgcz.ethz.ch"
+author: "Witold Wolski"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   xaringan::moon_reader:
@@ -132,9 +132,9 @@ exclude: true
 Assess whether a particular __agent__ 
 caused or influenced a particular __outcome__ 
 
-- What is the probablity (P) that A belongs to class B?
-- What is P that A originates from B?
-- What is P that B generates A?
+- What is the probability that A belongs to class B?
+- What is probability that A originates from B?
+- What is probability that B generates A?
 ]
 
 .right-plot[
@@ -148,37 +148,83 @@ caused or influenced a particular __outcome__
 
 In answering these question people typically rely on;
 
-__representativeness__ heuristic, i.e. when A is highly representative of B, the probability that A originates form B is judged to be high.
+- __representativeness__ heuristic,
+  - i.e. when A is highly representative of B, the probability that A originates form B is judged to be high.
+   (Bat and Bird , Frog and Tadpole)
+- __availability__ heuristic
+  - retrievability - how easily information can be brought to mind
+  - imaginability - how easy is it to explain outcomes (a good story sells)
+  - bias due to illusory correlations - frequency of co-occurrence
+- __anchoring__ heuristic
+  - insufficient adjustment
+  - assessment of uncertainty - typically under-estimated
 
-But people are insensitive to:
-- to prior probability of outcome
-- to sample size
-- to predictability (predict future based on observations made now).
-- illusion of validity (caused by consistency  $^{\star}$)
-- misconception of regression (confounding)
-
-
-
-.footnote[
-$^{\star}$ but consistent patterns are most often observed when input variables are highly redundant or correlated. Hence people ten dto have great confidence in predictions based on redundant input variables.<br/>
-[Judgment under Uncertainty: Heuristics and Biases by Tversky A. and Kahneman D. Science 1974](https://www.science.org/doi/10.1126/science.185.4157.1124),
-]
 
 ---
 
 # Judgement under uncertainty - Heuristics and biases
 
 
-- __availability__ heuristic
-  - bias due to of retrievable (how easily information can be brought to mind)
-  - biases of imaginably (how easy is it to explain outcomes)
-  - bias due to illusory correlations (frequency of co-occurrence)
-- __anchoring__ heuristic
-  - insufficient adjustment
-  - assessment of uncertainty (typically under-estimated)
+But people are insensitive to:
+- to prior probability of outcome
+- to sample size
+- to predictability (predict future based on observations made now).
+- illusion of validity caused by consistency  $^{\star}$
+- misconception of regression - confounding $^{\star\star}$
+
+
+
+.footnote[
+$^{\star}$ but consistent patterns are most often observed when input variables are highly redundant or correlated. Hence people tend to have great confidence in predictions based on redundant input variables.<br/>
+
+$^{\star\star}$ Because the instructors had praised their trainees after good landings and admonished them after poor
+ ones, they reached the erroneous and potentially harmful conclusion that punishment is more effective than reward.
+
+[Judgment under Uncertainty: Heuristics and Biases by Tversky A. and Kahneman D. Science 1974](https://www.science.org/doi/10.1126/science.185.4157.1124),
+
+]
+
+
 
 ---
 
+
+# Bias - Other types of
+
+- Confirmation bias,<br/> tendency to favor information that confirm hypothesis $^{\star}$
+
+.img-right[
+![](../inst/images/Man_In_The_Moon_1.png)
+]
+
+
+--
+
+- Funding bias,<br/> bias relative to the commercial interests of a study's <br/> financial sponsor
+.img-right[
+![](../inst/images/Man_In_The_Moon_2.png)
+]
+--
+
+- Publication bias,<br/> Publishing only results that show a significant finding,</br> and inserts bias in favor of positive results.  $^{\star\star}$
+  
+.img-right[
+![](../inst/images/Man_In_The_Moon_3.png)
+]
+
+.footnote[
+$^\star$ Do you examine an experiment for a technical problem which <br/>
+fits your hypothesis? </br>
+$^{\star\star}$ A consequence of this is that researchers are unduly motivated<br/>
+to manipulate their practices to ensure that<br/> a statistically significant result is reported. <br/>
+
+[Meta-assessment of bias in science](https://www.pnas.org/content/114/14/3714)</br>
+[catalogofbias.org](https://catalogofbias.org/)
+]
+
+---
+
+exclude: true
 # Judgement under uncertainty - Heuristics and biases
 
 Imagine an urn filled with balls, of which 2/3 are of one color and 1/3 of another.
@@ -186,11 +232,12 @@ Imagine an urn filled with balls, of which 2/3 are of one color and 1/3 of anoth
 - One individual (__A__) has drawn $5$ balls from the urn, and found that $4$ were red and $1$ was white. 
 - Another (__B__) has drawn $20$ balls and found that $12$ were red and $8$ were white. 
 
-Which of the two individuals should feel more confident that the urn contains $2/3$ red balls and $1/3$ white balls, rather than the opposite? What odds should each individual give?
+Which of the two individuals should feel more confident that the urn contains $2/3$ red balls and $1/3$ white balls, rather than the opposite? 
 
+What odds should each individual give?
 
-- Odds for __A__:
-- Odss for __B__:
+- Odds for __A__ (5 balls : 4 red; 1 white) =
+- Odss for __B__ (20 balls : 12 red; 1 white) =  
 
 .footnote[Odds : $$\frac{\textrm{Probability of urn with 2/3 RED balls}}{\textrm{Probability or urn with 2/3 WHITE balls}}$$ ]
 
@@ -205,10 +252,11 @@ Which of the two individuals should feel more confident that the urn contains $2
   - results must be measurable
   - experiment must be repeatable
 4. __Observation__ <br/> make observations about results of experiment
-5. __Analysis__ <br/> run NHST (frequentist) or derive posterior distribution (Bayesian.)
+5. __Analysis__ <br/> run NHST (Frequentist) or derive posterior distribution (Bayesian) $^{\star}$
 6. __Conclusion__ <br/> significant result
 
-.footnote[NHST - null hypotheses significance test]
+.footnote[NHST - null hypotheses significance test <br/>
+$^{\star}$ or barplot with error bars, or image of a blot.]
 
 ---
 exclude: true
@@ -263,11 +311,10 @@ Sir Austin Bradford Hill CBE FRS was an English epidemiologist and statistician,
 
 - Protein Quantification 
   - Strength of association : Control, Treatment $5 \mu g$, Treatment $10 \mu g$
-  - Consistency : Treatment effect does not depend on Genetic Background (__it depends__)
+  - Consistency : Treatment effect __does__ or __does not__ depend on Genetic Background.
   - Temporality : Time course data
   - Specificity : Effect only caused by this treatment
 
-- Does establishing all Bradford-Hill criteria prove cause and effect?
 - Which Bradford-Hill criteria do you aim to meet in your study?
 
 
@@ -296,6 +343,21 @@ Judea Pearl "The Book of Why: The New Science of Cause and Effect"<br/>
 ]
 
 
+---
+
+# Study Types - 530 B.C.
+
+“Test your servants for ten days:<br/> Give us nothing but vegetables to eat and water to drink.<br/> Then compare our appearance with that<br/> of the young men who eat the royal food, <br/>and decide what to do with us based on how we look.”
+
+Bible (see Daniel 1:1–16).<br/>
+
+
+.img-right[
+![](../inst/images2021/Bergmann_Murdoch.png)
+]
+
+.footnote[Bregman, Rutger. Utopia for Realists (p. 206). Bloomsbury Publishing. Kindle Edition. ]
+
 
 
 ---
@@ -315,36 +377,6 @@ Judea Pearl "The Book of Why: The New Science of Cause and Effect"<br/>
 (randomize subjects into two groups, placebo and treatment group)
 ]
 
----
-
-# Study Types
-
-.pull-left[
-## Observational study
-pros:
-- May require less resources
-- Less ethical considerations (e.g. smokers)
-- Good if outcome of interest is rare
-
-cons:
-- difficult to determine causality
-- no randomization or blinding
-- The exposure status is not determined by the researcher
-]
-
-.pull-right[
-## Experimental Intervention
-pros:
-- More validity
-- Can determine causality
-- Randomized and blinded
-
-
-cons:
-- may require more resources
-- Ethical concerns for certain exposures
-- Difficult if outcome studied is rare<br/> (e.g. Vaccination)
-]
 
 ---
 
@@ -353,21 +385,6 @@ cons:
 ![](../inst/images/Study_Type_Case_Control.png)
 ]
 
-
----
-
-# Study Types - 530 B.C.
-
-“Test your servants for ten days:<br/> Give us nothing but vegetables to eat and water to drink.<br/> Then compare our appearance with that<br/> of the young men who eat the royal food, <br/>and decide what to do with us based on how we look.”
-
-Bible (see Daniel 1:1–16).<br/>
-
-
-.img-right[
-![](../inst/images2021/Bergmann_Murdoch.png)
-]
-
-.footnote[Bregman, Rutger. Utopia for Realists (p. 206). Bloomsbury Publishing. Kindle Edition. ]
 
 ---
 
@@ -437,42 +454,43 @@ be used where possible
 
 .footnote[[Blinding: Who, what, when, why, how?](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2947122/)]
 
----
-
-
-# Bias - Other types of
-
-- Confirmation bias,<br/> tendency to favor information that confirm hypothesis $^{\star}$
-
-.img-right[
-![](../inst/images/Man_In_The_Moon_1.png)
-]
-
-
---
-
-- Funding bias,<br/> bias relative to the commercial interests of a study's <br/> financial sponsor
-.img-right[
-![](../inst/images/Man_In_The_Moon_2.png)
-]
---
-
-- Publication bias,<br/> Publishing only results that show a significant finding,</br> and inserts bias in favor of positive results.  $^{\star\star}$
-  
-.img-right[
-![](../inst/images/Man_In_The_Moon_3.png)
-]
-
-.footnote[
-$^\star$ Do you examine an experiment for a technical problem which <br/>
-fits your hypothesis? </br>
-$^{\star\star}$ Over-interpretation of improvements of new methods. Wrong expectations about a method e.g. Plasma Proteomics.</br>
-[Meta-assessment of bias in science](https://www.pnas.org/content/114/14/3714)</br>
-[catalogofbias.org](https://catalogofbias.org/)
-]
 
 
 ---
+
+
+# Study Types
+
+.pull-left[
+## Observational study
+pros:
+- May require less resources
+- Less ethical considerations (e.g. smokers)
+- Good if outcome of interest is rare
+
+cons:
+- difficult to determine causality
+- no randomization or blinding
+- The exposure status is not determined by the researcher
+]
+
+.pull-right[
+## Experimental Intervention
+pros:
+- More validity
+- Can determine causality
+- Randomized and blinded
+
+
+cons:
+- may require more resources
+- Ethical concerns for certain exposures
+- Difficult if outcome studied is rare<br/> (e.g. Vaccination)
+]
+
+---
+
+
 
 # Confounders
 
@@ -507,7 +525,7 @@ The instructors concluded that verbal rewards are detrimental to learning while 
 .footnote[[Judgment under Uncertainty: Heuristics and Biases by Tversky A. and Kahneman D. Science 1974](https://www.science.org/doi/10.1126/science.185.4157.1124)]
 
 --
-Correct explanation would: regression to the mean.
+Correct explanation : regression to the mean.
 
 ---
 layout: false
@@ -597,7 +615,7 @@ The key technical issue is whether comparisons are made __between__ or __within_
 Between
 
 - Parallel Group Design <br/> k - groups, $n_i$ patients in group $i$ receive treatment $i$
-- Factorial Design <br/>  - more than one factor. combining treatments, e.g. A and B to same patient.
+- Factorial Design <br/>  - more than one factor, e.g. treatments and knockout.
 ]
 
 .pull-right[
@@ -835,6 +853,161 @@ $\sigma^2$ of replicates:
 
 ---
 
+# Sources of variation
+
+.footnote[https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6807909/]
+
+
+.left-code[
+- (a) the instrumental variation 
+- (b) the total technical variation 
+- (c) the intrabiological variation
+- (d) the interbiological variation 
+]
+
+.img-right[
+![](../inst/images/VariousTypesOfVariation.jpg)
+![](../inst/images/VariousTypesOfVariation_Summary.jpg)
+]
+
+
+---
+class: my-one-page-font
+
+# Two sample t-test
+
+Test statistic $$T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$$
+Null distribution $$T|H_{null} \sim T(0,1,df = N-1)$$
+
+where delta = $\bar{X}_2 - \bar{X}_1$, sd - standard deviation, df - depends on sample size
+
+
+---
+# `power.t.test` - estimating power
+
+Compute the power of the one- or two- sample t-test, or determine parameters to obtain a target power.
+
+```{r, eval = FALSE}
+power.t.test(n = NULL, delta = NULL, sd = 1, sig.level = 0.05,
+             power = NULL,
+             type = c("two.sample", "one.sample", "paired"),
+             alternative = c("two.sided", "one.sided"),
+             strict = FALSE, tol = .Machine$double.eps^0.25)
+```
+
+Relates the type-2 error (power) to the other variables: type-1 error (sig.level), standard deviation (sd), effect size (delta), sample size (n)
+
+---
+
+# `power.t.test` - estimating power
+
+
+What is __the power__ of the two-sample t-test using 
+a significance level of $0.05$ if we want to detect a biologically relevant difference of $50\%$
+given a standard deviation of $0.5$ and group size of $10$ samples?
+
+
+.remark-code[
+```{r}
+power.t.test(delta = 0.59, n = 10, sd = 0.5, sig.level = 0.05)
+```
+]
+
+.footnote[ Why `delta = 0.59`? $50%$ difference, means FC of $1.5$ or greater, and $log2(1.5) = 0.59$]
+
+
+---
+layout: false
+
+# `power.t.test` - esitmating difference $d$
+
+
+What __biologically relevant difference__ (or greater)
+ can be detected with a two-sample t-test using 
+a significance level of $0.05$ and a power of $0.8$ 
+given a standard deviation of $0.5$ and group size of $10$?
+
+.remark-code[
+```{r}
+res <- power.t.test(n = 10, sd = 0.5, power = 0.8, sig.level = 0.05)
+res$delta
+2^res$delta
+```
+]
+
+$$
+\begin{aligned}
+log_2(x) = y&~~~\textrm{exactly if} ~~~ 2^y = x\\
+log_2(I_1/I_2) &= log2(I_1) - log2(I_2) = d\\
+2^d &= I_1/I_2\\
+\end{aligned}
+$$
+
+
+---
+
+# `power.t.test` - Sample size estimation
+
+What __sample size__ do we need, given 
+a significance level of $0.05$ if we want to detect a biologically relevant difference of $50\%$
+given a standard deviation of $0.5$ and a power of $0.8$?
+
+.remark-code[
+```{r}
+res <- power.t.test(delta = 0.59, sd = 0.5, sig.level = 0.05, power = 0.8)
+res$n
+ceiling(res$n)
+```
+
+n - number of observations (per group)
+
+
+]
+
+
+
+---
+
+# `power.t.test` - summary
+
+.footnote[Top - greater standard deviation requires larger sample sizes, Bottom - smaller effect size requires larger sample sizes]
+
+.pull-left[
+For each statistical test,<br/> 
+there exists a unique relation between:
+
+- desired smallest detectable effect size $\mu$
+- sample variance $\sigma^2$
+- sample size $N$
+- critical p-value $p_0$
+- statistical power
+
+]
+
+.right-plot[
+```{r echo=FALSE}
+sd <- seq(0.5, 2, by = .001)
+dd <- power.t.test(delta = 2, sd = 1, sig.level = 0.05, power = 0.8)
+powersd <- function(sd, delta = 1, sig.level = 0.05, power = 0.8){
+  ceiling(power.t.test(delta = 2, sd = sd, sig.level = sig.level, power = power)$n)
+}
+
+ressd <- sapply(sd, powersd)
+power_delta <- function(delta, sd = 1, sig.level = 0.05, power = 0.8){
+  ceiling(power.t.test(delta = delta, sd = sd, sig.level = sig.level, power = power)$n)
+}
+
+delta <- seq(0.5,6, by = 0.001)
+resdelta <- sapply(delta, power_delta)
+plot(sd, ressd, ylab = "N", type = "l", main = "mu=1, p=0.05, power = 0.8")
+plot(delta, resdelta, xlab = "mu", ylab = "N", type = "l", log = "xy", main = "sd=1, p = 0.05, power = 0.8")
+
+```
+]
+
+---
+
+
 # Sample Size - Sample size calculation
 
 .footnote[Top - greater standard deviation requires larger sample sizes, Bottom - smaller effect size requires larger sample sizes]
@@ -877,10 +1050,11 @@ plot(delta, resdelta, xlab = "mu", ylab = "N", type = "l", log = "xy", main = "s
 
 # Conclusion
 
-- Overall goal: effective, reproducible and error free (not biased) research
-- Understand Causality 
-- Understand what heuristics people use and what errors they make
-- The scientific method, randomization, blinding, sample size estimation are helping to prevent biases.
+- Understand what heuristics we use to make judgements and what biases might arise.
+- The scientific method
+- Bradford hill criteria
+- randomization, blinding
+- sample size estimation
 
 __Thank you__
 

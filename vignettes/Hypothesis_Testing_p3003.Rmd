@@ -1,7 +1,7 @@
 ---
 title: "Hypothesis Testing"
 subtitle: "FGCZ Protein Informatics Training"
-author: "Witold Wolski wew@fgcz.ethz.ch"
+author: "Witold Wolski"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   xaringan::moon_reader:
