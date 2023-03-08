@@ -388,7 +388,7 @@ $T|H_0 \sim T(\mu=0,df=N_{obs})$
 
 ---
 
-# Mean = $\mu$? if sampleing $x \sim Exp(1)$
+# Mean = $\mu$? if sampling $x \sim Exp(1)$
 
 .left-code[
 Sampling from a skewed distribution.
@@ -1044,8 +1044,84 @@ knitr::kable(xx, format = "html")
 ]
 
 .footnote[Linear models do work also with missing data. We can specify the pairing by `extra ~ group + ID`]
+
 ---
 
+# Testing for Normality
+
+
+
+.left-code[
+```{r notNormal, eval=FALSE}
+hist(sqrt(rlnorm(10000)), breaks = 100)
+
+```
+]
+
+.right-plot[
+```{r notNormal-out , ref.label="notNormal", echo=FALSE, fig.width=6, fig.height=6}
+```
+]
+
+---
+
+# Testing for Normality
+
+```{r}
+
+x <- replicate(500, { #<< # generates 100 test results for n = 10,100,1000,5000
+                     c(shapiro.test(sqrt(rlnorm(10)))$p.value,   #$
+                       shapiro.test(sqrt(rlnorm(100)))$p.value,  #$
+                       shapiro.test(sqrt(rlnorm(1000)))$p.value, #$
+                       shapiro.test(sqrt(rlnorm(5000)))$p.value) #$
+                    } # rnorm gives a random draw from the normal distribution
+               )
+
+rownames(x) <- c("n10","n100","n1000","n5000")
+rowMeans(x < 0.05) #<< the proportion of significant deviations
+```
+
+.footnote[For small sample sizes (N = 10) not enough power to reject Null Hypothesis. For large sample sizes enough power, but NOT RELEVANT, because of the CLT. Don't confuse "statistical significance" with "importance".]
+
+---
+
+# Alternatively
+
+- Use histograms or qqplot
+- Diagnostic plots to detect outlier samples, e.g. heatmap, violin-plot
+- Use robust tests
+
+
+---
+
+# What is the power for N = 10
+
+A __type II error__ (false negative) occurs when <br/> the null hypothesis
+is false,<br/> but erroneously fails to be rejected. <br/>
+__power of a test__ (which equals $1−\beta$).
+
+Hence, for N = 10 and data from square-root <br/>
+normal distribution, the power is `r round(1-beta,digits= 2) * 100` %
+
+
+.img-right[
+![](../inst/images/hl_nullhypo_errors.png)
+]
+
+
+
+.left-code[
+```{r}
+rowMeans(x < 0.05)[1]
+#<< type II error
+beta = 1 - rowMeans(x < 0.05)[1] 
+beta
+1 - beta
+```
+]
+
+
+---
 
 # Conclusion
 

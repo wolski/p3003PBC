@@ -70,10 +70,10 @@ library(tidyverse)
 
 - Does diet impact weight of person
 - Is treatment preventing infection with COVID?
-- Does treatment changes the abundance of a specific protein?
-- Does the proteome of the muscle tissue and the liver tissue differ?
+- Does treatment changes the abundance of protein XYZ?
 
 ## OMICS experiments
+
 - Which of the many proteins are differentially expressed because of treatment?
 - Which of groups of proteins (geneset) are differentially expressed because of treatment?
 
@@ -93,7 +93,7 @@ Average weight loss is $0.13$kg. <br/>
 Paired t-test for weight loss gives a <br/>
 t-statistic of $t=0.126/0.068=1.84$,</br>
 giving a p-value of $0.067$ (using a two-sided test).</br>
-Not quite significant at the $5%$ level!
+Not significant at the $5\%$ level!
 
 
 .img-right[
@@ -132,12 +132,12 @@ layout: false
 
 # Weight loss example
 
-## Why is the 1-sided test not acceptable?
-
 You use a one-tailed test to improve the test's ability to learn whether the new diet is better. 
 
+## Why is the 1-sided test not acceptable?
+
 You risk missing valuable information by testing in only one direction.
-Test cannot determine whether diet is less effective (leads to weight gain).
+Test cannot determine whether diet leads to weight gain.
 
 ---
 
@@ -147,7 +147,7 @@ Can anything be done to get a significant result<br/>
 out of this study?<br/>
 --
 
-- Look at subgroups of the data <br/> by their sign of the zodiac. <br/> (additional factor)
+- Look at subgroups of the data <br/> by their sign of the zodiac.<br/> (additional factor)
 - *12* instead of *1* test
 --
 
@@ -166,10 +166,16 @@ out of this study?<br/>
 
 What is the problem of this approach?
 
+- By increasing the number of tests you increase the chance of false positive results (type I error).
+- Hypothesis that Arieans are good dieters was suggested by the fact that it gave an *apparently* significant result.
+
 --
 
-- Hypothesis that Arieans are good dieters was suggested by the fact that it gave an *apparently* significant result.
-- By increasing the number of tests you increase the chance of false positive results (type I error).
+
+Requests for subgroup analysis common for clinical studies.
+
+- Compare control vs treatment given sex (F, M) and age group (young, old). 
+
 
 ---
 exclude: true
@@ -197,7 +203,7 @@ exclude: true
 
 - __Multiple Regression__
   - regression analysis involving many explanatory variables
-  - Solution: Use background knowledge to suggest possible models, include only few interaction terms, adjust p-values. 
+  - Solution: Use background knowledge to suggest possible models, , adjust p-values. 
 
 ---
 
@@ -243,20 +249,20 @@ is to __increase the sample size__, and this may not be feasible.
 
 # Family-wise error rate (FWER)
 
-In statistics, family-wise error rate (FWER) is the probability of making one or more false discoveries, or type I errors when performing multiple hypotheses tests.
+In statistics, family-wise error rate (FWER) is the probability of making one or more false discoveries, or __type I errors__ when performing multiple hypotheses tests.
 
 
-If multiple hypotheses are tested, the chance of a rare event increases, and therefore, the likelihood of incorrectly rejecting a null hypothesis (i.e., making a type I error) increases.
+If multiple hypotheses are tested, the chance of a rare event increases, and therefore, the likelihood of incorrectly rejecting a null hypothesis (making a type I error) increases.
 
 ---
 
 # P-value adjustment - Bonferroni correction
 
-The Bonferroni correction compensates for that increase by testing each individual hypothesis at a significance level of $\epsilon = \alpha /k$, $\alpha$ is the desired overall size of test and $k$ is the number of hypotheses.
+The Bonferroni correction compensates for that increase by testing each individual hypothesis at a _significance level_ of $\epsilon = \alpha /k$, $\alpha$ is the desired overall _size of test_ and $k$ is the number of hypotheses.
 
 $$k=20;~ \alpha = 0.05;~~~~~~~\epsilon = 0.05/20 = 0.0025$$
 
-Bonferroni adjustments are typically very conservative (it assumes that the tests are independent - however they are frequently correlated) and more complex methods are usually used.
+Bonferroni adjustments are typically very conservative (assumes that the tests are independent - however they are frequently correlated) and more complex methods are usually used (e.g. [multcomp](https://CRAN.R-project.org/package=multcomp)).
 
 - R function `p.adjust` transforms the p-values (makes them larger) instead transforming the threshold.
 
@@ -340,7 +346,7 @@ exclude: true
 
 ---
 
-# FDR Motivation
+# False Discovery Rate - Motivation
 
 .footnote[Simulating p-values Figure A) 1000 p-values where H0 true, B) 600 p-values where H0 true and 400 HA true. C) closup]
 

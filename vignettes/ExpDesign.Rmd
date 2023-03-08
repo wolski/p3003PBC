@@ -149,7 +149,7 @@ caused or influenced a particular __outcome__
 In answering these question people typically rely on;
 
 - __representativeness__ heuristic,
-  - i.e. when A is highly representative of B, the probability that A originates form B is judged to be high.
+  - i.e. when A is highly representative of B, the probability that A originates from B is judged to be high.
    (Bat and Bird , Frog and Tadpole)
 - __availability__ heuristic
   - retrievability - how easily information can be brought to mind
@@ -165,7 +165,7 @@ In answering these question people typically rely on;
 # Judgement under uncertainty - Heuristics and biases
 
 
-But people are insensitive to:
+and people are insensitive to:
 - to prior probability of outcome
 - to sample size
 - to predictability (predict future based on observations made now).
@@ -173,54 +173,17 @@ But people are insensitive to:
 - misconception of regression - confounding $^{\star\star}$
 
 
-
 .footnote[
-$^{\star}$ but consistent patterns are most often observed when input variables are highly redundant or correlated. Hence people tend to have great confidence in predictions based on redundant input variables.<br/>
+$^{\star}$ People tend to have great confidence in predictions based on redundant input variables. However, consistent patterns are most often observed when input variables are highly redundant or correlated. <br/>
 
-$^{\star\star}$ Because the instructors had praised their trainees after good landings and admonished them after poor
- ones, they reached the erroneous and potentially harmful conclusion that punishment is more effective than reward.
+$^{\star\star}$ Example : Because the instructors had praised their trainees after good landings and admonished them after poor
+ ones, they reached the ... conclusion that punishment is more effective than reward.
 
 [Judgment under Uncertainty: Heuristics and Biases by Tversky A. and Kahneman D. Science 1974](https://www.science.org/doi/10.1126/science.185.4157.1124),
 
 ]
 
 
-
----
-
-
-# Bias - Other types of
-
-- Confirmation bias,<br/> tendency to favor information that confirm hypothesis $^{\star}$
-
-.img-right[
-![](../inst/images/Man_In_The_Moon_1.png)
-]
-
-
---
-
-- Funding bias,<br/> bias relative to the commercial interests of a study's <br/> financial sponsor
-.img-right[
-![](../inst/images/Man_In_The_Moon_2.png)
-]
---
-
-- Publication bias,<br/> Publishing only results that show a significant finding,</br> and inserts bias in favor of positive results.  $^{\star\star}$
-  
-.img-right[
-![](../inst/images/Man_In_The_Moon_3.png)
-]
-
-.footnote[
-$^\star$ Do you examine an experiment for a technical problem which <br/>
-fits your hypothesis? </br>
-$^{\star\star}$ A consequence of this is that researchers are unduly motivated<br/>
-to manipulate their practices to ensure that<br/> a statistically significant result is reported. <br/>
-
-[Meta-assessment of bias in science](https://www.pnas.org/content/114/14/3714)</br>
-[catalogofbias.org](https://catalogofbias.org/)
-]
 
 ---
 
@@ -283,8 +246,28 @@ women, different countries
 5.  __Biological gradient__ – the stronger the agent the greater the effect
 6.  __Plausibility__ – is there a possible biological mechanism that could explain the effect
 7. __Coherence__ – do different types of study result in similar conclusions – e.g., controlled trials and observational studies
-8. __Experiment__ "Occasionally it is possible to appeal to experimental evidence".
-<!-- 9. Analogous results found elsewhere – do similar agents have similar results?-->
+8. __Experiment__ "Occasionally it is possible to appeal to experimental evidence"
+9. __Analogy__  similar agents have similar results... asbestos and carbon nanotubes
+
+.footnote[
+
+(Austin Bradford Hill, Proc R Soc Med. 1965 May; 58(5): 295–300.)[https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1898525/]
+
+]
+---
+
+
+# Causality - Bradford-Hill Criteria
+
+- Protein Quantification 
+  - Strength of association : Control, Treatment $5 \mu g$, Treatment $10 \mu g$
+  - Consistency : Same effect in different genetic backgrounds, different laboratories.
+  - Temporality : Time course data
+  - Specificity : A treatment has only a single effect (e.g. only the expression of one protein changes)
+
+- Which Bradford-Hill criteria do you aim to meet in your study?
+
+[Applying the Bradford Hill criteria in the 21st century](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4589117/)
 
 .footnote[
 Sir Austin Bradford Hill CBE FRS was an English epidemiologist and statistician, pioneered the randomized clinical trial (use of streptomycin in treating tuberculosis) and, together with Richard Doll, demonstrated the connection between cigarette smoking and lung cancer (case-control study).
@@ -307,19 +290,6 @@ Sir Austin Bradford Hill CBE FRS was an English epidemiologist and statistician,
 
 ---
 
-# Causality - Bradford-Hill Criteria
-
-- Protein Quantification 
-  - Strength of association : Control, Treatment $5 \mu g$, Treatment $10 \mu g$
-  - Consistency : Treatment effect __does__ or __does not__ depend on Genetic Background.
-  - Temporality : Time course data
-  - Specificity : Effect only caused by this treatment
-
-- Which Bradford-Hill criteria do you aim to meet in your study?
-
-
-
----
 exclude: true
 
 # Causality
@@ -1044,6 +1014,70 @@ plot(delta, resdelta, xlab = "mu", ylab = "N", type = "l", log = "xy", main = "s
 
 ```
 ]
+---
+
+
+# Bias
+
+Bias is a disproportionate weight in favor of or against an idea or thing, usually in a way that is closed-minded, prejudicial, or unfair.
+
+
+- Confirmation bias,<br/> tendency to favor information that confirm hypothesis $^{\star}$
+
+.img-right[
+![](../inst/images/Man_In_The_Moon_1.png)
+]
+
+
+--
+
+- [catalogofbias.org](https://catalogofbias.org/biases/)
+
+.img-right[
+![](../inst/images/Man_In_The_Moon_2.png)
+]
+
+--
+
+- ...
+  
+.img-right[
+![](../inst/images/Man_In_The_Moon_3.png)
+]
+
+--
+
+
+
+.footnote[
+$^\star$ Do you examine an experiment which <br/>
+fits your hypothesis, for a technical problem? </br>
+
+
+- [Meta-assessment of bias in science](https://www.pnas.org/content/114/14/3714)</br>
+]
+
+---
+
+# Bias
+
+
+- Publication bias,<br/> Publishing only results that show a significant finding,</br> and inserts bias in favor of positive results.  $^{\star\star}$
+
+.img-right[
+![](../inst/images/Z_plot.png)
+]
+
+
+
+.footnote[
+- [Publication bias or research misconduct?](https://medianwatch.netlify.app/post/z_values/)
+
+
+$^{\star\star}$ A consequence of this is that researchers are unduly motivated<br/>
+to manipulate their practices to ensure that<br/> a statistically significant result is reported. <br/>
+]
+
 
 ---
 
@@ -1052,9 +1086,10 @@ plot(delta, resdelta, xlab = "mu", ylab = "N", type = "l", log = "xy", main = "s
 
 - Understand what heuristics we use to make judgements and what biases might arise.
 - The scientific method
-- Bradford hill criteria
-- randomization, blinding
-- sample size estimation
+- Bradford Hill criteria to study Causality
+- Study Types
+- Randomization and blinding
+- Sample size estimation
 
 __Thank you__
 
