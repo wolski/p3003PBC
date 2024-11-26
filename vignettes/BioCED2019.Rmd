@@ -16,8 +16,8 @@ output:
 editor_options:
   chunk_output_type: console
 vignette: >
-  %\VignetteIndexEntry{fgczgseaora: unifying methods on gene (protein) set enrichment} 
   %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{fgczgseaora: unifying methods on gene (protein) set enrichment} 
   %\VignetteEngine{knitr::rmarkdown}
 ---
 

@@ -1,0 +1,119 @@
+---
+title: "GSEA with clusterProfiler or msig-DB"
+subtitle: "FGCZ Protein Informatics Training"
+author: "Witold Wolski"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "metropolis", "metropolis-fonts", "trug-ggplot2.css"]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "%current%"
+editor_options:
+  chunk_output_type: console
+vignette: >
+  %\VignetteIndexEntry{GSEA with clusterProfiler or msig-DB} 
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+class: fullscreen, inverse, top, center, text-black
+background-image: url("../inst/images/OIG2.jpeg")
+
+.font150[**GSEA**]
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 4.25, fig.height = 3.5, fig.retina = 3,
+                      message = FALSE, warning = FALSE, cache = TRUE,
+                      autodep = TRUE, hiline = TRUE)
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo <- FALSE
+    options$out.height <- "99%"
+    options$fig.width <- 16
+    options$fig.height <- 8
+  }
+  options
+})
+hook_source <- knitr::knit_hooks$get('source')
+knitr::knit_hooks$set(source = function(x, options) {
+  if (!is.null(options$hiline) && options$hiline) {
+    x <- stringr::str_replace(x, "^ ?(.+)\\s?#<<", "*\\1")
+  }
+  hook_source(x, options)
+})
+options(htmltools.dir.version = FALSE, width = 90)
+as_table <- function(...) knitr::kable(..., format='html', digits = 3)
+
+library(tidyverse)
+```
+
+---
+
+# Goals
+
+- generate rank files for GSEA analysis
+  - either using R or Excel
+  - filter for 2 or more peptides
+  - extract on protein ID in case there are ID1;ID2;...
+  - extract the Gene Names
+- Run GSEA analysis with misg-DB
+- Run GSEA analysis with clusterProfiler
+
+---
+
+#  Generating rank files
+
+- in Excel use Data -> Filter and Data -> text to columns
+
+
+- in R 
+  - use File->upload to upload the excel file
+  - use `readxl::read_xlsx` to read the differential expression table into data.frame
+  - use `subset` and `gsub` or else to extract the gene names and generete rank files.
+  
+---
+
+# use msig-DB to run GSEA analysis
+
+- https://www.gsea-msigdb.org/gsea/downloads.jsp
+- https://www.gsea-msigdb.org/gsea/doc/GSEAUserGuideFrame.html
+
+---
+
+# use clusterProfiler to analyse rank files
+
+- generate the geneList
+- find the correct database
+
+```{r gsea, eval=FALSE, echo = TRUE}
+library(org.Hs.eg.db); library(clusterProfiler)
+data(geneList, package="DOSE")
+ego3 <- gseGO(geneList     = geneList,
+              OrgDb        = org.Hs.eg.db,
+              ont          = "CC",
+              minGSSize    = 100,
+              maxGSSize    = 500,
+              pvalueCutoff = 0.05,
+              verbose      = FALSE)
+goplot(ego3)
+```
+
+
+.img-right[
+```{r gsea-out, ref.label="gsea", echo=FALSE, fig.width=6, fig.height=6}
+```
+]
+
+
+
+---
+
+# explore visualization options in clusterProfiler
+
+- https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html
+- `dotplot`, `cnetplot`, `heatplot`...

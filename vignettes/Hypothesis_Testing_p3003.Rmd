@@ -77,6 +77,8 @@ Dr. Muriel Bristol, a female colleague of Fisher claimed to be able to tell whet
 ..img-right[
 ![](../inst/images/Milk-Tea-2m.jpg)
 ]
+
+.footnote[Lady tasting tea https://en.wikipedia.org/wiki/Lady_tasting_tea,Ronald Fisher https://en.wikipedia.org/wiki/Ronald_Fisher]
 --
 
 - The null hypothesis was that the lady<br/> had no such ability.
@@ -1101,7 +1103,8 @@ is false,<br/> but erroneously fails to be rejected. <br/>
 __power of a test__ (which equals $1−\beta$).
 
 Hence, for N = 10 and data from square-root <br/>
-normal distribution, the power is `r round(1-beta,digits= 2) * 100` %
+normal distribution, the power is:
+
 
 
 .img-right[

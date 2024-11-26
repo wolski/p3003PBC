@@ -75,7 +75,7 @@ library(tidyverse)
 ## OMICS experiments
 
 - Which of the many proteins are differentially expressed because of treatment?
-- Which of groups of proteins (geneset) are differentially expressed because of treatment?
+- Which groups of proteins (geneset) are differentially expressed because of treatment?
 
 ---
 layout: false
@@ -90,7 +90,7 @@ Experiment:
    - Weight at the end of week. 
 
 Average weight loss is $0.13$kg. <br/>
-Paired t-test for weight loss gives a <br/>
+Paired **t-test** for weight loss gives a <br/>
 t-statistic of $t=0.126/0.068=1.84$,</br>
 giving a p-value of $0.067$ (using a two-sided test).</br>
 Not significant at the $5\%$ level!
@@ -192,7 +192,8 @@ exclude: true
 
 - __Multiple endpoints__
   - many outcome measures to asses an intervention. <br/>
-  In mass spectrometry: _MS1 intensity and MS2 intensity (DIA)_.
+      - In mass spectrometry: _MS1 intensity and MS2 intensity (DIA)_.
+      - Skin Prick Test (SPT), RAST (tests for the amount of specific IgE antibodies in the blood).
   - Solution : choose primary outcome, adjust p-values,  multivariate analysis.
 --
 
@@ -203,7 +204,7 @@ exclude: true
 
 - __Multiple Regression__
   - regression analysis involving many explanatory variables
-  - Solution: Use background knowledge to suggest possible models, , adjust p-values. 
+  - Solution: Use background knowledge to suggest possible models, adjust p-values. 
 
 ---
 
@@ -218,8 +219,8 @@ exclude: true
 - __Subgroup comparison__
   - Samples are subdivided on baseline factors : gender, age-groups, sign of zodiac
   - Solution : 
-      - adjust p-values 
       - ANOVA analysis to test factors
+      - adjust p-values
   
 .footnote[Example : 50 Control samples, 50 Treatment, no significant result. Split data into female and male, and young and old group. Four tests, instead of one and maybe one is significant.]
 
@@ -245,6 +246,44 @@ is to __increase the sample size__, and this may not be feasible.
 ![](../inst/images/hl_nullhypo_errors.png)
 ]
 
+
+---
+
+# Multiple Testing
+
+.left-code[
+
+
+```{r simulatingH0SigmaKTnew, eval=FALSE, size="footnotesize"}
+# improved statistic
+set.seed(2); N = 20; N_obs = 4; mu = 0; sigma = 1
+bb <- function(y){
+  x <- rnorm( N_obs, mu, sigma )
+  # compute mean and sd
+  data.frame(mean = mean( x ), 
+             sd = sd(x))  }
+res <- purrr::map_df(1:N, bb)
+T0 <- (mu - res$mean)/ (sigma/sqrt(N_obs)) #<<
+plot(T0,rep(0.4,20 ), type="h", xlim=c(-3,3), ylim=c(0,0.4))
+
+x <- seq(-10,10,0.01)
+lines(x, dnorm(x, 
+      sd= 1), #<<
+      col=2)
+abline(v = c(qnorm(0.025), qnorm(0.975)),
+       col= "orange", lwd=2)
+
+```
+
+$T|H_0 \sim N(0,1)$
+]
+
+.right-plot[
+```{r simulatingH0SigmaKTnew-out, ref.label="simulatingH0SigmaKTnew", echo=FALSE, out.width="100%"}
+```
+]
+
+
 ---
 
 # Family-wise error rate (FWER)
@@ -254,6 +293,8 @@ In statistics, family-wise error rate (FWER) is the probability of making one or
 
 If multiple hypotheses are tested, the chance of a rare event increases, and therefore, the likelihood of incorrectly rejecting a null hypothesis (making a type I error) increases.
 
+
+
 ---
 
 # P-value adjustment - Bonferroni correction
@@ -262,7 +303,7 @@ The Bonferroni correction compensates for that increase by testing each individu
 
 $$k=20;~ \alpha = 0.05;~~~~~~~\epsilon = 0.05/20 = 0.0025$$
 
-Bonferroni adjustments are typically very conservative (assumes that the tests are independent - however they are frequently correlated) and more complex methods are usually used (e.g. [multcomp](https://CRAN.R-project.org/package=multcomp)).
+Bonferroni adjustments are typically very conservative (assumes that the tests are independent - however tests are frequently correlated) and more complex methods are usually used (e.g. [multcomp](https://CRAN.R-project.org/package=multcomp)).
 
 - R function `p.adjust` transforms the p-values (makes them larger) instead transforming the threshold.
 

@@ -124,6 +124,7 @@ exclude: true
 - Exp. Design
 - Sample Size
 
+.footnote[https://www.youtube.com/watch?v=mt9WKbQJrI4]
 ---
 
 # Question of Causality
@@ -204,6 +205,7 @@ What odds should each individual give?
 
 .footnote[Odds : $$\frac{\textrm{Probability of urn with 2/3 RED balls}}{\textrm{Probability or urn with 2/3 WHITE balls}}$$ ]
 
+.footnote[https://www.youtube.com/watch?v=HZGCoVF3YvM]
 
 ---
 # Scientific Method
@@ -312,6 +314,7 @@ Judea Pearl "The Book of Why: The New Science of Cause and Effect"<br/>
 
 ]
 
+.footnote[https://www.youtube.com/watch?v=HZGCoVF3YvM]
 
 ---
 
@@ -496,6 +499,16 @@ The instructors concluded that verbal rewards are detrimental to learning while 
 
 --
 Correct explanation : regression to the mean.
+
+---
+
+# Confounders - Types of
+
+.image-70[
+![](../inst/images_2/FourElementalConfounds.png)
+]
+
+.footnote[https://www.youtube.com/watch?v=mBEA7PKDmiY]
 
 ---
 layout: false
@@ -844,12 +857,12 @@ $\sigma^2$ of replicates:
 ---
 class: my-one-page-font
 
-# Two sample t-test
+# t-test
 
 Test statistic $$T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$$
 Null distribution $$T|H_{null} \sim T(0,1,df = N-1)$$
 
-where delta = $\bar{X}_2 - \bar{X}_1$, sd - standard deviation, df - depends on sample size
+where delta = $\bar{X}_2 - \mu$, sd - standard deviation, df - depends on sample size
 
 
 ---
@@ -1091,5 +1104,7 @@ to manipulate their practices to ensure that<br/> a statistically significant re
 - Randomization and blinding
 - Sample size estimation
 
+
 __Thank you__
 
+.footnote[https://www.youtube.com/watch?v=uanZZLlzKHw]
