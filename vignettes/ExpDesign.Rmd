@@ -156,10 +156,13 @@ In answering these question people typically rely on;
   - retrievability - how easily information can be brought to mind
   - imaginability - how easy is it to explain outcomes (a good story sells)
   - bias due to illusory correlations - frequency of co-occurrence
-- __anchoring__ heuristic
+- __anchoring__ heuristic (first impression)
   - insufficient adjustment
   - assessment of uncertainty - typically under-estimated
 
+.footnote[
+Anchoring can limit consideration of factors or scenarios that lie outside the initial frame of reference, reducing the accuracy of uncertainty assessments. 
+For instance, a new gene's function might be inferred based on a reference gene's function, even if adjustments for species-specific differences are insufficient.]
 
 ---
 
@@ -167,14 +170,18 @@ In answering these question people typically rely on;
 
 
 and people are insensitive to:
-- to prior probability of outcome
+- to prior probability of outcome $^{\star\star}$
 - to sample size
-- to predictability (predict future based on observations made now).
+- to predictability (predict future based on observations made now), is connected to anchoring $^{\star}$
 - illusion of validity caused by consistency  $^{\star}$
 - misconception of regression - confounding $^{\star\star}$
 
 
 .footnote[
+$^{\star\star}$ fail to properly account for the base rate or prior likelihood of an event occurring when making judgments or decisions
+
+$^{\star}$ Overestimate or underestimate how well certain factors or cues can predict future outcomes or explain phenomena
+
 $^{\star}$ People tend to have great confidence in predictions based on redundant input variables. However, consistent patterns are most often observed when input variables are highly redundant or correlated. <br/>
 
 $^{\star\star}$ Example : Because the instructors had praised their trainees after good landings and admonished them after poor
@@ -185,10 +192,23 @@ $^{\star\star}$ Example : Because the instructors had praised their trainees aft
 ]
 
 
+---
+
+# Mitigating Insensitivity to Predictability
+
+- **Probabilistic Thinking**:  
+  Encouraging the use of probabilities and statistical tools helps people better assess the predictability of outcomes.
+
+- **Training and Feedback**:  
+  Repeated exposure to prediction tasks with feedback can improve sensitivity to the true predictability of events.
+
+- **Avoiding Anchoring**:  
+  Ensuring people critically evaluate all relevant information rather than fixating on initial values or assumptions helps reduce biases in predicting outcomes.
 
 ---
 
-exclude: true
+
+exclude: false
 # Judgement under uncertainty - Heuristics and biases
 
 Imagine an urn filled with balls, of which 2/3 are of one color and 1/3 of another.
@@ -243,8 +263,8 @@ exclude: true
 exposed to the agent the more plausible is the association
 2. __Consistency__ – (reproducibility) does it happen in other groups of people – both men and
 women, different countries
-3. __Specificity__ – no other likely explanations
-4. __Temporality__ – effect follows cause, and if expected delay, effect must occur after that delay
+3. __Specificity__ – evaluates whether a specific cause leads to a specific effect
+4. __Temporality__ – effect follows cause, and if expected delay, effect must occur after that delay (only mandatory criterion)
 5.  __Biological gradient__ – the stronger the agent the greater the effect
 6.  __Plausibility__ – is there a possible biological mechanism that could explain the effect
 7. __Coherence__ – do different types of study result in similar conclusions – e.g., controlled trials and observational studies
@@ -378,7 +398,7 @@ They have shown that these smaller, more precise,<br/>
 questions are often best answered via carefully<br/>
 __designed experiments__<br/>
 among the people who are most affected."
-
+x
 
 .img-right[
 ![](../inst/images/Nobel2019.png)
