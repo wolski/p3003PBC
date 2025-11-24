@@ -1,0 +1,643 @@
+---
+title: "Experimental Design - Short Version"
+subtitle: "FGCZ Protein Informatics Training"
+author: "Witold Wolski"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "metropolis", "metropolis-fonts", "trug-ggplot2.css"]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "%current%"
+editor_options:
+  chunk_output_type: console
+vignette: >
+  %\VignetteIndexEntry{Experimental Design - Short Version}
+  %\VignetteEncoding{UTF-8}
+
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 4.25,
+                      fig.height = 3.5,
+                      fig.retina = 3,
+                      message = FALSE,
+                      warning = FALSE,
+                      cache = TRUE,
+                      autodep = TRUE,
+                      hiline = TRUE)
+
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo <- FALSE
+    options$out.height <- "99%"
+    options$fig.width <- 16
+    options$fig.height <- 8
+  }
+  options
+})
+hook_source <- knitr::knit_hooks$get('source')
+knitr::knit_hooks$set(source = function(x, options) {
+  if (!is.null(options$hiline) && options$hiline) {
+    x <- stringr::str_replace(x, "^ ?(.+)\\s?#<<", "*\\1")
+  }
+  hook_source(x, options)
+})
+options(htmltools.dir.version = FALSE, width = 90)
+as_table <- function(...) knitr::kable(..., format='html', digits = 3)
+```
+
+---
+
+class: fullscreen, inverse, top, center, text-black
+background-image: url("../inst/images/Linear_chair.jpg")
+
+.font150[**Experimental Design - Short Version**]
+
+---
+
+# Overview
+
+This presentation covers key aspects of experimental design for proteomics research:
+
+- **Confounders**
+  - What are confounders and why do they matter?
+  - Types of confounders
+  - How to control for confounders
+  - Reporting confounders
+
+- **Experimental Design**
+  - Between vs within subjects designs
+  - Factorial designs and interactions
+  - Parallel group vs factorial designs
+
+- **Sample Size Estimation**
+  - Ethical considerations
+  - Type I and Type II errors
+  - Using power.t.test for sample size calculations
+
+---
+
+# Confounders
+
+__Confounder__ - a variable that influences both the independent and dependent variable, creating a spurious association.
+
+__Example:__ You compare protein expression between __treated__ and __control__ mice.
+
+- __Independent variable__ (what you manipulate): Treatment (drug vs placebo)
+- __Dependent variable__ (what you measure): Protein expression levels
+- __Confounder__: You processed all treated samples on Monday and all controls on Friday
+
+You observe differences in protein expression - but is it the drug effect or a batch effect?
+
+The confounder (processing day) affects both:
+- which group the sample belongs to (independent variable)
+- the measured protein levels (dependent variable)
+
+
+---
+layout: false
+
+# Controlling for Confounders
+
+Three strategies to prevent confounding:
+
+1. **Randomize** sample assignment<br/>
+   over co-variates (age, sex, run order)
+
+2. **Process in parallel**<br/>
+   handle all samples together to avoid batch effects
+
+3. **Complete block design**<br/>
+   ensure all treatment groups are represented <br/>
+   in each batch
+
+.img-right[
+![How to avoid](../inst/images/BatchEffect.png)
+]
+
+__Bad:__ All treated in Batch 1, all controls in Batch 2<br/>
+__Good:__ Each batch contains treated AND control samples
+
+.footnote[
+[Statistical Design of Quantitative Mass Spectrometry-Based Proteomic Experiments](https://doi.org/10.1021/pr8010099)<br/>
+[Importance of Block Randomization When Designing Proteomics Experiments](https://doi.org/10.1021/acs.jproteome.0c00536)
+]
+
+---
+
+# Queue Generator
+
+Randomize the order in which samples are measured to prevent confounding by instrument drift or column degradation.
+
+__Problem:__ Running all samples of one condition first, then another, confounds treatment with time.
+
+__Solution:__ Create __blocks__ where each condition appears once, then randomize within blocks.
+
+__Example:__ 3 x A, 3 x B, 2 x C, 2 x D (10 samples total)
+
+| Block 1 | Block 2 | Block 3 |
+|---------|---------|---------|
+| A B C D | B C D A | B A     |
+
+Each block contains one sample per condition (as available), run order randomized within block.
+
+.footnote[http://fgcz-ms-shiny.uzh.ch:8080/queue_generator10/]
+
+---
+
+# Documenting Co-variates
+
+Record variables that could confound your results - <br/>
+even if you controlled for them, others may need this for re-analysis.
+
+.pull-left[
+**Biological:**
+- age
+- sex / gender
+- BMI
+- disease stage
+]
+
+.pull-right[
+**Technical:**
+- batch / run date
+- instrument
+- operator
+- sample preparation date
+]
+
+__Why?__ Enables statistical correction and reproducibility.
+
+.footnote[
+EQUATOR Network - reporting guidelines: http://www.equator-network.org/
+]
+
+
+
+---
+
+# Experimental Design - Introduction
+
+Experimental design is the planning of experiments to ensure that <br/>
+the data collected can answer the research question.
+
+__Key decisions:__
+
+- **Between vs within subjects** - who gets compared?
+- **Factorial designs** - how to study multiple factors?
+- **Interactions** - does the effect of one factor depend on another?
+
+__Goal:__ Maximize statistical power while minimizing <br/>
+resources (samples, time, cost).
+
+---
+
+
+# Experimental Design
+
+Are comparisons made __between__ or __within__ subjects?
+
+.pull-left[
+**Between subjects**
+
+Different individuals in each group
+
+- __Parallel groups:__ treated vs control mice
+- __Factorial:__ combine treatment + genotype
+]
+
+.pull-right[
+**Within subjects** (paired/repeated)
+
+Same individual measured multiple times
+
+- __Time series:__ before and after treatment
+- __Crossover:__ each subject gets all treatments
+]
+
+__Within-subject designs are more powerful__ - <br/>
+individual variability is controlled.
+
+.footnote[Ronald Fisher (1890 - 1962) "The Design of Experiments" (1935)]
+
+---
+
+layout: false
+
+# Interactions
+
+An __interaction__ occurs when the effect of one factor <br/>
+depends on the level of another factor.
+
+__Example:__ Does a drug work differently in WT vs knockout mice?
+
+.pull-left[
+**No interaction**
+
+Drug effect is the same <br/>
+regardless of genotype
+]
+
+.pull-right[
+**Interaction**
+
+Drug works in WT mice <br/>
+but not in knockouts
+]
+
+Think of interactions as __"it depends"__ effects - <br/>
+you need to know both factors to predict the outcome.
+
+.footnote[[Understanding Interaction Effects in Statistics](https://statisticsbyjim.com/regression/interaction-effects/)]
+
+
+---
+
+# Exp. Design - Factorial vs parallel group
+
+.pull-left[
+Parallel (one factor)
+
+- drug A
+- drug B
+- plac
+]
+
+.pull-right[
+Factorial (2 or more factors)
+
+- Factor A
+  - drug A
+  - plac A
+- Factor B
+  - drug B
+  - plac B
+]
+
+40 patients, Placebo, drug A and drug B.
+How would you allocate these patients?
+
+
+.footnote[Ronald Fisher pioneered the use of factorial experiments instead of the one-factor-at-a-time method.]
+
+---
+
+# Exp. Design - Factorial vs parallel group
+
+.pull-left[
+Parallel (one factor)
+
+- drug A (13)
+- drug B (13)
+- plac (14)
+
+Compare:
+- 13 drug A vs 14 plac
+- 13 drug B vs 14 plac
+]
+
+.pull-right[
+Factorial (2 or more factors)
+
+- drug A + drug B (10)
+- plac A + drug B (10)
+- drug A + plac B (10)
+- plac A + plac B (10)
+
+Compare:
+- 20 drug A vs 20 plac A
+- 20 drug B vs 20 plac B
+]
+
+
+---
+layout: false
+
+# Exp. Design - Interactions
+
+Factorial Designs are efficient at evaluating<br/>
+the effects and possible interactions of<br/>
+several factors (independent variables).
+
+
+.footnote[https://en.wikipedia.org/wiki/Design_of_experiments]
+
+--
+
+- No interaction
+.img-right[
+![](../inst/images/TypesOfInteractions_NO.png)
+
+
+[Medical Statistics - University of Sheffield]
+]
+
+
+--
+
+- Quantitative interaction
+
+.img-right[
+![](../inst/images/TypesOfInteractions_Quanti.png)
+]
+
+
+--
+
+- Qualitative interaction
+
+.img-right[
+![](../inst/images/TypesOfInteractions_Quali.png)
+]
+
+
+
+---
+exclude: true
+
+# All possible interactions
+
+
+- 1 = there was a main effect for IV1.
+- ~1 = there was not a main effect for IV1
+- 2 = there was a main effect for IV2
+- ~2 = there was not a main effect of IV2
+- 1x2 = there was an interaction
+- ~1x2 = there was not an interaction
+
+.img-right[
+![](../inst/images/allInteractions2x2.png)
+]
+
+.footnote[https://crumplab.github.io/statistics/more-on-factorial-designs.html]
+
+---
+
+
+# Sample Size - Ethical considerations
+
+- It is agreed that it is __unethical__ _to conduct research which is badly planned or
+executed_.
+
+-  It is unethical to perform a trial which:
+  - has _many more subjects_ than are needed to reach a conclusion.
+  - has little prospect of reaching any conclusion, <br/> e.g. because
+  of _insufficient numbers of subjects_ (or some other aspect of poor design)
+
+- The local ethics committee has discretion on how it will supervise __non-interventional__ studies
+  -  US - Institutional Review Board (IRB)
+  -  EU - ethics committees
+
+[Declaration of Helsinki (1964+amendments))](https://www.wma.net/policies-post/wma-declaration-of-helsinki-ethical-principles-for-medical-research-involving-human-subjects/)
+
+---
+
+# Sample Size - Types of error
+
+
+A __type I error__ (false positive) occurs when<br/> the null hypothesis (H0) is true, but is rejected.<br/>
+The _type I error rate_ or __significance level__ (p-Value)<br/> is the probability of rejecting the<br/>
+null hypothesis given that it is true.
+
+
+A __type II error__ (false negative) occurs when<br/>
+the null hypothesis is false,<br/>
+but erroneously fails to be rejected. <br/>
+The _the type II error rate_ is denoted by the Greek letter $\beta$<br/>
+and is related to the __power of a test__ (which equals $1−\beta$).
+
+For a given test, the only way to reduce both error rates<br/>
+is to __increase the sample size__, and this may not be feasible.
+
+.img-right[
+![](../inst/images/hl_nullhypo_errors.png)
+]
+
+
+---
+
+# Sample Size - Sample size calculation
+
+
+.pull-left[
+
+Run pilot experiment and measure the coefficient of variation (CV) or <br>
+$\sigma^2$ of replicates:
+
+- technical
+- _biochemical_
+- __biological__
+]
+
+
+
+.pull-right[
+- _biological variance >> bio-chem+tech variance_<br/>
+  - Only provide biological replicates
+- _bio-chem+tech variance >> biological variance_<br/>
+  - __improve sample handling and preparation__
+  - choose different technology
+  - buy better instrument
+]
+
+.footnote[measure 3 tech replicates, 3 tech+bio-chem replicates, 3 tech+bio-chem+biological replicates]
+
+---
+
+# Sources of variation
+
+.footnote[https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6807909/]
+
+
+.left-code[
+- (a) the instrumental variation
+- (b) the total technical variation
+- (c) the intrabiological variation
+- (d) the interbiological variation
+]
+
+.img-right[
+![](../inst/images/VariousTypesOfVariation.jpg)
+![](../inst/images/VariousTypesOfVariation_Summary.jpg)
+]
+
+
+---
+class: my-one-page-font
+
+# t-test
+
+Test statistic $$T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$$
+Null distribution $$T|H_{null} \sim T(0,1,df = N-1)$$
+
+where delta = $\bar{X}_2 - \mu$, sd - standard deviation, df - depends on sample size
+
+
+---
+# `power.t.test` - estimating power
+
+Compute the power of the one- or two- sample t-test, or determine parameters to obtain a target power.
+
+```{r, eval = FALSE}
+power.t.test(n = NULL, delta = NULL, sd = 1, sig.level = 0.05,
+             power = NULL,
+             type = c("two.sample", "one.sample", "paired"),
+             alternative = c("two.sided", "one.sided"),
+             strict = FALSE, tol = .Machine$double.eps^0.25)
+```
+
+Relates the type-2 error (power) to the other variables: type-1 error (sig.level), standard deviation (sd), effect size (delta), sample size (n)
+
+---
+
+# `power.t.test` - estimating power
+
+
+What is __the power__ of the two-sample t-test using
+a significance level of $0.05$ if we want to detect a biologically relevant difference of $50\%$
+given a standard deviation of $0.5$ and group size of $10$ samples?
+
+
+.remark-code[
+```{r}
+power.t.test(delta = 0.59, n = 10, sd = 0.5, sig.level = 0.05)
+```
+]
+
+.footnote[ Why `delta = 0.59`? $50%$ difference, means FC of $1.5$ or greater, and $log2(1.5) = 0.59$]
+
+
+---
+layout: false
+
+# `power.t.test` - esitmating difference $d$
+
+
+What __biologically relevant difference__ (or greater)
+ can be detected with a two-sample t-test using
+a significance level of $0.05$ and a power of $0.8$
+given a standard deviation of $0.5$ and group size of $10$?
+
+.remark-code[
+```{r}
+res <- power.t.test(n = 10, sd = 0.5, power = 0.8, sig.level = 0.05)
+res$delta
+2^res$delta
+```
+]
+
+$$
+\begin{aligned}
+log_2(x) = y&~~~\textrm{exactly if} ~~~ 2^y = x\\
+log_2(I_1/I_2) &= log2(I_1) - log2(I_2) = d\\
+2^d &= I_1/I_2\\
+\end{aligned}
+$$
+
+
+---
+
+# `power.t.test` - Sample size estimation
+
+What __sample size__ do we need, given
+a significance level of $0.05$ if we want to detect a biologically relevant difference of $50\%$
+given a standard deviation of $0.5$ and a power of $0.8$?
+
+.remark-code[
+```{r}
+res <- power.t.test(delta = 0.59, sd = 0.5, sig.level = 0.05, power = 0.8)
+res$n
+ceiling(res$n)
+```
+
+n - number of observations (per group)
+
+
+]
+
+
+
+---
+
+# `power.t.test` - summary
+
+.footnote[Top - greater standard deviation requires larger sample sizes, Bottom - smaller effect size requires larger sample sizes]
+
+.pull-left[
+For each statistical test,<br/>
+there exists a unique relation between:
+
+- desired smallest detectable effect size $\mu$
+- sample variance $\sigma^2$
+- sample size $N$
+- critical p-value $p_0$
+- statistical power
+
+]
+
+.right-plot[
+```{r echo=FALSE}
+sd <- seq(0.5, 2, by = .001)
+dd <- power.t.test(delta = 2, sd = 1, sig.level = 0.05, power = 0.8)
+powersd <- function(sd, delta = 1, sig.level = 0.05, power = 0.8){
+  ceiling(power.t.test(delta = 2, sd = sd, sig.level = sig.level, power = power)$n)
+}
+
+ressd <- sapply(sd, powersd)
+power_delta <- function(delta, sd = 1, sig.level = 0.05, power = 0.8){
+  ceiling(power.t.test(delta = delta, sd = sd, sig.level = sig.level, power = power)$n)
+}
+
+delta <- seq(0.5,6, by = 0.001)
+resdelta <- sapply(delta, power_delta)
+plot(sd, ressd, ylab = "N", type = "l", main = "mu=1, p=0.05, power = 0.8")
+plot(delta, resdelta, xlab = "mu", ylab = "N", type = "l", log = "xy", main = "sd=1, p = 0.05, power = 0.8")
+
+```
+]
+
+---
+
+
+# Sample Size - Sample size calculation
+
+.footnote[Top - greater standard deviation requires larger sample sizes, Bottom - smaller effect size requires larger sample sizes]
+
+.pull-left[
+For each statistical test,<br/>
+there exists a unique relation between:
+
+- desired smallest detectable effect size $\mu$
+- sample variance $\sigma^2$
+- sample size $N$
+- critical p-value $p_0$
+- statistical power
+
+]
+
+.right-plot[
+```{r echo=FALSE}
+sd <- seq(0.5, 2, by = .001)
+dd <- power.t.test(delta = 2, sd = 1, sig.level = 0.05, power = 0.8)
+powersd <- function(sd, delta = 1, sig.level = 0.05, power = 0.8){
+  ceiling(power.t.test(delta = 2, sd = sd, sig.level = sig.level, power = power)$n)
+}
+
+ressd <- sapply(sd, powersd)
+power_delta <- function(delta, sd = 1, sig.level = 0.05, power = 0.8){
+  ceiling(power.t.test(delta = delta, sd = sd, sig.level = sig.level, power = power)$n)
+}
+
+delta <- seq(0.5,6, by = 0.001)
+resdelta <- sapply(delta, power_delta)
+plot(sd, ressd, ylab = "N", type = "l", main = "mu=1, p=0.05, power = 0.8")
+plot(delta, resdelta, xlab = "mu", ylab = "N", type = "l", log = "xy", main = "sd=1, p = 0.05, power = 0.8")
+
+```
+]

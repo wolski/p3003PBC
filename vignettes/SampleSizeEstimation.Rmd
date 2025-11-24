@@ -567,7 +567,7 @@ datadir <- file.path(find.package("prolfquadata") , "quantdata")
 inputMQfile <-  file.path(datadir, "MAXQuant_ComboCourse_p2691_March_2018_WU183012.zip")
 inputAnnotation <- file.path(datadir, "annotation_ComboCourse_p2691_March_2018_WU183012.xlsx")
 
-startdata <- prolfqua::tidyMQ_ProteinGroups(inputMQfile)
+startdata <- prolfquapp::tidyMQ_ProteinGroups(inputMQfile)
 head(startdata)
 annotation <- readxl::read_xlsx(inputAnnotation)
 annotation$experiment = "p2691"

@@ -1,10 +1,14 @@
 rmarkdown::render("ExpDesign.Rmd")
-rmarkdown::render("Multiplicity_p3003.Rmd")
+rmarkdown::render("ExpDesignProteomics.Rmd")
 rmarkdown::render("Hypothesis_Testing_p3003.Rmd")
 rmarkdown::render("IntroductionToLinearModels.Rmd")
+rmarkdown::render("Multiplicity_p3003.Rmd")
 rmarkdown::render("SampleSizeEstimation.Rmd")
-
-
-
-rmarkdown::render("LFQ_Service_Examples.Rmd")
+rmarkdown::render("GSEA_with_msig.Rmd")
 rmarkdown::render("OtherSoftware.Rmd")
+rmarkdown::render("BriefIntroductionTooR.Rmd")
+rmarkdown::render("ImpactOfFilteringOnProteinFDR.Rmd")
+rmarkdown::render("BioCED2019.Rmd")
+
+# Render index page last (after all vignettes are generated)
+rmarkdown::render("index_vignettes.Rmd")

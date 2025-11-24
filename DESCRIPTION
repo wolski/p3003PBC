@@ -33,12 +33,16 @@ Imports:
     stringr,
     tidyverse,
     tidyr,
+    xaringan,
+    ggarchery,
+    clusterProfiler,
+    org.Hs.eg.db,
+    ggarchery,
 Suggests:
     knitr,
     kableExtra,
     rmarkdown,
     testthat
 Remotes:
-    protViz/quantable,
     statOmics/MSqRob,
     bioc::3.9/limma

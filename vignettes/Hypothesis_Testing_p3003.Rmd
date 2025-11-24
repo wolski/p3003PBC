@@ -263,7 +263,7 @@ bb <- function(y){
              sd = sd(x))  #<<
 }
 res <- purrr::map_df(1:N, bb)
-res %>% tidyr::gather() %>%
+res |> tidyr::gather() |>
 ggplot(aes(x = value)) +
   geom_histogram() +
   facet_grid(~key,scales="free_x")
@@ -605,11 +605,11 @@ tmp <- list("Diet A"=as.integer(c( 1, 2, 3, 4, 5)),
 library(flextable)
 tmp <- (data.frame(tmp))
 
-tmp %>%
-  head() %>%
-  t() %>% 
-  as.data.frame() %>% 
-  rownames_to_column() %>% 
+tmp |>
+  head() |>
+  t() |>
+  as.data.frame() |>
+  rownames_to_column() |>
   flextable()
 
 ```
@@ -885,8 +885,8 @@ legend("topleft", legend =
        round(
          cor(sleepwide$`1`, sleepwide$`2`),
          digits=2)))
-sleepwide <- sleepwide %>% 
-  dplyr::mutate(diff = `2`-`1`) 
+sleepwide <- sleepwide |>
+  dplyr::mutate(diff = `2`-`1`)
 boxplot(sleepwide$diff) #<<
 
 ```
@@ -921,16 +921,19 @@ with $\bar{d}$ the mean of the differences $d_i$ with $i \in (1,\dots, n)$, and 
 
 .left-code[
 ```{r}
+sleepwide <- tidyr::spread(sleep, group, extra)
+sleepwide <- sleepwide |>
+  dplyr::mutate(diff = `2`-`1`)
+
 test.p.values <- data.frame(
-unpaired.p = 
+unpaired.p =
   t.test(extra ~ group, #<<
-         data = sleep, #<<
-         paired = FALSE)$p.value, #<<
-paired.p = 
-  t.test(extra~group, #<<
-         data = sleep, #<<
-         paired = TRUE)$p.value, #<<
-diff.p = 
+         data = sleep)$p.value, #<<
+paired.p =
+  t.test(sleepwide$`1`, sleepwide$`2`, #<<
+         paired = TRUE #<<
+         )$p.value, #<<
+diff.p =
   t.test(sleepwide$diff)$p.value #<<
 )
 
@@ -960,17 +963,25 @@ knitr::kable(signif(test.p.values, digits=2), format = "html")
 sleepless <- datasets::sleep
 sleepless$extra[c(1,4,6,12)] <- NA
 sleepless$extra[1:4]
+
+# This fails - t.test doesn't support this formula
 tryCatch(
-  t.test(extra ~ group, data = sleepless, paired = TRUE),#<<
+  t.test(extra ~ group + ID, data = sleepless),#<<
   error = function(e) e)
 
+# Unpaired t-test works but ignores pairing
 tryCatch(
-  t.test(extra ~ group, data = sleepless, paired = FALSE),#<<
+  t.test(extra ~ group, data = sleepless),#<<
   error = function(e) e)
+
+# Correct approach: reshape and use paired argument
+sleepless_wide <- tidyr::spread(sleepless, group, extra)
+t.test(sleepless_wide$`1`, sleepless_wide$`2`, #<<
+       paired = TRUE) #<<
 
 ```
 
-.footnote[running the paired t-test with missing data fails. It can not be specified which observations are paired.]
+.footnote[The formula `extra ~ group + ID` fails with t.test. To handle paired data with missing values, reshape to wide format and use `paired = TRUE`.]
 
 ---
 
@@ -991,11 +1002,11 @@ broom::tidy(anova(lm2))[1,],
 broom::tidy(anova(lmermod))[1,],
 )
 # format table
-xx <- add_column(x, model = 
+xx <- add_column(x, model =
         c("lm_1","lm_2","lmer"),
-        .before = 1) %>%
-  dplyr::select(model, p.value) %>%
-  dplyr::mutate(p.value = 
+        .before = 1) |>
+  dplyr::select(model, p.value) |>
+  dplyr::mutate(p.value =
                   signif(p.value, digits=2))
   
 ```
@@ -1029,11 +1040,11 @@ broom::tidy(anova(lm2))[1,],
 broom::tidy(anova(lmermod))[1,],
 )
 
-xx <- add_column(x, 
+xx <- add_column(x,
         model = c("lm_1","lm_2","lmer"),
-        .before = 1) %>%
-  dplyr::select(model, p.value) %>%
-  dplyr::mutate(p.value = 
+        .before = 1) |>
+  dplyr::select(model, p.value) |>
+  dplyr::mutate(p.value =
                   signif(p.value, digits = 2))
 ```
 ]
