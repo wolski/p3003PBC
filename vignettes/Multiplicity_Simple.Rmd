@@ -1,0 +1,248 @@
+---
+title: "Multiple Testing in Proteomics"
+subtitle: "FGCZ Protein Informatics Training"
+author: "Witold Wolski"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["trug-ggplot2.css", "default", "metropolis", "metropolis-fonts"]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "%current%"
+editor_options:
+  chunk_output_type: console
+vignette: >
+  %\VignetteIndexEntry{Multiple Testing Simple}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+class: fullscreen, inverse, top, center, text-white
+background-image: url("../inst/images/many-black-chair-backs.jpg")
+
+.font150[**The Multiplicity Problem**]
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 4.25, fig.height = 3.5, fig.retina = 3,
+                      message = FALSE, warning = FALSE, cache = TRUE,
+                      autodep = TRUE, hiline = TRUE)
+options(htmltools.dir.version = FALSE, width = 90)
+library(tidyverse)
+```
+
+---
+# Why Does This Matter?
+
+.pull-left[
+![](../inst/images/JellyBeans_significant.png)
+]
+
+.pull-right[
+**The xkcd scenario:**
+
+Scientists test 20 jelly bean colors for causing acne.
+
+At $\alpha = 0.05$, we expect **1 false positive** by chance alone!
+
+The "green jelly beans cause acne" finding is likely spurious.
+
+This is the **multiplicity problem**.
+]
+
+.footnote[xkcd.com/882]
+
+---
+# The Problem: Too Many Tests
+
+**Model complexity:** Comparing 5 treatment groups
+
+- Number of pairwise comparisons: $\frac{5 \times (5-1)}{2} = 10$ tests
+- At $\alpha = 0.05$: expect $10 \times 0.05 = 0.5$ false positives
+
+--
+
+**Data complexity:** Testing 5000 proteins for differential expression
+
+- At significance level $\alpha = 0.05$
+- Even if **NO proteins** are truly different...
+- We expect $5000 \times 0.05 = \mathbf{250}$ **false positives!**
+
+--
+
+**The question:** Which of our "significant" results are real discoveries vs. false alarms?
+
+
+
+---
+# Two Sources of Multiplicity
+
+Multiplicity arises whenever we perform **more than one statistical test**. Understanding the source helps choose the right correction.
+
+--
+
+**Model complexity:** Testing multiple parameters or comparisons within a single model
+
+- Linear model testing 8 covariates for significance
+- Post-hoc tests after finding a significant main effect
+
+.tiny-text[These tests are often **correlated** (same data, related hypotheses).]
+
+--
+
+**Data complexity:** Repeating the same test across many independent features
+
+- Differential expression across 5000 proteins
+- Testing drug effects on 100 cell lines
+
+.tiny-text[Here we have **many independent chances** to find a false positive.]
+
+---
+# FWER: Family-Wise Error Rate
+
+**Definition:** Probability of making **at least one** false positive.
+
+$$FWER = P(\text{at least one false positive}) \leq \alpha$$
+
+**Bonferroni correction:** Divide $\alpha$ by number of tests $k$
+
+$$\alpha_{adjusted} = \frac{\alpha}{k}$$
+
+- Assumes **independent tests** (conservative if tests are correlated)
+- **Use when:** Model complexity (e.g., post-hoc comparisons in ANOVA)
+- R packages: `multcomp`, `emmeans` (account for correlation structure)
+
+
+---
+
+
+# FDR: False Discovery Rate
+
+**Definition:** Expected **proportion** of false discoveries among all discoveries.
+
+$$FDR = E\left[\frac{\text{False Positives}}{\text{All Discoveries}}\right] = E\left[\frac{FP}{FP + TP}\right]$$
+
+- More lenient than FWER - preserves statistical power
+- **Use when:** Data complexity (OMICS, many features)
+- Acceptable FDR levels: 0.05, 0.10, or even 0.25 for discovery
+
+**Benjamini-Hochberg procedure:** Rank p-values, find threshold
+
+
+---
+
+# Understanding P-value Distributions
+
+```{r pval-simulation, echo=FALSE, fig.width=9, fig.height=4, fig.align='center'}
+set.seed(123)
+simulate_pvals <- function(n_tests = 1000, frac_true = 0.1, effect = 2) {
+  sapply(1:n_tests, function(i) {
+    ctrl <- rnorm(6, 0, 1)
+    trt <- rnorm(6, ifelse(runif(1) < frac_true, effect, 0), 1)
+    t.test(trt, ctrl)$p.value
+  })
+}
+pvals_null <- simulate_pvals(frac_true = 0)
+pvals_mix <- simulate_pvals(frac_true = 0.2)
+
+par(mfrow = c(1, 2))
+hist(pvals_null, breaks = 20, main = "All H0 true (no real effects)",
+     xlab = "p-value", col = "lightblue")
+abline(h = 50, col = "red", lwd = 2)
+hist(pvals_mix, breaks = 20, main = "20% with real effects",
+     xlab = "p-value", col = "lightgreen")
+abline(h = 40, col = "red", lwd = 2)
+```
+
+- **Left:** When no proteins differ, p-values are **uniformly distributed** (red line). Small p-values are false positives.
+
+- **Right:** When some proteins truly differ, we see a **spike near 0** - these are true discoveries above the uniform background.
+
+.footnote[More details: [How to interpret a p-value histogram](http://varianceexplained.org/statistics/interpreting-pvalue-histogram/)]
+
+
+---
+layout: false
+
+# FDR and p-value distribution
+
+.pull-left[
+- TP true positives
+- FP false positives
+- FN false negatives
+- TN true negatives
+
+$$FDR = \frac{FP}{FP + TP}$$
+]
+
+.right-plot[
+```{r pValScenariosHist-closup, echo=FALSE, fig.width=6, fig.height=6}
+m <- 1000
+simulate.p.values <- function(
+  i, delta = 2, fraction = 0.1){
+  control <- rnorm(6,0,1)
+  treatment <- rnorm(6,0,1)
+  if (runif(1) < fraction)
+   treatment <- treatment + delta
+  return(t.test(treatment,control)$p.value)
+}
+
+pvals24 <- sapply(1:m, simulate.p.values,
+                  delta = 2, fraction = 0.4 )
+hist(pvals24, breaks = 20, ylim = c(0,300), xlim = c(0,0.5), main = "D")
+abline(h = (1000 - 400)/20, col = 3)
+abline(v = 0.05, col = 2)
+text(x = c(0.02,  0.1 ), y = c(250,250),
+     labels = c("Rejected H0","Accepted H0"), srt = 90)
+
+text(x = c(0.02, 0.02, 0.1, 0.1), y = c(20,100,20,100),
+     labels = c("FP","TP","TN","FN"))
+```
+
+]
+
+.footnote[John D.Storey 2002; Storey and Tibshirani 2003; Prummer 2012]
+
+
+---
+
+# Why Not Report Unadjusted P-values?
+
+**The problem:** With 5000 proteins at $\alpha = 0.05$, you get ~250 false positives by chance.
+
+A p-value of $0.01$ for a single protein means nothing when you tested thousands.
+
+--
+
+**The solution:** In OMICS, we don't use p-values directly for decisions.
+
+Instead, p-values serve as **input** to the Benjamini-Hochberg procedure, which uses the **distribution** of all p-values to estimate what proportion of your discoveries are false.
+
+--
+
+**How to report results:**
+
+- Don't say: "Protein X has p = 0.03, so it's significant"
+- Do say: "At FDR < 0.1, we found 200 differentially expressed proteins"
+
+---
+
+# Key Takeaways
+
+1. **Never report unadjusted p-values** in OMICS experiments - p-values are computed to estimate the FDR.
+
+2. **Choose the right correction:**
+   - FWER (Bonferroni, `multcomp`) for model complexity (few tests)
+   - FDR (Benjamini-Hochberg) for data complexity (many features)
+
+3. **FDR thresholds** of 0.05 - 0.25 are acceptable for discovery - you're controlling the proportion of false leads, not eliminating them
+
+4. **Limit model complexity and focus analyses** when possible.
+
+5. **FWER** correction depends on the number of tests, while **FDR** is estimated from the p-value distribution itself.
+
+ 
+

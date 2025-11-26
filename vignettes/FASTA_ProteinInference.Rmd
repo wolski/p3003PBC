@@ -1,0 +1,303 @@
+---
+title: "FASTA Databases & Protein Inference"
+subtitle: "FGCZ Protein Informatics Training"
+author: "Witold Wolski"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["trug-ggplot2.css", "default", "metropolis", "metropolis-fonts"]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "%current%"
+editor_options:
+  chunk_output_type: console
+vignette: >
+  %\VignetteIndexEntry{FASTA Databases and Protein Inference}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+class: fullscreen, inverse, top, center, text-white
+background-image: url("../inst/images/many-black-chair-backs.jpg")
+
+.font150[**FASTA Databases & Protein Inference**]
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 4.25, fig.height = 3.5, fig.retina = 3,
+                      message = FALSE, warning = FALSE, cache = TRUE,
+                      autodep = TRUE, hiline = TRUE)
+options(htmltools.dir.version = FALSE, width = 90)
+```
+
+---
+# What is a FASTA Database?
+
+A text file containing protein sequences used as reference for peptide identification.
+
+**Format:**
+.tiny-text[
+```
+>sp|F4J9Q6|FKB43_ARATH Peptidyl-prolyl cis-trans isomerase FKBP43 OS=Arabidopsis thaliana OX=3702 GN=FKBP43 PE=1 SV=1
+MKWVTFISLLFLFSSAYSRGVFRRDAHKSEVAHRFKDLGEENFKALVLIA
+FAQYLQQCPFEDHVKLVNEVTEFAKTCVADESAENCDKSLHTLFGDKLCT
+...
+```
+]
+
+--
+
+**Structure:**
+- `>` starts the header line
+- **Identifier:** `sp|F4J9Q6|FKB43_ARATH` (up to first space)
+- **Description:** Everything after the first space
+- Sequence on following lines (until next `>`)
+
+---
+# FASTA Header Fields
+
+.tiny-text[
+```
+>sp|F4J9Q6|FKB43_ARATH Peptidyl-prolyl cis-trans isomerase FKBP43
+ OS=Arabidopsis thaliana OX=3702 GN=FKBP43 PE=1 SV=1
+```
+]
+
+
+| Field | Meaning | Example |
+|-------|---------|---------|
+| **OS** | Organism name | Arabidopsis thaliana |
+| **OX** | Organism taxonomy ID | 3702 |
+| **GN** | Gene name | FKBP43 |
+| **PE** | Protein existence (1-5) | 1 = experimental evidence |
+| **SV** | Sequence version | 1 |
+
+--
+
+**PE levels:** 1=experimental, 2=transcript, 3=homology, 4=predicted, 5=uncertain
+
+**Purpose:** Search engines use only the identifier; description fields are for annotation.
+
+---
+# UniProt Identifiers
+
+**Swiss-Prot (sp|)** - Manually curated, reviewed
+
+```
+sp|P02768|ALBU_HUMAN
+```
+.tiny-text[
+- High quality, experimentally validated
+- ~570,000 entries (all species)
+- Well supported by downstream tools (GSEA, ORA, pathway databases)
+]
+
+--
+
+**TrEMBL (tr|)** - Automatically annotated, unreviewed
+
+```
+tr|A0A024R1R8|A0A024R1R8_HUMAN
+```
+.tiny-text[
+- Computationally predicted from gene sequences
+- ~250 million entries (all species)
+- Mapping to gene sets often problematic (missing from annotation databases)
+]
+
+--
+
+.tiny-text[**Recommendation:** Prefer Swiss-Prot when available; use TrEMBL for less-studied organisms.]
+
+---
+# UniProt Download Options
+
+When downloading from UniProt, you choose between:
+
+**Canonical sequences (one per gene)**
+- Human: ~20,500 proteins
+- Simpler database, cleaner protein inference
+- Standard choice for most experiments
+
+--
+
+**Canonical + Isoforms**
+- Human: ~40,000+ sequences
+- Includes splice variants (e.g., P02768-1, P02768-2)
+- More comprehensive, but complicates inference
+
+--
+
+**Trade-off:** Completeness vs. interpretability
+
+---
+# The Protein Inference Problem
+
+In bottom-up proteomics, we **measure peptides** but want to **identify proteins**.
+
+**The challenge:** Some peptides map to multiple proteins!
+
+```
+Peptide AEFAEVSK ─────────► Albumin (P02768)
+                           (proteotypic)
+
+Peptide DLGEENFK ────┬────► Albumin (P02768)
+                     │
+                     └────► Albumin isoform 2 (P02768-2)
+                           (shared peptide)
+```
+
+--
+
+**Question:** If we only observe the shared peptide, which protein is present?
+
+---
+# Peptide Types
+
+.pull-left[
+.tiny-text[
+**Proteotypic peptides**
+- Map to exactly ONE protein
+- Gold standard for identification and quantification
+- Unambiguous evidence
+
+**Shared peptides**
+- Map to multiple proteins (e.g., isoforms, homologs)
+- Create ambiguity in protein inference
+- Often excluded from quantification
+]
+]
+
+.pull-right[
+.tiny-text[
+**Razor peptides**
+- Shared peptides assigned to the protein with most unique peptides
+- Pragmatic solution (used by MaxQuant, Proteome Discoverer)
+- Can introduce quantification bias
+]
+]
+
+---
+# Razor Peptide Assignment
+
+```
+Protein 1:  ───Pep_A───Pep_B───Pep_C───Pep_D───
+               unique   shared  shared  unique
+                 │         │       │       │
+                 ▼         ▼       ▼       ▼
+              count=1    razor   razor  count=1
+                         ────────────────────────
+                         Assigned to Protein 1
+                         (has 2 unique peptides)
+
+Protein 2:  ───Pep_B───Pep_C───
+               shared  shared
+                 │       │
+                 ▼       ▼
+               (not assigned - fewer unique peptides)
+```
+
+- **Pep_A, Pep_D:** Proteotypic (unique to Protein 1)
+- **Pep_B, Pep_C:** Shared between both proteins → become **razor peptides** assigned to Protein 1
+
+**Razor rule:** Shared peptides go to the protein with most unique peptides.
+
+---
+# Consequences of Database Choice
+
+.pull-left[
+**Using isoform database:**
+
+.tiny-text[
+- More proteins → more shared peptides
+- Harder to distinguish isoforms (often differ by few peptides)
+- Protein groups become larger and harder to interpret
+- May report "Protein X; Protein X isoform 2; Protein X isoform 3"
+]
+]
+
+.pull-right[
+**Using canonical database:**
+
+.tiny-text[
+- Cleaner protein inference
+- Fewer ambiguous assignments
+- May miss biologically relevant isoform switching
+- Peptides from non-canonical isoforms may not match
+]
+]
+
+--
+
+**Recommendation:** Start canonical, add isoforms only if scientifically motivated.
+
+---
+# Search Space Explosion
+
+.pull-left[
+Database size directly impacts computational burden:
+
+| Database | Proteins | Peptides |
+|----------|----------|----------|
+| Human canonical | 20,500 | ~1.5M |
+| Human + isoforms | 42,000 | >> 1.5M |
+
+**Variable modifications multiply the problem:**
+
+.tiny-text[
+- Phosphorylation (S, T, Y): × 3-4
+- Oxidation (M): × 1.5
+- Acetylation (K, N-term): × 2
+]
+]
+
+.pull-right[
+Combined: 1.5M peptides → **10-20 million** modified forms!
+
+**Consequences:**
+
+.tiny-text[
+- Longer search times
+- Larger spectral libraries (DIA)
+- Larger decoy space → affects FDR
+]
+]
+
+--
+
+.tiny-text[
+**Why does decoy size matter?** More decoy peptides means more random matches by chance. To maintain the same FDR, the score threshold must increase—potentially losing real identifications.
+]
+
+---
+# Practical Recommendations
+
+.my-one-page-font[
+
+.pull-left[
+1. **Start with canonical** (one sequence per gene) for routine analyses
+
+2. **Document everything:**
+   - Database version and download date
+   - Species and taxonomy ID
+   - Swiss-Prot only vs. Swiss-Prot + TrEMBL
+
+3. **Add isoforms selectively** when studying:
+   - Alternative splicing
+   - Specific isoform biology
+]
+
+.pull-right[
+4. **Be conservative with modifications:**
+   - Fixed: Carbamidomethyl (C)
+   - Variable: Oxidation (M), maybe 1-2 more
+   - PTM-focused studies need specialized approaches
+
+5. **Report protein groups** honestly - don't hide inference ambiguity
+]
+
+]
+

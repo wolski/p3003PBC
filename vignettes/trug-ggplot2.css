@@ -2,6 +2,11 @@ body {
   font-size: 1.1em;
 }
 
+.tiny-text {
+  font-size: 0.75em;
+  line-height: 1.3;
+}
+
 .title-slide {
   background-image: url(../inst/images/IrchelFGCZ.jpg);
 }

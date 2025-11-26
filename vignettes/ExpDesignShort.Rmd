@@ -259,102 +259,94 @@ you need to know both factors to predict the outcome.
 
 ---
 
-# Exp. Design - Factorial vs parallel group
+# Factorial Design
 
-.pull-left[
-Parallel (one factor)
+A __factorial design__ tests multiple __factors__ simultaneously.
 
-- drug A
-- drug B
-- plac
-]
+__Factor:__ A variable you manipulate (e.g., treatment, genotype)
 
-.pull-right[
-Factorial (2 or more factors)
+__Example:__ Study drug effect in wild-type and knockout mice
 
-- Factor A
-  - drug A
-  - plac A
-- Factor B
-  - drug B
-  - plac B
-]
+| | WT | Knockout |
+|---|---|---|
+| **Placebo** | WT + placebo | KO + placebo |
+| **Drug** | WT + drug | KO + drug |
 
-40 patients, Placebo, drug A and drug B.
-How would you allocate these patients?
+This 2x2 factorial design lets you answer:
 
+1. Does the drug have an effect? (main effect of drug)
+2. Does genotype matter? (main effect of genotype)
+3. Does the drug work differently in WT vs KO? (interaction)
 
-.footnote[Ronald Fisher pioneered the use of factorial experiments instead of the one-factor-at-a-time method.]
+__One experiment, three questions!__
 
 ---
 
-# Exp. Design - Factorial vs parallel group
+# Factorial vs Parallel Design
+
+A parallel design can often be __restructured__ as a factorial design!
+
+__Question:__ 40 subjects to test drug A and drug B. How to allocate?
 
 .pull-left[
-Parallel (one factor)
+**Parallel design**
 
-- drug A (13)
-- drug B (13)
-- plac (14)
+| Group | n |
+|-------|---|
+| drug A | 13 |
+| drug B | 13 |
+| placebo | 14 |
 
-Compare:
-- 13 drug A vs 14 plac
-- 13 drug B vs 14 plac
+Compare: 13 vs 14 per test
 ]
 
 .pull-right[
-Factorial (2 or more factors)
+**Factorial design (2x2)**
 
-- drug A + drug B (10)
-- plac A + drug B (10)
-- drug A + plac B (10)
-- plac A + plac B (10)
+| Group | n |
+|-------|---|
+| drug A + drug B | 10 |
+| drug A + plac B | 10 |
+| plac A + drug B | 10 |
+| plac A + plac B | 10 |
 
-Compare:
-- 20 drug A vs 20 plac A
-- 20 drug B vs 20 plac B
+Compare:<br/>
+20 drug A vs 20 plac A<br/>
+20 drug B vs 20 plac B
 ]
+
+__Factorial wins:__ Same 40 subjects, but larger effective sample size!<br/>
+__Bonus:__ Can also test for drug A × drug B interaction.
+
+.footnote[Ronald Fisher pioneered factorial experiments over one-factor-at-a-time.]
 
 
 ---
 layout: false
 
-# Exp. Design - Interactions
+# Types of Interactions
 
-Factorial Designs are efficient at evaluating<br/>
-the effects and possible interactions of<br/>
-several factors (independent variables).
+.pull-left[
+**No interaction**<br/>
+Lines are parallel - effect of one factor<br/>
+is constant across levels of the other.
 
+**Quantitative interaction**<br/>
+Lines not parallel but don't cross -<br/>
+effect size differs but direction is same.
 
-.footnote[https://en.wikipedia.org/wiki/Design_of_experiments]
-
---
-
-- No interaction
-.img-right[
-![](../inst/images/TypesOfInteractions_NO.png)
-
-
-[Medical Statistics - University of Sheffield]
+**Qualitative interaction**<br/>
+Lines cross - effect reverses<br/>
+depending on the other factor!
 ]
 
-
---
-
-- Quantitative interaction
-
-.img-right[
-![](../inst/images/TypesOfInteractions_Quanti.png)
+.pull-right[
+.image-70[![](../inst/images/TypesOfInteractions_NO.png)]
+.image-70[![](../inst/images/TypesOfInteractions_Quanti.png)]
+.image-70[![](../inst/images/TypesOfInteractions_Quali.png)]
 ]
 
-
---
-
-- Qualitative interaction
-
-.img-right[
-![](../inst/images/TypesOfInteractions_Quali.png)
-]
+.footnote[Medical Statistics - University of Sheffield]
 
 
 
@@ -379,87 +371,94 @@ exclude: true
 
 ---
 
+# Sample Size Estimation - Introduction
 
-# Sample Size - Ethical considerations
+How many samples do you need for your experiment?
 
-- It is agreed that it is __unethical__ _to conduct research which is badly planned or
-executed_.
+__Topics:__
 
--  It is unethical to perform a trial which:
-  - has _many more subjects_ than are needed to reach a conclusion.
-  - has little prospect of reaching any conclusion, <br/> e.g. because
-  of _insufficient numbers of subjects_ (or some other aspect of poor design)
+- **Why it matters** - ethical and scientific reasons
+- **Type I and Type II errors** - false positives vs false negatives
+- **Sources of variation** - what drives your sample size?
+- **power.t.test in R** - practical calculations
 
-- The local ethics committee has discretion on how it will supervise __non-interventional__ studies
-  -  US - Institutional Review Board (IRB)
-  -  EU - ethics committees
-
-[Declaration of Helsinki (1964+amendments))](https://www.wma.net/policies-post/wma-declaration-of-helsinki-ethical-principles-for-medical-research-involving-human-subjects/)
+__Goal:__ Plan experiments that have sufficient power <br/>
+to detect biologically meaningful effects.
 
 ---
 
-# Sample Size - Types of error
 
+# Why Sample Size Matters
 
-A __type I error__ (false positive) occurs when<br/> the null hypothesis (H0) is true, but is rejected.<br/>
-The _type I error rate_ or __significance level__ (p-Value)<br/> is the probability of rejecting the<br/>
-null hypothesis given that it is true.
+.pull-left[
+**Too few samples:**
+- Inconclusive results
+- Wasted resources (samples, time, money)
+- Cannot detect real effects
 
+**Too many samples:**
+- Unnecessary use of animals/human subjects
+- Wasted resources
+- Delays other research
+]
 
-A __type II error__ (false negative) occurs when<br/>
-the null hypothesis is false,<br/>
-but erroneously fails to be rejected. <br/>
-The _the type II error rate_ is denoted by the Greek letter $\beta$<br/>
-and is related to the __power of a test__ (which equals $1−\beta$).
+.pull-right[
+**Ethical obligation:**
 
-For a given test, the only way to reduce both error rates<br/>
-is to __increase the sample size__, and this may not be feasible.
+It is __unethical__ to conduct research<br/>
+that is badly planned.
+
+Both underpowered and overpowered<br/>
+studies waste resources and may<br/>
+harm subjects unnecessarily.
+]
+
+.footnote[Declaration of Helsinki (1964) - [link](https://www.wma.net/policies-post/wma-declaration-of-helsinki-ethical-principles-for-medical-research-involving-human-subjects/)]
+
+---
+
+# Type I and Type II Errors
+
+.pull-left[
+**Type I error** (false positive, α)
+
+You conclude there IS an effect<br/>
+when there is NONE.
+
+Controlled by significance level (p < 0.05)
+
+**Type II error** (false negative, β)
+
+You conclude there is NO effect<br/>
+when there IS one.
+
+**Power = 1 - β** (typically aim for 0.8)
+]
 
 .img-right[
 ![](../inst/images/hl_nullhypo_errors.png)
 ]
 
+__Key insight:__ To reduce both errors → increase sample size
+
 
 ---
 
-# Sample Size - Sample size calculation
+# Sources of Variation
 
+Run a pilot to estimate variance at each level:
 
 .pull-left[
+**(a) Instrumental** - same sample, repeated injections
 
-Run pilot experiment and measure the coefficient of variation (CV) or <br>
-$\sigma^2$ of replicates:
+**(b) Technical** - same sample, repeated preparation
 
-- technical
-- _biochemical_
-- __biological__
-]
+**(c) Intra-biological** - same subject, different timepoints
 
+**(d) Inter-biological** - different subjects
 
-
-.pull-right[
-- _biological variance >> bio-chem+tech variance_<br/>
-  - Only provide biological replicates
-- _bio-chem+tech variance >> biological variance_<br/>
-  - __improve sample handling and preparation__
-  - choose different technology
-  - buy better instrument
-]
-
-.footnote[measure 3 tech replicates, 3 tech+bio-chem replicates, 3 tech+bio-chem+biological replicates]
-
----
-
-# Sources of variation
-
-.footnote[https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6807909/]
-
-
-.left-code[
-- (a) the instrumental variation
-- (b) the total technical variation
-- (c) the intrabiological variation
-- (d) the interbiological variation
+__Biological variance usually dominates!__<br/>
+→ Focus on biological replicates
 ]
 
 .img-right[
@@ -467,87 +466,45 @@ $\sigma^2$ of replicates:
 ![](../inst/images/VariousTypesOfVariation_Summary.jpg)
 ]
 
-
----
-class: my-one-page-font
-
-# t-test
-
-Test statistic $$T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$$
-Null distribution $$T|H_{null} \sim T(0,1,df = N-1)$$
-
-where delta = $\bar{X}_2 - \mu$, sd - standard deviation, df - depends on sample size
+.footnote[https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6807909/]
 
 
 ---
-# `power.t.test` - estimating power
 
-Compute the power of the one- or two- sample t-test, or determine parameters to obtain a target power.
+# The power.t.test Function
 
+.pull-left[
+**Five related variables:**
+
+- **n** - sample size per group
+- **delta** - effect size (difference to detect)
+- **sd** - standard deviation
+- **sig.level** - Type I error rate (α, default 0.05)
+- **power** - 1 - Type II error rate (1-β)
+
+Provide any 4, R calculates the 5th!
+]
+
+.pull-right[
 ```{r, eval = FALSE}
-power.t.test(n = NULL, delta = NULL, sd = 1, sig.level = 0.05,
-             power = NULL,
-             type = c("two.sample", "one.sample", "paired"),
-             alternative = c("two.sided", "one.sided"),
-             strict = FALSE, tol = .Machine$double.eps^0.25)
-```
-
-Relates the type-2 error (power) to the other variables: type-1 error (sig.level), standard deviation (sd), effect size (delta), sample size (n)
-
----
-
-# `power.t.test` - estimating power
-
-
-What is __the power__ of the two-sample t-test using
-a significance level of $0.05$ if we want to detect a biologically relevant difference of $50\%$
-given a standard deviation of $0.5$ and group size of $10$ samples?
-
-
-.remark-code[
-```{r}
-power.t.test(delta = 0.59, n = 10, sd = 0.5, sig.level = 0.05)
+power.t.test(
+  n = NULL,
+  delta = NULL,
+  sd = 1,
+  sig.level = 0.05,
+  power = NULL
+)
 ```
 ]
 
-.footnote[ Why `delta = 0.59`? $50%$ difference, means FC of $1.5$ or greater, and $log2(1.5) = 0.59$]
-
-
----
-layout: false
-
-# `power.t.test` - esitmating difference $d$
-
-
-What __biologically relevant difference__ (or greater)
- can be detected with a two-sample t-test using
-a significance level of $0.05$ and a power of $0.8$
-given a standard deviation of $0.5$ and group size of $10$?
-
-.remark-code[
-```{r}
-res <- power.t.test(n = 10, sd = 0.5, power = 0.8, sig.level = 0.05)
-res$delta
-2^res$delta
-```
-]
-
-$$
-\begin{aligned}
-log_2(x) = y&~~~\textrm{exactly if} ~~~ 2^y = x\\
-log_2(I_1/I_2) &= log2(I_1) - log2(I_2) = d\\
-2^d &= I_1/I_2\\
-\end{aligned}
-$$
-
+__Recall t-statistic:__ $T = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}}$ — larger n → more power
 
 ---
 
-# `power.t.test` - Sample size estimation
+# Example: Required Sample Size
 
-What __sample size__ do we need, given
-a significance level of $0.05$ if we want to detect a biologically relevant difference of $50\%$
-given a standard deviation of $0.5$ and a power of $0.8$?
+**Question:** How many samples per group to detect a 50% difference (FC=1.5)<br/>
+with power=0.8 and sd=0.5?
 
 .remark-code[
 ```{r}
@@ -555,30 +512,34 @@ res <- power.t.test(delta = 0.59, sd = 0.5, sig.level = 0.05, power = 0.8)
 res$n
 ceiling(res$n)
 ```
-
-n - number of observations (per group)
-
-
 ]
+
+__Result:__ Need 13 samples per group (26 total)
+
+This is the most common use case: <br/>
+"How many samples do I need for my experiment?"
 
 
 
 ---
 
-# `power.t.test` - summary
-
-.footnote[Top - greater standard deviation requires larger sample sizes, Bottom - smaller effect size requires larger sample sizes]
+# Summary: Sample Size Depends on σ and δ
 
 .pull-left[
-For each statistical test,<br/>
-there exists a unique relation between:
+**Top plot: N vs standard deviation (σ)**
 
-- desired smallest detectable effect size $\mu$
-- sample variance $\sigma^2$
-- sample size $N$
-- critical p-value $p_0$
-- statistical power
+Higher variance in your data<br/>
+→ need more samples to detect effect
 
+**Bottom plot: N vs effect size (δ)**
+
+Smaller effect you want to detect<br/>
+→ need more samples
+
+__Practical advice:__<br/>
+- Reduce variance (better protocols)<br/>
+- Accept larger minimum detectable effect<br/>
+- Or: get more samples!
 ]
 
 .right-plot[
@@ -596,48 +557,8 @@ power_delta <- function(delta, sd = 1, sig.level = 0.05, power = 0.8){
 
 delta <- seq(0.5,6, by = 0.001)
 resdelta <- sapply(delta, power_delta)
-plot(sd, ressd, ylab = "N", type = "l", main = "mu=1, p=0.05, power = 0.8")
-plot(delta, resdelta, xlab = "mu", ylab = "N", type = "l", log = "xy", main = "sd=1, p = 0.05, power = 0.8")
-
-```
-]
-
----
-
-
-# Sample Size - Sample size calculation
-
-.footnote[Top - greater standard deviation requires larger sample sizes, Bottom - smaller effect size requires larger sample sizes]
-
-.pull-left[
-For each statistical test,<br/>
-there exists a unique relation between:
-
-- desired smallest detectable effect size $\mu$
-- sample variance $\sigma^2$
-- sample size $N$
-- critical p-value $p_0$
-- statistical power
-
-]
-
-.right-plot[
-```{r echo=FALSE}
-sd <- seq(0.5, 2, by = .001)
-dd <- power.t.test(delta = 2, sd = 1, sig.level = 0.05, power = 0.8)
-powersd <- function(sd, delta = 1, sig.level = 0.05, power = 0.8){
-  ceiling(power.t.test(delta = 2, sd = sd, sig.level = sig.level, power = power)$n)
-}
-
-ressd <- sapply(sd, powersd)
-power_delta <- function(delta, sd = 1, sig.level = 0.05, power = 0.8){
-  ceiling(power.t.test(delta = delta, sd = sd, sig.level = sig.level, power = power)$n)
-}
-
-delta <- seq(0.5,6, by = 0.001)
-resdelta <- sapply(delta, power_delta)
-plot(sd, ressd, ylab = "N", type = "l", main = "mu=1, p=0.05, power = 0.8")
-plot(delta, resdelta, xlab = "mu", ylab = "N", type = "l", log = "xy", main = "sd=1, p = 0.05, power = 0.8")
+plot(sd, ressd, ylab = "N", type = "l", main = "N vs sd (delta=2, power=0.8)")
+plot(delta, resdelta, xlab = "delta", ylab = "N", type = "l", log = "xy", main = "N vs delta (sd=1, power=0.8)")
 
 ```
 ]

@@ -1,0 +1,419 @@
+---
+title: "Over-Representation Analysis & Gene Set Enrichment Analysis"
+subtitle: "Pathway Analysis in Proteomics"
+author: "Witold Wolski"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["trug-ggplot2.css", "default", "metropolis", "metropolis-fonts"]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "%current%"
+editor_options:
+  chunk_output_type: console
+vignette: >
+  %\VignetteIndexEntry{ORA and GSEA}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+class: fullscreen, inverse, top, center, text-white
+background-image: url("../inst/images/many-black-chair-backs.jpg")
+
+.font150[**ORA & GSEA**]
+
+.font120[Pathway Analysis in Proteomics]
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 4.25, fig.height = 3.5, fig.retina = 3,
+                      message = FALSE, warning = FALSE, cache = TRUE,
+                      autodep = TRUE, hiline = TRUE)
+options(htmltools.dir.version = FALSE, width = 90)
+```
+
+---
+# What Are Gene Sets?
+
+**Gene sets** = curated collections of genes/proteins sharing a common biological property.
+
+.pull-left[
+**Two Major Collections:**
+
+**GO (Gene Ontology)**
+.tiny-text[
+- Biological Process (BP)
+- Molecular Function (MF)
+- Cellular Component (CC)
+]
+
+**KEGG Pathways**
+.tiny-text[
+- Metabolic pathways
+- Signaling pathways
+]
+]
+
+.pull-right[
+**The Idea:**
+
+Match your experimental results against these curated sets to discover:
+.tiny-text[
+- Which biological processes are affected?
+- Which pathways show coordinated changes?
+- What functional themes emerge from your data?
+]
+]
+
+--
+
+**Why use gene sets?** Individual protein changes are hard to interpret. Gene sets aggregate biological knowledge, revealing **functional patterns** in your data.
+
+---
+# Creating the Significant Protein List
+
+ORA requires a list of "significant" proteins. How do you create it?
+
+**Start with:** Differential expression results (all proteins with fold change + FDR)
+
+.pull-left[
+**Option 1: FDR only**
+```
+FDR < 0.05
+```
+.tiny-text[
+- More proteins included
+- Includes small effect sizes
+]
+]
+
+.pull-right[
+**Option 2: FDR + Fold Change**
+```
+FDR < 0.05 AND |log2FC| > 1
+```
+.tiny-text[
+- Fewer proteins
+- Focus on large effects
+]
+]
+
+--
+
+.tiny-text[
+**Additional filters:** Min. peptides (≥ 2), exclude imputation-based fold changes
+
+**Tip:** Consider separate UP and DOWN regulated lists for directional analysis.
+]
+
+---
+# Over-Representation Analysis (ORA)
+
+Tests whether a pathway is over-represented in your significant protein list.
+
+**Statistical test:** Hypergeometric / Fisher's exact test
+
+.pull-left[
+**Contingency table:**
+
+|  | In Pathway | Not in Pathway | Total |
+|--|------------|----------------|-------|
+| **Significant** | a | b | a+b |
+| **Not significant** | c | d | c+d |
+| **Total** | a+c | b+d | N |
+]
+
+.pull-right[
+**Question:** Is `a` larger than expected by chance?
+
+**Fisher's exact test** calculates the probability of observing this overlap (or more extreme) under the null hypothesis.
+]
+
+---
+# ORA: The Background Universe
+
+**Critical:** The background (N) must be all **measured proteins**, not the whole genome.
+
+.pull-left[
+**Correct:**
+- N = proteins quantified in your experiment
+- Typically 3,000 - 8,000 proteins
+]
+
+.pull-right[
+**Wrong:**
+- N = all proteins in UniProt (~20,000)
+- Introduces bias: proteomics detects high-abundance proteins (structural, housekeeping), leading to spurious enrichment for their gene sets.
+]
+
+--
+
+**Advantage:** Fast and intuitive; widely implemented in tools and databases.
+
+---
+# Limitations of ORA
+
+**Threshold sensitivity**
+
+Results depend heavily on chosen FDR/fold change cutoff; proteins just below threshold are ignored.
+
+--
+
+**Ignores magnitude & direction**
+
+All selected proteins treated equally - a protein with log2FC = 5 counts the same as log2FC = 1.
+
+--
+
+**Independence assumption**
+
+Assumes proteins are independent; overlapping gene sets and correlated proteins can inflate false positives.
+
+---
+# Gene Set Enrichment Analysis (GSEA)
+
+Ranks **all measured proteins** using a metric (fold change, p-value, moderated t-statistic).
+
+.pull-left[
+**Algorithm:**
+.tiny-text[
+1. Walk down the ranked list
+2. Compute a running-sum enrichment score
+3. Score increases when pathway proteins appear, decreases otherwise
+]
+
+**Output:**
+.tiny-text[
+- Normalized Enrichment Score (NES)
+- P-value and FDR
+- "Leading edge" subset where the score peaks
+]
+]
+
+.pull-right[
+**Advantages:**
+.tiny-text[
+- No arbitrary cutoff required
+- Uses magnitude and direction of change
+- Detects subtle coordinated changes across many proteins
+]
+]
+
+---
+# GSEA: Running Enrichment Score
+
+.left-code[
+```{r gsea-example, eval=FALSE}
+library(clusterProfiler)
+library(enrichplot)
+
+data(geneList, package = "DOSE")
+
+# Run GSEA with GO
+gse <- gseGO(geneList = geneList,
+             OrgDb = org.Hs.eg.db,
+             ont = "BP",
+             pvalueCutoff = 0.05)
+
+gseaplot2(gse, geneSetID = 1, #<<
+          title = gse$Description[1])
+```
+]
+
+.right-plot[
+```{r gsea-out, ref.label="gsea-example", echo=FALSE, fig.width=6, fig.height=5, message=FALSE, warning=FALSE}
+```
+]
+
+---
+# Ranking Metrics & RNK Files
+
+.pull-left[
+**Pre-ranked .rnk file** (tab-delimited):
+```
+ProteinID    Score
+P02768       3.45
+Q9Y6K9       2.81
+P04406      -1.23
+...
+```
+]
+
+.pull-right[
+**For ranking use:** Moderated t-statistic (e.g., from limma)
+]
+
+---
+# ORA vs GSEA: Choosing the Right Approach
+
+| Aspect | ORA | GSEA |
+|--------|-----|------|
+| Input | Significant protein list | All proteins (ranked) |
+| Cutoff | Required | Not required |
+| Direction | Ignored | Preserved |
+| Subtle changes | May miss | Can detect |
+
+--
+
+**Complementary approaches:**
+- Running both can validate findings
+- Reveals different aspects of pathway activity
+- GSEA can find significant pathways even when no individual proteins reach FDR thresholds
+
+---
+# Why GSEA Works Without Significant Proteins
+
+**The scenario:**
+- No individual proteins pass FDR threshold
+- But GSEA reports significant pathway enrichment
+
+--
+
+**Why this happens:**
+
+High-throughput experiments often have:
+- Modest sample sizes
+- Subtle expression changes
+
+GSEA detects **coordinated shifts** across many proteins, revealing pathway-level alterations even when individual proteins do not reach significance.
+
+---
+# Visualisation & Multi-omics Integration
+
+.pull-left[
+**Common visualizations:**
+.tiny-text[
+- **Bar/dot plots:** Compare NES or -log10(p) across pathways
+- **Running enrichment plots:** Score accumulation along ranked list
+- **cnetplot / enrichmap:** Gene-concept networks
+- **Upset plots:** Overlap of leading edge genes
+]
+]
+
+.pull-right[
+**Multi-omics integration:**
+.tiny-text[
+- Perform GSEA separately for proteomics, transcriptomics, etc.
+- Combine scores to discover concordant pathways (e.g., multiGSEA)
+- Harmonise identifiers across omics layers
+- Select appropriate pathway databases
+]
+]
+
+---
+# Visualisation: Dot Plot
+
+.left-code[
+```{r dotplot-example, eval=FALSE}
+library(clusterProfiler)
+library(enrichplot)
+library(org.Hs.eg.db)
+
+# Example: ORA with GO terms
+data(geneList, package = "DOSE")
+genes <- names(geneList)[abs(geneList) > 2]
+
+ego <- enrichGO(gene = genes,
+                OrgDb = org.Hs.eg.db,
+                ont = "BP",
+                readable = TRUE)
+
+dotplot(ego, showCategory = 10) #<<
+```
+]
+
+.right-plot[
+```{r dotplot-out, ref.label="dotplot-example", echo=FALSE, fig.width=6, fig.height=5, message=FALSE, warning=FALSE}
+```
+]
+
+---
+# Visualisation: Network (cnetplot)
+
+.left-code[
+```{r cnet-example, eval=FALSE}
+library(clusterProfiler)
+library(enrichplot)
+
+data(geneList, package = "DOSE")
+genes <- names(geneList)[abs(geneList) > 2]
+
+ego <- enrichGO(gene = genes,
+                OrgDb = org.Hs.eg.db,
+                ont = "BP",
+                readable = TRUE)
+
+cnetplot(ego, #<<
+         categorySize = "pvalue",
+         showCategory = 5,
+         foldChange = geneList)
+```
+]
+
+.right-plot[
+```{r cnet-out, ref.label="cnet-example", echo=FALSE, fig.width=6, fig.height=5, message=FALSE, warning=FALSE}
+```
+]
+
+---
+# Comparing Multiple Contrasts
+
+.left-code[
+```{r compare-cluster, eval=FALSE}
+library(clusterProfiler)
+library(org.Hs.eg.db)
+
+data(gcSample, package = "clusterProfiler")
+# gcSample: list of gene sets
+# from different conditions/clusters
+
+ck <- compareCluster( #<<
+  geneClusters = gcSample,
+  fun = enrichGO,
+  OrgDb = org.Hs.eg.db,
+  ont = "BP")
+
+dotplot(ck, showCategory = 3) #<<
+```
+]
+
+.right-plot[
+```{r compare-cluster-out, ref.label="compare-cluster", echo=FALSE, fig.width=7, fig.height=6, message=FALSE, warning=FALSE}
+```
+]
+
+---
+# Comparing GSEA Across Conditions
+
+.left-code[
+```{r compare-gsea, eval=FALSE}
+library(clusterProfiler)
+library(enrichplot)
+
+data(geneList, package = "DOSE")
+# Simulate second condition
+geneList2 <- geneList + rnorm(length(geneList), 0, 0.5)
+geneList2 <- sort(geneList2, decreasing = TRUE) #<<
+
+gse1 <- gseGO(geneList, OrgDb = org.Hs.eg.db,
+              ont = "BP", pvalueCutoff = 0.1)
+gse2 <- gseGO(geneList2, OrgDb = org.Hs.eg.db,
+              ont = "BP", pvalueCutoff = 0.1)
+
+# Merge and compare
+merged <- merge_result(list( #<<
+  Condition1 = gse1,
+  Condition2 = gse2))
+
+dotplot(merged, showCategory = 5) #<<
+```
+]
+
+.right-plot[
+```{r compare-gsea-out, ref.label="compare-gsea", echo=FALSE, fig.width=7, fig.height=6, message=FALSE, warning=FALSE}
+```
+]
+
