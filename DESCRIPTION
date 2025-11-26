@@ -38,6 +38,7 @@ Imports:
     clusterProfiler,
     org.Hs.eg.db,
     ggarchery,
+    pagedown
 Suggests:
     knitr,
     kableExtra,

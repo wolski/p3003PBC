@@ -23,7 +23,7 @@ vignette: >
 ---
 
 class: fullscreen, inverse, top, center, text-black
-background-image: url("../inst/images/Linear_chair.jpg")
+background-image: url("images/Linear_chair.jpg")
 
 .font150[**linear models (lm)**]
 
@@ -419,7 +419,7 @@ knitr::kable(multcomp,
   - movement type with levels: push and pull
 
 .img-right[
-![](../inst/images/Spider.png)
+![](images/Spider.png)
 ]
 
 
@@ -443,7 +443,7 @@ coef(noI)
 ]
 
 .img-right[
-![](../inst/images/interactions_and_contrasts-spider_interactions1.png)
+![](images/interactions_and_contrasts-spider_interactions1.png)
 ]
 
 
@@ -473,7 +473,7 @@ You cannot answer the question without __more__ information <br/> about the othe
 
 
 .img-right[
-![](../inst/images/HotdogKetchup.jpg)
+![](images/HotdogKetchup.jpg)
 ]
 
 
@@ -500,7 +500,7 @@ coef(withI)
 ]
 
 .img-right[
-![](../inst/images/interactions_and_contrasts-spider_interactions2.png)
+![](images/interactions_and_contrasts-spider_interactions2.png)
 ]
 
 
@@ -583,7 +583,7 @@ What is the difference between the two Volcanos? <br/>
 
 
 .img-right[
-![](../inst/images/Volcano2Moderation.png)
+![](images/Volcano2Moderation.png)
 ]
 
 ---
@@ -709,7 +709,7 @@ prolfqua::table_facade(x, caption = "All possible pairs of E. coli concentration
 ]
 
 .img-right[
-![](../inst/images/IonstarExp.png)
+![](images/IonstarExp.png)
 - Human proteins $\beta =  0$
 - E. Coli $\beta \ne 0$
 ]
@@ -742,7 +742,7 @@ $$
 
 
 .img-left[
-![](../inst/images/IonStar_Statistics_brms_model.png)
+![](images/IonStar_Statistics_brms_model.png)
 
 ]
 
@@ -791,7 +791,7 @@ $log_2FC$ < T-statistic < sign $(log_2FC) \times$ p-value
 
 
 
-.img-right[![](../inst/images/ROC_CURVE_015.png)]
+.img-right[![](images/ROC_CURVE_015.png)]
 
 ---
 
@@ -808,7 +808,7 @@ the FDR approximates the FDP.
 
 
 .img-right[
-![](../inst/images/FDR_vs_FDP.png)
+![](images/FDR_vs_FDP.png)
 FDR vs FDP curves]
 
 

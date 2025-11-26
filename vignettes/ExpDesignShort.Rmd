@@ -55,7 +55,7 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 ---
 
 class: fullscreen, inverse, top, center, text-black
-background-image: url("../inst/images/Linear_chair.jpg")
+background-image: url("images/Linear_chair.jpg")
 
 .font150[**Experimental Design - Short Version**]
 
@@ -118,7 +118,7 @@ Three strategies to prevent confounding:
    in each batch
 
 .img-right[
-![How to avoid](../inst/images/BatchEffect.png)
+![How to avoid](images/BatchEffect.png)
 ]
 
 __Bad:__ All treated in Batch 1, all controls in Batch 2<br/>
@@ -341,9 +341,9 @@ depending on the other factor!
 ]
 
 .pull-right[
-.image-70[![](../inst/images/TypesOfInteractions_NO.png)]
-.image-70[![](../inst/images/TypesOfInteractions_Quanti.png)]
-.image-70[![](../inst/images/TypesOfInteractions_Quali.png)]
+.image-70[![](images/TypesOfInteractions_NO.png)]
+.image-70[![](images/TypesOfInteractions_Quanti.png)]
+.image-70[![](images/TypesOfInteractions_Quali.png)]
 ]
 
 .footnote[Medical Statistics - University of Sheffield]
@@ -364,7 +364,7 @@ exclude: true
 - ~1x2 = there was not an interaction
 
 .img-right[
-![](../inst/images/allInteractions2x2.png)
+![](images/allInteractions2x2.png)
 ]
 
 .footnote[https://crumplab.github.io/statistics/more-on-factorial-designs.html]
@@ -436,7 +436,7 @@ when there IS one.
 ]
 
 .img-right[
-![](../inst/images/hl_nullhypo_errors.png)
+![](images/hl_nullhypo_errors.png)
 ]
 
 __Key insight:__ To reduce both errors → increase sample size
@@ -462,8 +462,8 @@ __Biological variance usually dominates!__<br/>
 ]
 
 .img-right[
-![](../inst/images/VariousTypesOfVariation.jpg)
-![](../inst/images/VariousTypesOfVariation_Summary.jpg)
+![](images/VariousTypesOfVariation.jpg)
+![](images/VariousTypesOfVariation_Summary.jpg)
 ]
 
 .footnote[https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6807909/]

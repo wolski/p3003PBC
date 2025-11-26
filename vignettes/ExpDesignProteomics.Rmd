@@ -23,7 +23,7 @@ vignette: >
 ---
 
 class: fullscreen, inverse, top, center, text-black
-background-image: url("../inst/images/many-black-chair-backs.jpg")
+background-image: url("images/many-black-chair-backs.jpg")
 
 .font150[**design**]
 
@@ -75,7 +75,7 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 - Novel aquisition methods (DIA vs DDA) <br/> [Extending the Limits of Quantitative Proteome](https://www.mcponline.org/content/14/5/1400)
 
 .img-right[
-![](../inst/images/DIA_vs_LFQ.jpg)
+![](images/DIA_vs_LFQ.jpg)
 ]
 
 --
@@ -83,7 +83,7 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 - improvements in feature detection and extraction <br/> [Ionstar](https://www.pnas.org/content/115/21/E4767)
 
 .img-right[
-![](../inst/images/IonStar_MQ_PD.jpg)
+![](images/IonStar_MQ_PD.jpg)
 ]
 
 --
@@ -91,7 +91,7 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 - zoo of data transformation and imputation methods <br/> [Simultaneous Improvement in the Precision...](https://www.mcponline.org/content/18/8/1683)
 
 .img-right[
-![](../inst/images/LFQ_Improvement.jpg)
+![](images/LFQ_Improvement.jpg)
 ]
 
 
@@ -102,7 +102,7 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 
 
 .img-right[
-![](../inst/images/Ropeca.png)
+![](images/Ropeca.png)
 ]
 
 ---
@@ -121,12 +121,12 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 # Normalization
 
 .img-left[
-![before normalization](../inst/images_2/beforeNormalization.png)
+![before normalization](images_2/beforeNormalization.png)
 ]
 
 
 .img-right[
-![after normalization](../inst/images_2/after_normalization.png)
+![after normalization](images_2/after_normalization.png)
 ]
 
 .footnote[Left - Intensity distributions before (Left) and after normalization (Right).]
@@ -149,11 +149,11 @@ Only than we are removing only systematic changes among samples.
 
 
 .img-left[
-![Missigness](../inst/images_2/Missigness.png)
+![Missigness](images_2/Missigness.png)
 ]
 
 .img-right[
-![Protein counts](../inst/images_2/proteinCounts.png)
+![Protein counts](images_2/proteinCounts.png)
 ]
 
 .footnote[Left : Heatmap : columns - samples, rows - proteins, black - missing protein quantifications. Right : # quantified proteins per sample.]
@@ -175,11 +175,11 @@ Only than we are removing only systematic changes among samples.
 
 
 .img-left[
-![after normalization](../inst/images_2/heatmapmodel1ALL.png)
+![after normalization](images_2/heatmapmodel1ALL.png)
 ]
 
 .img-right[
-![after normalization](../inst/images_2/heatmapAOVmodel1.png)
+![after normalization](images_2/heatmapAOVmodel1.png)
 ]
 
 
@@ -192,12 +192,12 @@ The protein intensities in the KO samples are very different than in the other c
 
 
 .img-left[
-![after normalization all no outliers](../inst/images_2/heatmapmodel1ALL_similarOnly.png)
+![after normalization all no outliers](images_2/heatmapmodel1ALL_similarOnly.png)
 ]
 
 
 .img-right[
-![after normalization Anova significant](../inst/images_2/heatmapAOVmodel1_SimilarOnly.png)
+![after normalization Anova significant](images_2/heatmapAOVmodel1_SimilarOnly.png)
 ]
 
 .footnote[Same samples except KO. Right - Proteins with a significant result in the ANOVA analysis.]
@@ -243,7 +243,7 @@ Not quite significant at the $5%$ level!
 
 
 .img-right[
-![](../inst/images/Multi_Test_Weight_example_1.png)
+![](images/Multi_Test_Weight_example_1.png)
 ]
 
 .footnote[Example from  Andersen (1990) ]
@@ -266,7 +266,7 @@ Not quite significant at the $5%$ level!
 
 
 .right-plot[
-![](../inst/images/Multi_Test_Weight_example_1.png)
+![](images/Multi_Test_Weight_example_1.png)
 ]
 
 .footnote[
@@ -299,7 +299,7 @@ out of this study?<br/>
 
 
 .img-right[
-![](../inst/images/Multi_Test_Weight_example_2.png)
+![](images/Multi_Test_Weight_example_2.png)
 ]
 
 --
@@ -332,7 +332,7 @@ More in the Proteome Informatics course <br/>
 https://fgcz.ch/education/bioinformaticsTraining/bioinfProteomics.html
 
 .img-right[
-![](../inst/images/JellyBeans_significant.png)
+![](images/JellyBeans_significant.png)
 ]
 
 .footnote[https://xkcd.com/882/]

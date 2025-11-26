@@ -22,7 +22,7 @@ vignette: >
 ---
 
 class: fullscreen, inverse, top, center, text-black
-background-image: url("../inst/images/OIG2.jpeg")
+background-image: url("images/OIG2.jpeg")
 
 .font150[**GSEA**]
 

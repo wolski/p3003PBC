@@ -23,7 +23,7 @@ vignette: >
 ---
 
 class: fullscreen, inverse, top, center, text-black
-background-image: url("../inst/images/Comfortable_Chair.jpg")
+background-image: url("images/Comfortable_Chair.jpg")
 
 .font150[**Sample size estimation**]
 
@@ -93,7 +93,7 @@ For a given test, the only way to reduce both error rates<br/>
 is to __increase the sample size__, and this may not be feasible.
 
 .img-right[
-![](../inst/images/hl_nullhypo_errors.png)
+![](images/hl_nullhypo_errors.png)
 ]
 
 ---
@@ -359,7 +359,7 @@ for all measurements by $log_2$ transforming the data.
 Note:<br/> $\frac{d}{dx} \ln(x) =\frac{1}{x}$.
 
 .img-right[
-![](../inst/images/CVvsSD.png)
+![](images/CVvsSD.png)
 ]
 
 
@@ -378,7 +378,7 @@ After z-transform samples have the same deviation $$mad(I^t_1) = mad(I^t_2)$$ eq
 ]
 
 .img-right[
-![](../inst/images/Density_Intensities.png)
+![](images/Density_Intensities.png)
 ]
 
 
@@ -471,7 +471,7 @@ lines(1:3, prot, col = 2, lwd = 3, lty = 2)
   - Ensure reproducibility
 
 .img-right[
-![](../inst/images/Meeting_Agenda_p1.png)
+![](images/Meeting_Agenda_p1.png)
 ]
 
 .footnote[https://wolski.github.io/prolfqua/articles/Auxiliary_ExDesignSurvey.html]
@@ -492,7 +492,7 @@ and the hypothesis to be tested
 
 
 .img-right[
-![](../inst/images/Meeting_Agenda_p2.png)
+![](images/Meeting_Agenda_p2.png)
 ]
 
 .footnote[https://wolski.github.io/prolfqua/articles/Auxiliary_ExDesignSurvey.html]
@@ -522,7 +522,7 @@ layout: false
 - check if assumptions for data normalization are met.
 
 .img-right[
-![](../inst/images/QC_SD_Missigness_1.png)
+![](images/QC_SD_Missigness_1.png)
 ]
 --
 
@@ -530,13 +530,13 @@ Visualize the distribution of standard deviation</br> of all proteins
 using the density function and<br/> the empirical cumulative density function (ecdf)
   
 .img-right[
-![](../inst/images/QC_SD_distribution_function.png)
+![](images/QC_SD_distribution_function.png)
 ]
 
 --
 
 .img-right[
-![](../inst/images/QC_SD_ECDF.png)
+![](images/QC_SD_ECDF.png)
 ]
 
 --
@@ -551,7 +551,7 @@ Sample size estimates for parameters<br/> specified in protocol
 
 
 .img-right[
-![](../inst/images/QC_SD_SampleSize_Estimates.png)
+![](images/QC_SD_SampleSize_Estimates.png)
 ]
 
 ---
@@ -620,8 +620,8 @@ str(startdata)
 ]
 
 .img-right[
-![](../inst/images/VariousTypesOfVariation.jpg)
-![](../inst/images/VariousTypesOfVariation_Summary.jpg)
+![](images/VariousTypesOfVariation.jpg)
+![](images/VariousTypesOfVariation_Summary.jpg)
 ]
 
 

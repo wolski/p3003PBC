@@ -22,7 +22,7 @@ vignette: >
 ---
 
 class: fullscreen, inverse, top, center, text-black
-background-image: url("../inst/images/test_chair.jpeg")
+background-image: url("images/test_chair.jpeg")
 
 .font150[**hypothesis testing**]
 
@@ -75,7 +75,7 @@ library(tidyverse)
 Dr. Muriel Bristol, a female colleague of Fisher claimed to be able to tell whether the tea or the milk was added first to a cup.
 
 ..img-right[
-![](../inst/images/Milk-Tea-2m.jpg)
+![](images/Milk-Tea-2m.jpg)
 ]
 
 .footnote[Lady tasting tea https://en.wikipedia.org/wiki/Lady_tasting_tea,Ronald Fisher https://en.wikipedia.org/wiki/Ronald_Fisher]
@@ -644,7 +644,7 @@ For a given test, the only way to reduce both error rates<br/>
 is to __increase the sample size__, and this may not be feasible.
 
 .img-right[
-![](../inst/images/hl_nullhypo_errors.png)
+![](images/hl_nullhypo_errors.png)
 ]
 
 
@@ -1119,7 +1119,7 @@ normal distribution, the power is:
 
 
 .img-right[
-![](../inst/images/hl_nullhypo_errors.png)
+![](images/hl_nullhypo_errors.png)
 ]
 
 
@@ -1151,6 +1151,6 @@ state if you reject null given your size of test $\alpha$.
 - Parametric tests do not make as many assumptions <br/> about the data.
 
 .img-right[
-![](../inst/images/StatTIP_1.png)
+![](images/StatTIP_1.png)
 ]
 

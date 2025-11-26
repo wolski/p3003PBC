@@ -4,3 +4,7 @@
 .Ruserdata
 doc
 Meta
+.DS_Store
+.vscode
+vignettes/pdf
+

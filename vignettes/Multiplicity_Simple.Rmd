@@ -22,7 +22,7 @@ vignette: >
 ---
 
 class: fullscreen, inverse, top, center, text-white
-background-image: url("../inst/images/many-black-chair-backs.jpg")
+background-image: url("images/many-black-chair-backs.jpg")
 
 .font150[**The Multiplicity Problem**]
 
@@ -38,7 +38,7 @@ library(tidyverse)
 # Why Does This Matter?
 
 .pull-left[
-![](../inst/images/JellyBeans_significant.png)
+![](images/JellyBeans_significant.png)
 ]
 
 .pull-right[

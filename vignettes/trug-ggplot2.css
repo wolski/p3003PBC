@@ -8,7 +8,7 @@ body {
 }
 
 .title-slide {
-  background-image: url(../inst/images/IrchelFGCZ.jpg);
+  background-image: url(images/IrchelFGCZ.jpg);
 }
 
 .footnote {
@@ -174,4 +174,69 @@ body {
 
 .my-one-page-font {
   font-size: 20px;
+}
+
+/* FGCZ banner behind slide titles - applied to all slides */
+.remark-slide-content {
+  position: relative;
+  padding-top: 70px;
+}
+
+/* Remove metropolis dark gray header bar */
+.remark-slide-content::after,
+.remark-slide-content::before,
+.remark-slide::after,
+.remark-slide::before,
+.remark-slide-scaler::after,
+.remark-slide-scaler::before {
+  display: none !important;
+  background: none !important;
+}
+
+/* Override metropolis header styling */
+.remark-slide-content {
+  border-top: none !important;
+  background-color: #FAFAFA;
+}
+
+.remark-slide {
+  background-color: #FAFAFA !important;
+}
+
+.remark-slide-scaler {
+  background-color: #FAFAFA !important;
+}
+
+.remark-slide-content h1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 8px 75px;
+  font-size: 1.4em;
+  line-height: 1.2;
+  background-image: url(fgcz_formatting/fgcz_banner.png);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  background-color: transparent;
+  color: #fff;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+  z-index: 1;
+}
+
+/* Disable banner for title/fullscreen/inverse slides */
+.fullscreen .remark-slide-content h1,
+.inverse .remark-slide-content h1 {
+  position: static;
+  background-image: none;
+  color: inherit;
+  text-shadow: none;
+  padding: 0;
+}
+
+.fullscreen .remark-slide-content,
+.inverse .remark-slide-content {
+  padding-top: 0;
 }

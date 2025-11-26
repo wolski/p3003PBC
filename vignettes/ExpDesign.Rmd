@@ -23,7 +23,7 @@ vignette: >
 ---
 
 class: fullscreen, inverse, top, center, text-black
-background-image: url("../inst/images/Linear_chair.jpg")
+background-image: url("images/Linear_chair.jpg")
 
 .font150[**design**]
 
@@ -71,7 +71,7 @@ exclude: true
 - Novel aquisition methods (DIA vs DDA)
 
 .img-right[
-![](../inst/images/DIA_vs_LFQ.jpg)
+![](images/DIA_vs_LFQ.jpg)
 ]
 
 --
@@ -80,7 +80,7 @@ exclude: true
 - improvements in feature detection and extraction
 
 .img-right[
-![](../inst/images/IonStar_MQ_PD.jpg)
+![](images/IonStar_MQ_PD.jpg)
 ]
 
 --
@@ -89,7 +89,7 @@ exclude: true
 - a zoo of data <br/> transformation, pretreatment, imputation methods
 
 .img-right[
-![](../inst/images/LFQ_Improvement.jpg)
+![](images/LFQ_Improvement.jpg)
 ]
 
 
@@ -99,7 +99,7 @@ exclude: true
 - improvements in fold change estimation
 
 .img-right[
-![](../inst/images/Ropeca.png)
+![](images/Ropeca.png)
 ]
 
 
@@ -139,7 +139,7 @@ caused or influenced a particular __outcome__
 ]
 
 .right-plot[
-![](../inst/images/CausalNetworkSignalTransduction.png)
+![](images/CausalNetworkSignalTransduction.png)
 ]
 
 
@@ -249,7 +249,7 @@ exclude: true
 # Causality - How to prove cause and effect?
 
 .right-plot[
-![](../inst/images/BuehlmanCausality.png)
+![](images/BuehlmanCausality.png)
 ]
 
 .footnote[[Peter Buehlmann "Invariance, Causality and Robustness"](https://arxiv.org/pdf/1812.08233.pdf)]
@@ -300,10 +300,10 @@ Sir Austin Bradford Hill CBE FRS was an English epidemiologist and statistician,
 # Causality - Bradford-Hill Criteria
 
 .pull-left[Plausibility<br/>
-![](../inst/images/BH_Plausibility.png)]
+![](images/BH_Plausibility.png)]
 
 .pull-right[Specificity<br/>
-![](../inst/images/BH_Specificity.png)]
+![](images/BH_Specificity.png)]
 
 .footnote[[Explaining Hill Criteria using xkcd](https://www.kdnuggets.com/2017/02/hill-data-scientist-xkcd-story.html)<br/>
 [The Bradford Hill Criteria Don't Hold Up](https://lesslikely.com/statistics/bradford-hill-criteria-dont-hold/)
@@ -324,7 +324,7 @@ exclude: true
 ]
 
 .right-plot[
-![](../inst/images/Causality_fromData.jpg)
+![](images/Causality_fromData.jpg)
 
 ]
 .footnote[[CausalDisco](https://github.com/annennenne/causalDisco/blob/master/slides/causaldisco_ahp_user2019.pdf)
@@ -346,7 +346,7 @@ Bible (see Daniel 1:1–16).<br/>
 
 
 .img-right[
-![](../inst/images2021/Bergmann_Murdoch.png)
+![](images2021/Bergmann_Murdoch.png)
 ]
 
 .footnote[Bregman, Rutger. Utopia for Realists (p. 206). Bloomsbury Publishing. Kindle Edition. ]
@@ -375,7 +375,7 @@ Bible (see Daniel 1:1–16).<br/>
 
 # Study Types - Case control study
 .image-70[
-![](../inst/images/Study_Type_Case_Control.png)
+![](images/Study_Type_Case_Control.png)
 ]
 
 
@@ -401,7 +401,7 @@ among the people who are most affected."
 x
 
 .img-right[
-![](../inst/images/Nobel2019.png)
+![](images/Nobel2019.png)
 ]
 
 
@@ -443,7 +443,7 @@ be used where possible
 
 - To prevent __ascertainment__ and __performance__ __bias__.
 
-.img-right[![](../inst/images/blind_trials.png)]
+.img-right[![](images/blind_trials.png)]
 
 .footnote[[Blinding: Who, what, when, why, how?](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2947122/)]
 
@@ -495,14 +495,14 @@ __Confounder__ - is a variable that influences both the dependent variable and i
 __Reichenbach's common cause principle:__ <br/>
 A correlation occurs due to one of the three possible mechanisms
 .img-small[
-![](../inst/images/Causality_Mechanisms_3.png)
+![](images/Causality_Mechanisms_3.png)
 ]
 
 .footnote[[Mediators, confounders, colliders – a crash course in causal inference](https://theoreticalecology.wordpress.com/2019/04/14/mediators-confounders-colliders-a-crash-course-in-causal-inference/)]
 
 <!--
 .img-right[
-![](../inst/images/Confounding_Wiki.png)
+![](images/Confounding_Wiki.png)
 ]
 -->
 
@@ -525,7 +525,7 @@ Correct explanation : regression to the mean.
 # Confounders - Types of
 
 .image-70[
-![](../inst/images_2/FourElementalConfounds.png)
+![](images_2/FourElementalConfounds.png)
 ]
 
 .footnote[https://www.youtube.com/watch?v=mBEA7PKDmiY]
@@ -545,7 +545,7 @@ all treatments are present in each batch<br/>
 in equal numbers.
 
 .img-right[
-![How to avoid](../inst/images/BatchEffect.png)
+![How to avoid](images/BatchEffect.png)
 How to avoid confounding by batch
 ]
 
@@ -648,7 +648,7 @@ Q : "Do you prefer ketchup or chocolate <br/> sauce on your food?"
 A : "__It depends__ on the type of food!" <br/>
 
 .img-right[
-![](../inst/images/HotdogKetchup.jpg)
+![](images/HotdogKetchup.jpg)
 ]
 
 --
@@ -738,7 +738,7 @@ several factors (independent variables).
 
 - No interaction
 .img-right[
-![](../inst/images/TypesOfInteractions_NO.png)
+![](images/TypesOfInteractions_NO.png)
 
 
 [Medical Statistics - University of Sheffield]
@@ -750,7 +750,7 @@ several factors (independent variables).
 - Quantitative interaction
 
 .img-right[
-![](../inst/images/TypesOfInteractions_Quanti.png)
+![](images/TypesOfInteractions_Quanti.png)
 ]
 
 
@@ -759,7 +759,7 @@ several factors (independent variables).
 - Qualitative interaction
 
 .img-right[
-![](../inst/images/TypesOfInteractions_Quali.png)
+![](images/TypesOfInteractions_Quali.png)
 ]
 
 
@@ -778,7 +778,7 @@ exclude: true
 - ~1x2 = there was not an interaction
 
 .img-right[
-![](../inst/images/allInteractions2x2.png)
+![](images/allInteractions2x2.png)
 ]
 
 .footnote[https://crumplab.github.io/statistics/more-on-factorial-designs.html]
@@ -822,7 +822,7 @@ For a given test, the only way to reduce both error rates<br/>
 is to __increase the sample size__, and this may not be feasible.
 
 .img-right[
-![](../inst/images/hl_nullhypo_errors.png)
+![](images/hl_nullhypo_errors.png)
 ]
 
 
@@ -869,8 +869,8 @@ $\sigma^2$ of replicates:
 ]
 
 .img-right[
-![](../inst/images/VariousTypesOfVariation.jpg)
-![](../inst/images/VariousTypesOfVariation_Summary.jpg)
+![](images/VariousTypesOfVariation.jpg)
+![](images/VariousTypesOfVariation_Summary.jpg)
 ]
 
 
@@ -1058,7 +1058,7 @@ Bias is a disproportionate weight in favor of or against an idea or thing, usual
 - Confirmation bias,<br/> tendency to favor information that confirm hypothesis $^{\star}$
 
 .img-right[
-![](../inst/images/Man_In_The_Moon_1.png)
+![](images/Man_In_The_Moon_1.png)
 ]
 
 
@@ -1067,7 +1067,7 @@ Bias is a disproportionate weight in favor of or against an idea or thing, usual
 - [catalogofbias.org](https://catalogofbias.org/biases/)
 
 .img-right[
-![](../inst/images/Man_In_The_Moon_2.png)
+![](images/Man_In_The_Moon_2.png)
 ]
 
 --
@@ -1075,7 +1075,7 @@ Bias is a disproportionate weight in favor of or against an idea or thing, usual
 - ...
   
 .img-right[
-![](../inst/images/Man_In_The_Moon_3.png)
+![](images/Man_In_The_Moon_3.png)
 ]
 
 --
@@ -1098,7 +1098,7 @@ fits your hypothesis, for a technical problem? </br>
 - Publication bias,<br/> Publishing only results that show a significant finding,</br> and inserts bias in favor of positive results.  $^{\star\star}$
 
 .img-right[
-![](../inst/images/Z_plot.png)
+![](images/Z_plot.png)
 ]
 
 

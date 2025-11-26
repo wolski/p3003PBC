@@ -23,7 +23,7 @@ vignette: >
 
 
 class: fullscreen, inverse, top, center, text-black
-background-image: url("../inst/images/R_logo.svg.png")
+background-image: url("images/R_logo.svg.png")
 
 .font150[**introduction to R**]
 

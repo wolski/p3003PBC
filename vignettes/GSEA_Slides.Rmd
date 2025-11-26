@@ -22,7 +22,7 @@ vignette: >
 ---
 
 class: fullscreen, inverse, top, center, text-white
-background-image: url("../inst/images/many-black-chair-backs.jpg")
+background-image: url("images/many-black-chair-backs.jpg")
 
 .font150[**ORA & GSEA**]
 

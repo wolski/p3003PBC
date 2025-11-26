@@ -57,7 +57,7 @@ as_table <- function(...) knitr::kable(..., format='html', digits = 3)
 ```
 
 
-background-image: url("../inst/images/fgczgseaora.png")
+background-image: url("images/fgczgseaora.png")
 
 
 # Protein quantification experiments
@@ -70,7 +70,7 @@ for various contrasts (comparisons of treatments)
 
 
 .img-right[
-![](../inst/images/Volcanos.png)
+![](images/Volcanos.png)
 ]
 
 
@@ -107,7 +107,7 @@ tab
 cat("p-value:", round(fisher.test(tab)$p.value, 5))
 ```
 .img-right[
-![](../inst/images/ListDichotom.png)
+![](images/ListDichotom.png)
 ]
 
 ---
@@ -122,7 +122,7 @@ cat("p-value:", round(fisher.test(tab)$p.value, 5))
 .footnote[Gene Sets can be highly correlated, because they contain the same proteins.  Multiplicity adjustment assumes indpendence (FDR).]
 
 .img-right[
-![](../inst/images/GSEA.png)
+![](images/GSEA.png)
 ]
 
 ---
@@ -263,24 +263,24 @@ e.g. GO Bioprocess, GO Molecular Function
 
 .img-right[
 
-![](../inst/images/P1_GSEAEntry.png)
+![](images/P1_GSEAEntry.png)
 ]
 
 ---
 
 # HTML output - HTML report with method description
 .img-left[
-![](../inst/images/P2_GSEA_Internal.png)
+![](images/P2_GSEA_Internal.png)
 ]
 
 .img-right[
-![](../inst/images/P3_GSEA_Webgestalt.png)
+![](images/P3_GSEA_Webgestalt.png)
 ]
 
 
 ---
 
-background-image: url("../inst/images/brussels.jpg")
+background-image: url("images/brussels.jpg")
 
 # Outlook
 
