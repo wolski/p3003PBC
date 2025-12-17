@@ -1,0 +1,45 @@
+@startuml TMT_phospho_workflow
+!theme plain
+skinparam backgroundColor white
+skinparam defaultFontSize 14
+
+title TMT Phosphoproteomics Workflow
+
+|Sample Preparation|
+start
+:Biological Samples\n(e.g., Treatment vs Control);
+:Protein Extraction\n& Quantification;
+:Tryptic Digestion;
+
+|TMT Labeling|
+:TMT Isobaric Labeling\n(up to 18 samples);
+:Pool Labeled Samples;
+
+|Phospho Enrichment|
+:Split Sample;
+fork
+  :Total Proteome\n(no enrichment);
+fork again
+  :IMAC/MOAC\nPhosphopeptide Enrichment;
+end fork
+
+|Fractionation|
+:High-pH Reversed Phase\nFractionation;
+note right: 8-24 fractions\nincreases depth
+
+|LC-MS/MS|
+:nanoLC-MS/MS\nAcquisition;
+
+|Data Analysis|
+:Database Search\n(MSFragger/FragPipe);
+:PTM Site Localization\n(PTMProphet);
+:Quantification\n(TMTIntegrator);
+fork
+  :Protein-level\nDifferential Expression;
+fork again
+  :Phosphosite-level\nDifferential Expression;
+end fork
+:Integrated DPA/DPU\nAnalysis (prophosqua);
+stop
+
+@enduml

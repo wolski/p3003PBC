@@ -36,9 +36,65 @@ options(htmltools.dir.version = FALSE, width = 90)
 ```
 
 ---
+# Motivation: Your Starting Point
+
+After differential expression analysis, you have a table like this:
+
+```{r de-table, echo=FALSE}
+library(dplyr)
+library(knitr)
+# Simulated DE results based on real prophosqua output
+de_example <- tibble::tribble(
+  ~gene_name, ~contrast, ~diff, ~statistic, ~FDR,
+  "Cat",      "KO_vs_WT",  1.05,  13.7, 7.3e-7,
+  "Slc7a11",  "KO_vs_WT",  2.29,  11.0, 7.3e-6,
+  "Sqstm1",   "KO_vs_WT",  2.64,  10.9, 7.3e-6,
+  "Hpgd",     "KO_vs_WT", -1.63, -10.9, 7.3e-6,
+  "Oasl1",    "KO_vs_WT",  1.74,  10.2, 1.2e-5,
+  "Anln",     "KO_vs_WT", -0.86, -10.0, 1.5e-5,
+  "...",      "...",       NA,     NA,    NA,
+  "Mfge8",    "KO_vs_WT",  0.13,   0.83, 0.83,
+  "Polrmt",   "KO_vs_WT",  0.15,   0.83, 0.83
+)
+kable(de_example, digits = c(0, 0, 2, 1, 2),
+      col.names = c("Gene", "Contrast", "log2FC", "t-stat", "FDR"),
+      caption = "9,030 proteins measured, 636 significant (FDR < 0.05)")
+```
+
+--
+
+**Now what?** You have 636 significant proteins. How do you make biological sense of this list?
+
+---
+# Questions You Want to Answer
+
+.pull-left[
+**From your significant protein list:**
+
+- Which **biological processes** are affected?
+- Which **pathways** are perturbed?
+- Are the changes related to **specific cellular compartments**?
+- Is there a **common functional theme**?
+]
+
+.pull-right[
+**Going deeper:**
+
+- Are there pathways affected even if **no single protein** is significant?
+- Do **up-regulated** and **down-regulated** proteins have different functions?
+- Which proteins are **driving** the enrichment signal?
+]
+
+--
+
+**Two complementary approaches:**
+- **ORA** - Over-Representation Analysis (uses significant list)
+- **GSEA** - Gene Set Enrichment Analysis (uses all proteins ranked)
+
+---
 # What Are Gene Sets?
 
-**Gene sets** = curated collections of genes/proteins sharing a common biological property.
+**Gene sets** = curated collections of genes/proteins/... sharing a common biological property.
 
 .pull-left[
 **Two Major Collections:**
@@ -71,6 +127,49 @@ Match your experimental results against these curated sets to discover:
 --
 
 **Why use gene sets?** Individual protein changes are hard to interpret. Gene sets aggregate biological knowledge, revealing **functional patterns** in your data.
+
+---
+# Example: HALLMARK_ADIPOGENESIS
+
+A real gene set from [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/):
+
+**Description:** Genes up-regulated during adipocyte differentiation (adipogenesis)
+
+**Size:** 200 genes
+
+.pull-left[
+**GMT format** (one line per gene set):
+```
+HALLMARK_ADIPOGENESIS <TAB> description <TAB> ABCA1 <TAB> ACAA2 <TAB> ACADL <TAB> ...
+```
+
+**GRP format** (one gene per line):
+```
+ABCA1
+ACAA2
+ACADL
+ACADM
+ACLY
+ACO2
+ADIPOQ
+...
+```
+]
+
+.pull-right[
+**First 15 genes:**
+.tiny-text[
+ABCA1, ABCB8, ACAA2, ACADL, ACADM, ACADS, ACLY, ACO2, ACOX1, ADCY6, ADIG, ADIPOQ, ADIPOR2, AGPAT3, AGPAT6
+]
+
+**Collections at MSigDB:**
+.tiny-text[
+- **H:** Hallmark (50 sets)
+- **C2:** Curated pathways (KEGG, Reactome, ...)
+- **C5:** GO gene sets
+- **C7:** Immunologic signatures
+]
+]
 
 ---
 # Creating the Significant Protein List
@@ -120,17 +219,69 @@ Tests whether a pathway is over-represented in your significant protein list.
 **Contingency table:**
 
 |  | In Pathway | Not in Pathway | Total |
-|--|------------|----------------|-------|
+|--|:----------:|:--------------:|:-----:|
 | **Significant** | a | b | a+b |
 | **Not significant** | c | d | c+d |
 | **Total** | a+c | b+d | N |
+
+.tiny-text[
+- **a** = significant proteins IN this pathway
+- **b** = significant proteins NOT in this pathway
+- **c** = non-significant proteins IN this pathway
+- **d** = non-significant proteins NOT in this pathway
+- **N** = all measured proteins (background)
+]
 ]
 
 .pull-right[
 **Question:** Is `a` larger than expected by chance?
 
-**Fisher's exact test** calculates the probability of observing this overlap (or more extreme) under the null hypothesis.
+**Expected value of a:**
+$$E(a) = \frac{(a+b) \times (a+c)}{N}$$
+
+.tiny-text[
+(significant proteins) × (pathway size) / (total)
 ]
+
+**Fisher's exact test** calculates the probability of observing `a` (or more) under the null hypothesis.
+]
+
+---
+# Fisher's Test: Numerical Examples
+
+**Setup:** 5,000 measured proteins, 500 significant (10%), pathway has 100 members
+
+.pull-left[
+**Example 1: No enrichment (H₀ true)**
+
+|  | In Pathway | Not in Pathway |
+|--|:----------:|:--------------:|
+| **Significant** | 10 | 490 |
+| **Not significant** | 90 | 4410 |
+
+Expected: 100 × 10% = **10** proteins
+Observed: **10** proteins
+
+**p-value = 0.55** → Not significant
+]
+
+.pull-right[
+**Example 2: Strong enrichment (H₁ true)**
+
+|  | In Pathway | Not in Pathway |
+|--|:----------:|:--------------:|
+| **Significant** | 40 | 460 |
+| **Not significant** | 60 | 4440 |
+
+Expected: 100 × 10% = **10** proteins
+Observed: **40** proteins (4× expected!)
+
+**p-value = 1.1 × 10⁻¹⁵** → Highly significant
+]
+
+--
+
+**Interpretation:** In Example 2, seeing 40 of 100 pathway proteins among 500 significant hits (when only 10 expected) is extremely unlikely by chance → pathway is enriched.
 
 ---
 # ORA: The Background Universe
@@ -415,5 +566,76 @@ dotplot(merged, showCategory = 5) #<<
 .right-plot[
 ```{r compare-gsea-out, ref.label="compare-gsea", echo=FALSE, fig.width=7, fig.height=6, message=FALSE, warning=FALSE}
 ```
+]
+
+---
+# Common Pitfalls & Best Practices
+
+.pull-left[
+**Redundant GO terms**
+- GO has hierarchical structure → parent/child terms overlap
+- Many similar terms in results (e.g., "immune response", "regulation of immune response")
+- **Solution:** Use `simplify()` function or semantic similarity clustering
+
+**Gene set size filters**
+- Very small sets (< 10 genes): unstable statistics
+- Very large sets (> 500 genes): too general, hard to interpret
+- **Recommendation:** Filter to 15-500 genes
+]
+
+.pull-right[
+**Other pitfalls**
+
+- **Wrong background:** Using whole genome instead of measured proteins (ORA)
+- **Wrong identifiers:** Mixing Entrez IDs, gene symbols, UniProt IDs
+- **Ignoring multiple testing:** Always check FDR, not just p-value
+- **Over-interpretation:** Enrichment ≠ causation
+- **Cherry-picking:** Report all significant results, not just expected ones
+
+**Species mismatch**
+- Ensure gene sets match your organism
+- Mouse vs human orthologs may differ
+]
+
+---
+# Summary & Conclusions
+
+.pull-left[
+**ORA (Over-Representation Analysis)**
+- Input: List of significant proteins
+- Test: Fisher's exact / hypergeometric
+- Requires: Threshold (FDR, fold change)
+- Use correct background (measured proteins!)
+- Fast, intuitive, widely available
+]
+
+.pull-right[
+**GSEA (Gene Set Enrichment)**
+- Input: All proteins, ranked by statistic
+- Test: Running enrichment score
+- No arbitrary threshold needed
+- Detects subtle coordinated changes
+- Provides leading edge genes
+]
+
+--
+
+**Key Takeaways:**
+
+1. Both methods answer: *"What biological functions are affected?"*
+2. **Use both** - they reveal different aspects of your data
+3. Always use **measured proteins** as background for ORA
+4. GSEA can find enrichment even when **no individual protein is significant**
+5. Visualize results: dot plots, enrichment plots, network plots
+
+---
+class: inverse, center, middle
+
+# Questions?
+
+.font120[
+ORA: significant list → enriched pathways
+
+GSEA: ranked list → coordinated changes
 ]
 

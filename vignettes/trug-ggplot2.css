@@ -7,6 +7,11 @@ body {
   line-height: 1.3;
 }
 
+.small-text {
+  font-size: 1.2em;
+  line-height: 1.3;
+}
+
 .title-slide {
   background-image: url(images/IrchelFGCZ.jpg);
 }
@@ -132,12 +137,32 @@ body {
   width: 100%;
 }
 
+.image-40 img {
+  width: 40%;
+}
+
 .image-50 img {
-  width: 30%;
+  width: 50%;
+}
+
+.image-55 img {
+  width: 55%;
+}
+
+.image-60 img {
+  width: 60%;
 }
 
 .image-70 img {
   width: 70%;
+}
+
+.image-80 img {
+  width: 80%;
+}
+
+.image-90 img {
+  width: 90%;
 }
 
 

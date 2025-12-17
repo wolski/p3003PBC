@@ -346,7 +346,7 @@ Bible (see Daniel 1:1–16).<br/>
 
 
 .img-right[
-![](images2021/Bergmann_Murdoch.png)
+![](images/Bergmann_Murdoch.png)
 ]
 
 .footnote[Bregman, Rutger. Utopia for Realists (p. 206). Bloomsbury Publishing. Kindle Edition. ]
@@ -525,7 +525,7 @@ Correct explanation : regression to the mean.
 # Confounders - Types of
 
 .image-70[
-![](images_2/FourElementalConfounds.png)
+![](images/FourElementalConfounds.png)
 ]
 
 .footnote[https://www.youtube.com/watch?v=mBEA7PKDmiY]

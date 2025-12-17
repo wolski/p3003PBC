@@ -3,8 +3,8 @@ vignettes <- c(
   "ExpDesignShort.Rmd",
   "FASTA_ProteinInference.Rmd",
   "GSEA_Slides.Rmd",
-  "Multiplicity_Simple.Rmd",
-  "ExpDesign.Rmd"
+  "Multiplicity_Simple.Rmd"
+#  "ExpDesign.Rmd"
 #  "ExpDesignProteomics.Rmd",
 #  "Hypothesis_Testing_p3003.Rmd",
 #  "IntroductionToLinearModels.Rmd",

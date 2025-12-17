@@ -65,21 +65,22 @@ background-image: url("images/Linear_chair.jpg")
 
 This presentation covers key aspects of experimental design for proteomics research:
 
-- **Confounders**
-  - What are confounders and why do they matter?
-  - Types of confounders
-  - How to control for confounders
-  - Reporting confounders
+.pull-left[
+**Confounders**
+- What are confounders and why do they matter?
+- How to control for confounders
 
-- **Experimental Design**
-  - Between vs within subjects designs
-  - Factorial designs and interactions
-  - Parallel group vs factorial designs
+**Experimental Design**
+- Between vs within subjects designs
+- Factorial designs and interactions
+]
 
-- **Sample Size Estimation**
-  - Ethical considerations
-  - Type I and Type II errors
-  - Using power.t.test for sample size calculations
+.pull-right[
+**Sample Size Estimation**
+- Type I and Type II errors
+- Using `power.t.test` for calculations
+- Ethical considerations
+]
 
 ---
 
@@ -261,6 +262,7 @@ you need to know both factors to predict the outcome.
 
 # Factorial Design
 
+.small[
 A __factorial design__ tests multiple __factors__ simultaneously.
 
 __Factor:__ A variable you manipulate (e.g., treatment, genotype)
@@ -279,16 +281,20 @@ This 2x2 factorial design lets you answer:
 3. Does the drug work differently in WT vs KO? (interaction)
 
 __One experiment, three questions!__
+]
 
 ---
 
 # Factorial vs Parallel Design
 
+.small[
 A parallel design can often be __restructured__ as a factorial design!
 
 __Question:__ 40 subjects to test drug A and drug B. How to allocate?
+]
 
 .pull-left[
+.small[
 **Parallel design**
 
 | Group | n |
@@ -298,9 +304,10 @@ __Question:__ 40 subjects to test drug A and drug B. How to allocate?
 | placebo | 14 |
 
 Compare: 13 vs 14 per test
-]
+]]
 
 .pull-right[
+.small[
 **Factorial design (2x2)**
 
 | Group | n |
@@ -310,15 +317,13 @@ Compare: 13 vs 14 per test
 | plac A + drug B | 10 |
 | plac A + plac B | 10 |
 
-Compare:<br/>
-20 drug A vs 20 plac A<br/>
-20 drug B vs 20 plac B
-]
+Compare: 20 vs 20 per test
+]]
 
-__Factorial wins:__ Same 40 subjects, but larger effective sample size!<br/>
+.small[
+__Factorial wins:__ Same 40 subjects, but larger effective sample size!
 __Bonus:__ Can also test for drug A × drug B interaction.
-
-.footnote[Ronald Fisher pioneered factorial experiments over one-factor-at-a-time.]
+]
 
 
 ---

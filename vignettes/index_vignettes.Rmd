@@ -13,29 +13,32 @@ output:
 
 This page provides easy access to all lecture materials for the FGCZ Protein Bioinformatics Course (P3003).
 
-## Core Course Lectures
+## Current Lectures (2024/2025)
+
+These are the lectures currently being used in the course:
+
+- [PTM Analysis](PTM_Analysis.html) - Phosphoproteomics: DPA vs DPU analysis
+- [Experimental Design (Short)](ExpDesignShort.html) - Condensed experimental design principles
+- [FASTA & Protein Inference](FASTA_ProteinInference.html) - Protein database and inference concepts
+- [Multiplicity (Simple)](Multiplicity_Simple.html) - Simplified multiple testing correction
+- [ORA & GSEA Slides](GSEA_Slides.html) - Over-Representation Analysis and Gene Set Enrichment Analysis
+
+## Archive
+
+These lectures are available but not actively used in the current course:
 
 ### Experimental Design
-- [Experimental Design](ExpDesign.html) - Introduction to experimental design principles
-- [Experimental Design for Proteomics](ExpDesignProteomics.html) - Proteomics-specific design considerations
+- [Experimental Design (Full)](ExpDesign.html) - Complete experimental design principles
 
 ### Statistical Foundations
 - [Hypothesis Testing](Hypothesis_Testing_p3003.html) - Statistical hypothesis testing concepts
 - [Introduction to Linear Models](IntroductionToLinearModels.html) - Linear modeling fundamentals
-- [Multiplicity and Multiple Testing Correction](Multiplicity_p3003.html) - Handling multiple comparisons
+- [Multiplicity (Full)](Multiplicity_p3003.html) - Handling multiple comparisons
 - [Sample Size Estimation](SampleSizeEstimation.html) - Power analysis and sample size calculations
 
-## Advanced Topics
-
-### Data Analysis Methods
+### Additional Resources
 - [Gene Set Enrichment Analysis (GSEA)](GSEA_with_msig.html) - Pathway and functional enrichment analysis
-- [Impact of Filtering on Protein FDR](ImpactOfFilteringOnProteinFDR.html) - FDR considerations in proteomics
-
-## Additional Resources
-
-- [Other Software for Proteomics](OtherSoftware.html) - Overview of proteomics analysis tools
 - [Brief Introduction to R](BriefIntroductionTooR.html) - R programming basics
-- [BioCED 2019 Materials](BioCED2019.html) - Conference presentation materials
 
 ---
 

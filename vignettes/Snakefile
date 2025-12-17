@@ -1,0 +1,145 @@
+# Snakefile for rendering P3003 course vignettes
+# Replaces renderAllVignettest.R
+#
+# Usage:
+#   snakemake -n          # dry-run, show what would be done
+#   snakemake             # render all (HTML + PDF + index)
+#   snakemake html_only   # render HTML only (no PDFs)
+#   snakemake deploy      # deploy to server
+#   snakemake clean       # remove generated files
+#   snakemake help        # show this help
+#
+#   snakemake ExpDesignShort.html   # render single vignette
+#   snakemake pdf/ExpDesignShort.pdf  # render single PDF
+
+# Help rule (default when called explicitly)
+rule help:
+    run:
+        print("""
+P3003 Course Vignettes - Snakemake Build System
+================================================
+
+Targets:
+  all        - Render all HTML, PDFs, and index (default)
+  html_only  - Render HTML only (faster, no PDFs)
+  deploy     - Deploy HTML files to FGCZ server
+  clean      - Remove all generated files
+  help       - Show this help message
+
+Single files:
+  <name>.html         - Render single vignette to HTML
+  pdf/<name>.pdf      - Render single vignette to PDF
+
+Current lectures: """ + ", ".join(CURRENT) + """
+Archive lectures: """ + ", ".join(ARCHIVE) + """
+
+Examples:
+  snakemake -n              # Dry-run
+  snakemake html_only       # Build HTML only
+  snakemake PTM_Analysis.html  # Single vignette
+  snakemake -j4             # Parallel build (4 cores)
+        """)
+
+# Current lectures (2024/2025)
+CURRENT = [
+    "ExpDesignShort",
+    "FASTA_ProteinInference",
+    "GSEA_Slides",
+    "Multiplicity_Simple"
+]
+
+# Archive lectures
+ARCHIVE = [
+    "BriefIntroductionTooR",
+    "ExpDesign",
+    "GSEA_with_msig",
+    "Hypothesis_Testing_p3003",
+    "IntroductionToLinearModels",
+    "Multiplicity_p3003",
+    "PTM_Analysis",
+    "SampleSizeEstimation"
+]
+
+# All vignettes
+VIGNETTES = CURRENT + ARCHIVE
+
+# Default rule: render all HTML files and index
+rule all:
+    input:
+        expand("{vignette}.html", vignette=VIGNETTES),
+        "index.html",
+        expand("pdf/{vignette}.pdf", vignette=VIGNETTES)
+
+# Rule to render HTML only (no PDFs)
+rule html_only:
+    input:
+        expand("{vignette}.html", vignette=VIGNETTES),
+        "index.html"
+
+# Rule to render individual vignette Rmd to HTML
+rule render_vignette:
+    input:
+        rmd="{vignette}.Rmd"
+    output:
+        html="{vignette}.html"
+    shell:
+        """
+        Rscript -e "rmarkdown::render('{input.rmd}')"
+        """
+
+# Rule to render index_vignettes.Rmd as index.html
+rule render_index:
+    input:
+        rmd="index_vignettes.Rmd",
+        # Depend on all vignettes being rendered first
+        vignettes=expand("{vignette}.html", vignette=VIGNETTES)
+    output:
+        html="index.html"
+    shell:
+        """
+        Rscript -e "rmarkdown::render('{input.rmd}', output_file='index.html')"
+        """
+
+# Rule to convert HTML to PDF using pagedown
+rule html_to_pdf:
+    input:
+        html="{vignette}.html"
+    output:
+        pdf="pdf/{vignette}.pdf"
+    shell:
+        """
+        mkdir -p pdf
+        Rscript -e "pagedown::chrome_print(normalizePath('{input.html}'), output='{output.pdf}', timeout=60)"
+        """
+
+# Deploy HTML files to server
+REMOTE = "wolski@fgcz-r-035:/srv/www/htdocs/public/teaching_wew/slides/"
+
+rule deploy:
+    input:
+        expand("{vignette}.html", vignette=VIGNETTES),
+        "index.html"
+    shell:
+        """
+        # Copy HTML and CSS files
+        scp {input} trug-ggplot2.css {REMOTE}
+        # Copy libs directory
+        scp -r libs {REMOTE}
+        # Copy images directory
+        scp -r images {REMOTE}
+        # Copy fgcz_formatting directory (banner, header, footer)
+        scp -r fgcz_formatting {REMOTE}
+        # Copy figure files
+        scp -r *_files {REMOTE}
+        """
+
+# Clean rule to remove generated files
+rule clean:
+    shell:
+        """
+        rm -f *.html
+        rm -rf pdf/
+        rm -rf *_files/
+        rm -rf *_cache/
+        rm -rf libs/
+        """
