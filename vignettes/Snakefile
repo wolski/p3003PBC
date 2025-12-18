@@ -57,7 +57,8 @@ ARCHIVE = [
     "IntroductionToLinearModels",
     "Multiplicity_p3003",
     "PTM_Analysis",
-    "SampleSizeEstimation"
+    "SampleSizeEstimation",
+    "Universal_GSEA"
 ]
 
 # All vignettes
@@ -113,7 +114,7 @@ rule html_to_pdf:
         """
 
 # Deploy HTML files to server
-REMOTE = "wolski@fgcz-r-035:/srv/www/htdocs/public/teaching_wew/slides/"
+REMOTE = "wolski@fgcz-r-035.uzh.ch:/srv/www/htdocs/public/teaching_wew/slides/"
 
 rule deploy:
     input:
@@ -123,6 +124,8 @@ rule deploy:
         """
         # Copy HTML and CSS files
         scp {input} trug-ggplot2.css {REMOTE}
+        # Copy Rmd source files that are linked from index
+        scp Universal_GSEA.Rmd {REMOTE}
         # Copy libs directory
         scp -r libs {REMOTE}
         # Copy images directory

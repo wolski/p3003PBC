@@ -58,10 +58,10 @@ This is the **multiplicity problem**.
 ---
 # The Problem: Too Many Tests
 
-**Model complexity:** Comparing 5 treatment groups
+**Model complexity:** Comparing 10 treatment groups
 
-- Number of pairwise comparisons: $\frac{5 \times (5-1)}{2} = 10$ tests
-- At $\alpha = 0.05$: expect $10 \times 0.05 = 0.5$ false positives
+- Number of pairwise comparisons: $\frac{10 \times 9}{2} = 45$ tests
+- Probability of **at least one** false positive: $1 - 0.95^{45} \approx 1$
 
 --
 
@@ -87,7 +87,7 @@ Multiplicity arises whenever we perform **more than one statistical test**. Unde
 **Model complexity:** Testing multiple parameters or comparisons within a single model
 
 - Linear model testing 8 covariates for significance
-- Post-hoc tests after finding a significant main effect
+- Post-hoc tests after not finding a significant main effect
 
 .tiny-text[These tests are often **correlated** (same data, related hypotheses).]
 
@@ -115,9 +115,7 @@ $$\alpha_{adjusted} = \frac{\alpha}{k}$$
 - **Use when:** Model complexity (e.g., post-hoc comparisons in ANOVA)
 - R packages: `multcomp`, `emmeans` (account for correlation structure)
 
-
 ---
-
 
 # FDR: False Discovery Rate
 

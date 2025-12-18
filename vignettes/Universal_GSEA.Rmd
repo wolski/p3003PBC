@@ -1,0 +1,649 @@
+---
+title: "Universal GSEA with Custom Gene Sets"
+author: "Witold Wolski"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: show
+    theme: flatly
+    highlight: tango
+vignette: >
+  %\VignetteIndexEntry{Universal GSEA with Custom Gene Sets}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.width = 8,
+  fig.height = 6,
+  message = FALSE,
+  warning = FALSE,
+  cache = TRUE
+)
+```
+
+# Introduction
+
+This vignette demonstrates how to perform **Gene Set Enrichment Analysis (GSEA)** using the universal `GSEA()` function from clusterProfiler. Unlike the built-in functions (`gseGO`, `gseKEGG`), the universal approach allows you to use **any custom gene set collection**.
+
+We will cover:
+
+1. Understanding **TERM2GENE** and **TERM2NAME** data structures
+2. Loading gene sets from **MSigDB** using the `msigdbr` package
+3. Running **universal GSEA**
+4. **Visualization** techniques for GSEA results
+5. **Creating custom gene sets** from scratch
+6. **Combining custom gene sets** with existing collections
+
+## Required Packages
+
+```{r load-packages}
+library(tidyverse)
+library(clusterProfiler)
+library(enrichplot)
+library(msigdbr)
+library(org.Hs.eg.db)
+```
+
+# Understanding TERM2GENE and TERM2NAME
+
+The `GSEA()` function requires gene sets in a specific format defined by two data frames.
+
+## TERM2GENE: The Gene Set Mapping
+
+**TERM2GENE** is a two-column data frame that maps gene set terms to their member genes:
+
+- **Column 1**: Term/pathway identifier (e.g., "HALLMARK_APOPTOSIS")
+- **Column 2**: Gene identifier (e.g., "TP53", "BCL2")
+
+Each row represents one gene belonging to one term. A gene can appear in multiple rows if it belongs to multiple gene sets.
+
+```{r term2gene-example}
+# Example TERM2GENE structure
+example_t2g <- data.frame(
+  gs_name = c("PATHWAY_A", "PATHWAY_A", "PATHWAY_A",
+              "PATHWAY_B", "PATHWAY_B", "PATHWAY_B"),
+  gene_symbol = c("TP53", "BRCA1", "MYC",
+                  "EGFR", "KRAS", "TP53")  # Note: TP53 is in both pathways
+)
+
+knitr::kable(example_t2g, col.names = c("Term", "Gene"),
+             caption = "Example TERM2GENE structure")
+```
+
+**Key points:**
+
+- Column **names don't matter** - only the **position** matters (first = term, second = gene)
+- One row per gene-term pair (long format)
+- Genes can belong to multiple terms
+- Gene identifiers must match your ranked gene list
+
+## TERM2NAME: Human-Readable Descriptions
+
+**TERM2NAME** is an optional two-column data frame providing descriptions for each term:
+
+- **Column 1**: Term/pathway identifier (must match TERM2GENE)
+- **Column 2**: Human-readable description
+
+```{r term2name-example}
+# Example TERM2NAME structure
+example_t2n <- data.frame(
+  gs_name = c("PATHWAY_A", "PATHWAY_B"),
+  gs_description = c("DNA Damage Response Pathway",
+                     "Receptor Tyrosine Kinase Signaling")
+)
+
+knitr::kable(example_t2n, col.names = c("Term", "Description"),
+             caption = "Example TERM2NAME structure")
+```
+
+If TERM2NAME is not provided, the term IDs from TERM2GENE will be used as descriptions in the output.
+
+# Loading Gene Sets from MSigDB
+
+The `msigdbr` package provides convenient access to the Molecular Signatures Database (MSigDB).
+
+## Available Collections
+
+```{r msigdb-collections}
+# View available collections
+msigdbr_collections() |>
+  knitr::kable(caption = "MSigDB Collections")
+```
+
+## Loading Hallmark Gene Sets
+
+Let's load the Hallmark collection (H) - 50 well-defined biological states and processes.
+
+```{r load-hallmark}
+# Load Hallmark gene sets for human
+hallmark_sets <- msigdbr(species = "Homo sapiens", category = "H")
+
+# Examine the structure
+glimpse(hallmark_sets)
+```
+
+## Creating TERM2GENE and TERM2NAME from MSigDB
+
+```{r create-t2g-t2n}
+# Create TERM2GENE (using gene symbols)
+hallmark_t2g <- hallmark_sets |>
+  dplyr::select(gs_name, gene_symbol)
+
+# Create TERM2NAME
+hallmark_t2n <- hallmark_sets |>
+  dplyr::select(gs_name, gs_description) |>
+  dplyr::distinct()
+
+# View the results
+head(hallmark_t2g, 10)
+head(hallmark_t2n, 5)
+
+# Summary
+cat("Number of gene sets:", n_distinct(hallmark_t2g$gs_name), "\n")
+cat("Total gene-set pairs:", nrow(hallmark_t2g), "\n")
+```
+
+# Preparing the Ranked Gene List
+
+GSEA requires a **named numeric vector** of gene-level statistics, sorted in decreasing order.
+
+## Loading Example Data
+
+```{r load-genelist}
+# Load example differential expression data
+data(geneList, package = "DOSE")
+
+# geneList is a named numeric vector of log2 fold changes
+# Names are Entrez IDs
+head(geneList)
+tail(geneList)
+
+cat("Number of genes:", length(geneList), "\n")
+cat("Range:", round(range(geneList), 2), "\n")
+```
+
+## Converting Gene Identifiers
+
+The example `geneList` uses Entrez IDs, but our MSigDB gene sets use gene symbols. We need to convert.
+
+```{r convert-ids}
+# Convert Entrez IDs to gene symbols
+gene_symbols <- AnnotationDbi::mapIds(
+  org.Hs.eg.db,
+  keys = names(geneList),
+  column = "SYMBOL",
+  keytype = "ENTREZID",
+  multiVals = "first"
+)
+
+# Create symbol-based geneList
+geneList_symbol <- geneList
+names(geneList_symbol) <- gene_symbols
+
+# Remove NAs and re-sort
+geneList_symbol <- geneList_symbol[!is.na(names(geneList_symbol))]
+geneList_symbol <- sort(geneList_symbol, decreasing = TRUE)
+
+head(geneList_symbol)
+cat("Genes after conversion:", length(geneList_symbol), "\n")
+```
+
+## Ranking Metrics
+
+Common metrics for creating a ranked gene list:
+
+| Metric | Pros | Cons |
+|--------|------|------|
+| **log2 Fold Change** | Simple, interpretable | Ignores significance |
+| **Moderated t-statistic** | Combines effect size and variance | Less interpretable |
+| **Signed -log10(p) × sign(FC)** | Combines significance and direction | Can be extreme |
+
+```{r ranking-metric-example, eval=FALSE}
+# Example: Creating a ranked list from DE results
+# geneList <- de_results$log2FC
+# names(geneList) <- de_results$gene_symbol
+# geneList <- sort(geneList, decreasing = TRUE)
+```
+
+# Running Universal GSEA
+
+Now we can run GSEA with our custom TERM2GENE and TERM2NAME.
+
+```{r run-gsea}
+gsea_result <- GSEA(
+  geneList = geneList_symbol,
+  TERM2GENE = hallmark_t2g,
+  TERM2NAME = hallmark_t2n,
+  minGSSize = 10,        # Minimum gene set size
+
+  maxGSSize = 500,       # Maximum gene set size
+  pvalueCutoff = 0.05,   # FDR threshold for results
+  pAdjustMethod = "BH",  # Benjamini-Hochberg correction
+  verbose = FALSE
+)
+
+# Number of significant results
+cat("Significant gene sets (FDR < 0.05):", nrow(gsea_result), "\n")
+```
+
+## Understanding the Output
+
+```{r gsea-output}
+# View top results
+gsea_result@result |>
+  dplyr::select(Description, setSize, NES, pvalue, p.adjust) |>
+  head(10) |>
+  knitr::kable(digits = c(0, 0, 2, 4, 4),
+               caption = "Top 10 GSEA Results")
+```
+
+**Output columns explained:**
+
+| Column | Description |
+|--------|-------------|
+| `ID` | Term identifier from TERM2GENE |
+| `Description` | Term description from TERM2NAME |
+| `setSize` | Number of genes in the set (after filtering) |
+| `enrichmentScore` | Raw enrichment score (ES) |
+| `NES` | Normalized enrichment score (comparable across sets) |
+| `pvalue` | Nominal p-value |
+| `p.adjust` | FDR-adjusted p-value |
+| `qvalue` | Q-value (another FDR measure) |
+| `rank` | Position where ES reaches maximum |
+| `leading_edge` | Statistics about leading edge genes |
+| `core_enrichment` | Genes in the leading edge (driving the enrichment) |
+
+# GSEA Visualizations
+
+The `enrichplot` package provides several visualization options for GSEA results.
+
+## Dot Plot
+
+The dot plot shows enriched terms with gene count and adjusted p-value.
+
+```{r dotplot, fig.height=8}
+dotplot(gsea_result,
+        showCategory = 20,
+        title = "GSEA: Hallmark Gene Sets",
+        font.size = 10)
+```
+
+The x-axis shows Gene Ratio (proportion of leading edge genes), dot size represents gene set size, and color indicates adjusted p-value.
+
+## Ridge Plot
+
+Ridge plots show the distribution of fold changes for genes in each enriched set.
+
+```{r ridgeplot, fig.height=8}
+ridgeplot(gsea_result, showCategory = 15) +
+  labs(x = "Enrichment Distribution",
+       title = "GSEA Ridge Plot") +
+  theme(axis.text.y = element_text(size = 9))
+```
+
+This visualization helps interpret whether pathways are up- or down-regulated based on where the density is centered relative to zero.
+
+## GSEA Plot (Running Enrichment Score)
+
+The classic GSEA visualization showing the running enrichment score along the ranked list.
+
+### Single Gene Set
+
+```{r gseaplot-single, fig.height=5}
+gseaplot2(gsea_result,
+          geneSetID = 1,
+          title = gsea_result$Description[1])
+```
+
+**Interpretation:**
+
+- **Top panel**: Running enrichment score - peaks indicate where gene set members are concentrated
+- **Middle panel**: Locations of gene set members in the ranked list (tick marks)
+- **Bottom panel**: The ranked metric values
+
+### Multiple Gene Sets
+
+Compare enrichment profiles across several pathways:
+
+```{r gseaplot-multi, fig.height=6}
+gseaplot2(gsea_result,
+          geneSetID = 1:4,
+          pvalue_table = TRUE,
+          ES_geom = "line")
+```
+
+## Enrichment Map (emapplot)
+
+The enrichment map clusters similar gene sets based on overlapping genes.
+
+```{r emapplot, fig.height=7}
+# First, calculate pairwise term similarity
+gsea_sim <- pairwise_termsim(gsea_result)
+
+# Create the enrichment map
+emapplot(gsea_sim,
+         showCategory = 20) +
+  labs(title = "Enrichment Map: Gene Set Similarity Network")
+```
+
+Connected nodes share genes, helping identify functional clusters.
+
+## Gene-Concept Network (cnetplot)
+
+Shows which genes contribute to enriched terms, colored by fold change.
+
+```{r cnetplot, fig.height=8, fig.width=10}
+cnetplot(gsea_result,
+         showCategory = 5,
+         foldChange = geneList_symbol,
+         cex_label_gene = 0.6,
+         cex_label_category = 0.9) +
+  labs(title = "Gene-Concept Network")
+```
+
+This reveals genes that participate in multiple enriched pathways (hubs).
+
+## Heatplot
+
+A heatmap representation of gene-concept relationships.
+
+```{r heatplot, fig.height=5, fig.width=12}
+heatplot(gsea_result,
+         showCategory = 6,
+         foldChange = geneList_symbol) +
+  labs(title = "Gene-Pathway Heatmap")
+```
+
+# Creating Custom Gene Sets from Scratch
+
+You can create your own gene sets based on domain knowledge, literature, or experimental data.
+
+## Single Custom Gene Set
+
+```{r custom-single}
+# Example: Create a custom "DNA Repair" gene set
+my_dna_repair_t2g <- data.frame(
+  gs_name = "CUSTOM_DNA_REPAIR",
+  gene_symbol = c("TP53", "BRCA1", "BRCA2", "ATM", "ATR",
+                  "CHEK1", "CHEK2", "RAD51", "XRCC1", "PARP1",
+                  "MLH1", "MSH2", "MSH6", "NBN", "MRE11",
+                  "FANCD2", "FANCA", "PALB2", "BLM", "WRN")
+)
+
+my_dna_repair_t2n <- data.frame(
+  gs_name = "CUSTOM_DNA_REPAIR",
+  gs_description = "Custom DNA Repair Genes (manual curation)"
+)
+
+knitr::kable(my_dna_repair_t2g,
+             caption = "Custom DNA Repair Gene Set")
+```
+
+## Multiple Custom Gene Sets
+
+```{r custom-multiple}
+# Create multiple custom gene sets
+my_custom_t2g <- data.frame(
+  gs_name = c(
+    # Apoptosis regulators
+    rep("CUSTOM_APOPTOSIS", 10),
+    # Cell cycle checkpoints
+    rep("CUSTOM_CELL_CYCLE", 8),
+    # Metabolic enzymes
+    rep("CUSTOM_METABOLISM", 7)
+  ),
+  gene_symbol = c(
+    # Apoptosis
+    "BCL2", "BAX", "CASP3", "CASP8", "CASP9",
+    "CYCS", "APAF1", "BID", "XIAP", "MCL1",
+    # Cell cycle
+    "CDK1", "CDK2", "CDK4", "CCND1", "CCNE1",
+    "RB1", "E2F1", "CDKN1A",
+    # Metabolism
+    "HK1", "HK2", "PFKM", "PKM", "LDHA", "G6PD", "IDH1"
+  )
+)
+
+my_custom_t2n <- data.frame(
+  gs_name = c("CUSTOM_APOPTOSIS", "CUSTOM_CELL_CYCLE", "CUSTOM_METABOLISM"),
+  gs_description = c(
+    "Custom Apoptosis Pathway Genes",
+    "Custom Cell Cycle Checkpoint Genes",
+    "Custom Metabolic Enzyme Genes"
+  )
+)
+
+# Summary
+my_custom_t2g |>
+  group_by(gs_name) |>
+  summarise(n_genes = n(), .groups = "drop") |>
+  knitr::kable(caption = "Custom Gene Sets Summary")
+```
+
+# Combining Custom Gene Sets with Existing Collections
+
+A powerful feature is adding your custom gene sets to established collections like MSigDB.
+
+## Using rbind() to Combine
+
+```{r combine-genesets}
+# Combine Hallmark sets with custom sets
+combined_t2g <- rbind(
+  hallmark_t2g,
+  my_custom_t2g
+)
+
+combined_t2n <- rbind(
+  hallmark_t2n,
+  my_custom_t2n
+)
+
+# Verify custom sets are included
+combined_t2g |>
+  dplyr::group_by(gs_name) |>
+  dplyr::summarise(n_genes = n(), .groups = "drop") |>
+  dplyr::filter(str_detect(gs_name, "^CUSTOM")) |>
+  knitr::kable(caption = "Custom Sets in Combined Collection")
+
+cat("Total gene sets:", n_distinct(combined_t2g$gs_name), "\n")
+cat("Total gene-term pairs:", nrow(combined_t2g), "\n")
+```
+
+## Running GSEA with Combined Sets
+
+```{r gsea-combined}
+gsea_combined <- GSEA(
+  geneList = geneList_symbol,
+  TERM2GENE = combined_t2g,
+  TERM2NAME = combined_t2n,
+  minGSSize = 5,         # Lower threshold to include smaller custom sets
+  maxGSSize = 500,
+  pvalueCutoff = 1,      # Keep all results for inspection
+  verbose = FALSE
+)
+
+# Check results for custom gene sets
+gsea_combined@result |>
+  dplyr::filter(str_detect(ID, "^CUSTOM")) |>
+  dplyr::select(Description, setSize, NES, pvalue, p.adjust) |>
+  knitr::kable(digits = c(0, 0, 2, 4, 4),
+               caption = "GSEA Results for Custom Gene Sets")
+```
+
+## Visualizing Custom Sets in Context
+
+```{r custom-viz}
+# Find the indices of custom sets
+custom_indices <- which(str_detect(gsea_combined@result$ID, "^CUSTOM"))
+
+if (length(custom_indices) > 0) {
+  gseaplot2(gsea_combined,
+            geneSetID = custom_indices,
+            pvalue_table = TRUE,
+            title = "Custom Gene Sets: Enrichment Profiles")
+}
+```
+
+# Working with GMT Files
+
+GMT (Gene Matrix Transposed) is a standard format for gene sets.
+
+## GMT File Format
+
+```
+PATHWAY_NAME<TAB>DESCRIPTION<TAB>GENE1<TAB>GENE2<TAB>GENE3<TAB>...
+```
+
+Each line represents one gene set:
+- Field 1: Gene set name
+- Field 2: Description (can be "NA" or URL)
+- Field 3+: Gene identifiers
+
+## Reading GMT Files
+
+```{r read-gmt, eval=FALSE}
+# Read a GMT file (example - file doesn't exist)
+my_gmt <- clusterProfiler::read.gmt("path/to/geneset.gmt")
+
+# The result is a TERM2GENE data frame
+head(my_gmt)
+```
+
+## Writing GMT Files
+
+Here's a function to export your custom gene sets as GMT:
+
+```{r write-gmt-function}
+#' Write TERM2GENE and TERM2NAME to GMT format
+#'
+#' @param t2g TERM2GENE data frame (two columns: term, gene)
+#' @param t2n TERM2NAME data frame (two columns: term, description). Optional.
+#' @param file Output file path
+write_gmt <- function(t2g, t2n = NULL, file) {
+  terms <- unique(t2g[[1]])
+
+  lines <- sapply(terms, function(term) {
+    genes <- t2g[t2g[[1]] == term, 2]
+    desc <- if (!is.null(t2n)) {
+      idx <- which(t2n[[1]] == term)
+      if (length(idx) > 0) t2n[[2]][idx[1]] else "NA"
+    } else {
+      "NA"
+    }
+    paste(c(term, desc, genes), collapse = "\t")
+  })
+
+  writeLines(lines, file)
+  cat("Wrote", length(lines), "gene sets to", file, "\n")
+}
+
+# Example usage (not run)
+# write_gmt(my_custom_t2g, my_custom_t2n, "my_custom_sets.gmt")
+```
+
+# Other MSigDB Collections
+
+## Loading Different Collections
+
+```{r other-collections, eval=FALSE}
+# C2: Curated gene sets (includes KEGG, Reactome, BioCarta)
+c2_kegg <- msigdbr(species = "Homo sapiens",
+                   category = "C2",
+                   subcategory = "CP:KEGG") |>
+  select(gs_name, gene_symbol)
+
+c2_reactome <- msigdbr(species = "Homo sapiens",
+                       category = "C2",
+                       subcategory = "CP:REACTOME") |>
+  select(gs_name, gene_symbol)
+
+# C5: GO gene sets
+c5_bp <- msigdbr(species = "Homo sapiens",
+                 category = "C5",
+                 subcategory = "GO:BP") |>
+  select(gs_name, gene_symbol)
+
+# C7: Immunologic signatures
+c7_imm <- msigdbr(species = "Homo sapiens", category = "C7") |>
+  select(gs_name, gene_symbol)
+
+# C8: Cell type signatures
+c8_cell <- msigdbr(species = "Homo sapiens", category = "C8") |>
+  select(gs_name, gene_symbol)
+```
+
+## Working with Mouse Data
+
+```{r mouse-example}
+# MSigDB provides ortholog-mapped gene sets for many species
+msigdbr_species() |>
+  head(10) |>
+  knitr::kable(caption = "Available Species in msigdbr")
+```
+
+```{r mouse-hallmark, eval=FALSE}
+# Load Hallmark for mouse
+mouse_hallmark <- msigdbr(species = "Mus musculus", category = "H") |>
+  select(gs_name, gene_symbol)
+```
+
+# Summary
+
+## Key Concepts
+
+**TERM2GENE:**
+
+- Two-column data frame (term, gene)
+- One row per gene-term membership
+- Column positions matter, names don't
+- Gene IDs must match your ranked list
+
+**TERM2NAME:**
+
+- Two-column data frame (term, description)
+- One row per term
+- Optional but recommended
+
+**Custom Gene Sets:**
+
+- Create simple data frames
+- Use `rbind()` to combine with existing collections
+- Adjust `minGSSize` for small custom sets
+- Export to GMT for sharing
+
+## Visualization Summary
+
+| Function | Purpose |
+|----------|---------|
+| `dotplot()` | Overview of all enriched terms |
+| `ridgeplot()` | Fold change distributions per term |
+| `gseaplot2()` | Running enrichment score |
+| `emapplot()` | Term similarity network |
+| `cnetplot()` | Gene-term network |
+| `heatplot()` | Gene-term heatmap |
+
+# Session Information
+
+```{r session-info}
+sessionInfo()
+```
+
+# References
+
+- Yu G, Wang L, Han Y, He Q (2012). clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS: A Journal of Integrative Biology, 16(5):284-287.
+- Subramanian A, Tamayo P, et al. (2005). Gene set enrichment analysis: A knowledge-based approach. PNAS 102(43):15545-15550.
+- Liberzon A, et al. (2015). The Molecular Signatures Database Hallmark Gene Set Collection. Cell Systems 1(6):417-425.
+
+**Useful Links:**
+
+- clusterProfiler book: https://yulab-smu.top/biomedical-knowledge-mining-book/
+- MSigDB: https://www.gsea-msigdb.org/gsea/msigdb/
+- msigdbr package: https://cran.r-project.org/package=msigdbr
+- enrichplot visualizations: https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html

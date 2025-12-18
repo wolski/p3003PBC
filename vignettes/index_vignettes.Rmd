@@ -38,6 +38,7 @@ These lectures are available but not actively used in the current course:
 
 ### Additional Resources
 - [Gene Set Enrichment Analysis (GSEA)](GSEA_with_msig.html) - Pathway and functional enrichment analysis
+- [Universal GSEA with Custom Gene Sets](Universal_GSEA.html) - GSEA with TERM2GENE/TERM2NAME, custom gene sets, visualizations ([Rmd](Universal_GSEA.Rmd))
 - [Brief Introduction to R](BriefIntroductionTooR.html) - R programming basics
 
 ---

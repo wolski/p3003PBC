@@ -6,7 +6,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: ["trug-ggplot2.css", "default", "metropolis", "metropolis-fonts"]
+    css: ["default", "metropolis", "metropolis-fonts", "trug-ggplot2.css"]
     nature:
       ratio: 16:9
       highlightStyle: github
@@ -33,6 +33,7 @@ knitr::opts_chunk$set(fig.width = 4.25, fig.height = 3.5, fig.retina = 3,
                       message = FALSE, warning = FALSE, cache = TRUE,
                       autodep = TRUE, hiline = TRUE)
 options(htmltools.dir.version = FALSE, width = 90)
+library(org.Hs.eg.db)
 ```
 
 ---
@@ -129,7 +130,7 @@ Match your experimental results against these curated sets to discover:
 **Why use gene sets?** Individual protein changes are hard to interpret. Gene sets aggregate biological knowledge, revealing **functional patterns** in your data.
 
 ---
-# Example: HALLMARK_ADIPOGENESIS
+# Example: `HALLMARK_ADIPOGENESIS`
 
 A real gene set from [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/):
 
@@ -137,31 +138,24 @@ A real gene set from [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/):
 
 **Size:** 200 genes
 
-.pull-left[
 **GMT format** (one line per gene set):
+.tiny-text[
 ```
-HALLMARK_ADIPOGENESIS <TAB> description <TAB> ABCA1 <TAB> ACAA2 <TAB> ACADL <TAB> ...
+HALLMARK_ADIPOGENESIS  description  ABCA1  ACAA2  ACADL  ...
 ```
+]
 
+.pull-left[
 **GRP format** (one gene per line):
 ```
 ABCA1
 ACAA2
 ACADL
-ACADM
-ACLY
-ACO2
-ADIPOQ
 ...
 ```
 ]
 
 .pull-right[
-**First 15 genes:**
-.tiny-text[
-ABCA1, ABCB8, ACAA2, ACADL, ACADM, ACADS, ACLY, ACO2, ACOX1, ADCY6, ADIG, ADIPOQ, ADIPOR2, AGPAT3, AGPAT6
-]
-
 **Collections at MSigDB:**
 .tiny-text[
 - **H:** Hallmark (50 sets)
@@ -211,9 +205,7 @@ FDR < 0.05 AND |log2FC| > 1
 ---
 # Over-Representation Analysis (ORA)
 
-Tests whether a pathway is over-represented in your significant protein list.
-
-**Statistical test:** Hypergeometric / Fisher's exact test
+Tests whether a pathway is over-represented in your significant protein list. **Statistical test:** Hypergeometric / Fisher's exact test
 
 .pull-left[
 **Contingency table:**
@@ -225,11 +217,8 @@ Tests whether a pathway is over-represented in your significant protein list.
 | **Total** | a+c | b+d | N |
 
 .tiny-text[
-- **a** = significant proteins IN this pathway
-- **b** = significant proteins NOT in this pathway
-- **c** = non-significant proteins IN this pathway
-- **d** = non-significant proteins NOT in this pathway
-- **N** = all measured proteins (background)
+**a** = significant IN pathway; **b** = significant NOT in pathway
+**c** = non-sig IN pathway; **d** = non-sig NOT in pathway; **N** = all measured
 ]
 ]
 
@@ -238,10 +227,7 @@ Tests whether a pathway is over-represented in your significant protein list.
 
 **Expected value of a:**
 $$E(a) = \frac{(a+b) \times (a+c)}{N}$$
-
-.tiny-text[
-(significant proteins) × (pathway size) / (total)
-]
+.tiny-text[(significant proteins) × (pathway size) / (total)]
 
 **Fisher's exact test** calculates the probability of observing `a` (or more) under the null hypothesis.
 ]
@@ -389,12 +375,31 @@ ProteinID    Score
 P02768       3.45
 Q9Y6K9       2.81
 P04406      -1.23
+O75376      -2.98
 ...
 ```
+
+**File requirements:**
+- Two columns: ID and score
+- Tab-separated
+- Sorted by score (descending)
+- Positive = upregulated, negative = downregulated
 ]
 
 .pull-right[
-**For ranking use:** Moderated t-statistic (e.g., from limma)
+**Good ranking metrics:**
+- Moderated t-statistic (limma, prolfqua)
+- log2 fold change
+- Signed -log10(p) × sign(FC)
+
+**Why not p-value alone?**
+
+P-values lose direction (up vs down)
+
+**The algorithm:**
+1. Proteins sorted by score
+2. Walk down the ranked list
+3. Only the **rank order** matters, not absolute values
 ]
 
 ---
@@ -409,9 +414,6 @@ P04406      -1.23
 
 --
 
-**Complementary approaches:**
-- Running both can validate findings
-- Reveals different aspects of pathway activity
 - GSEA can find significant pathways even when no individual proteins reach FDR thresholds
 
 ---
@@ -436,22 +438,18 @@ GSEA detects **coordinated shifts** across many proteins, revealing pathway-leve
 
 .pull-left[
 **Common visualizations:**
-.tiny-text[
-- **Bar/dot plots:** Compare NES or -log10(p) across pathways
-- **Running enrichment plots:** Score accumulation along ranked list
+- **Bar/dot plots:** NES or -log10(p) across pathways
+- **Running enrichment plots:** Score along ranked list
 - **cnetplot / enrichmap:** Gene-concept networks
-- **Upset plots:** Overlap of leading edge genes
-]
+- **Upset plots:** Leading edge gene overlaps
 ]
 
 .pull-right[
 **Multi-omics integration:**
-.tiny-text[
-- Perform GSEA separately for proteomics, transcriptomics, etc.
-- Combine scores to discover concordant pathways (e.g., multiGSEA)
+- GSEA separately for proteomics, transcriptomics, etc.
+- Combine scores for concordant pathways (multiGSEA)
 - Harmonise identifiers across omics layers
 - Select appropriate pathway databases
-]
 ]
 
 ---
@@ -527,7 +525,7 @@ ck <- compareCluster( #<<
   OrgDb = org.Hs.eg.db,
   ont = "BP")
 
-dotplot(ck, showCategory = 3) #<<
+dotplot(ck, showCategory = 2) #<<
 ```
 ]
 
@@ -569,32 +567,47 @@ dotplot(merged, showCategory = 5) #<<
 ]
 
 ---
-# Common Pitfalls & Best Practices
+# Common Pitfalls (1/2)
 
 .pull-left[
 **Redundant GO terms**
 - GO has hierarchical structure → parent/child terms overlap
-- Many similar terms in results (e.g., "immune response", "regulation of immune response")
-- **Solution:** Use `simplify()` function or semantic similarity clustering
+- Many similar terms in results
+- e.g., "immune response", "regulation of immune response"
 
-**Gene set size filters**
-- Very small sets (< 10 genes): unstable statistics
-- Very large sets (> 500 genes): too general, hard to interpret
-- **Recommendation:** Filter to 15-500 genes
+**Solution:** Use `simplify()` function or semantic similarity clustering
 ]
 
 .pull-right[
-**Other pitfalls**
+**Gene set size filters**
+- Very small sets (< 10 genes): unstable statistics
+- Very large sets (> 500 genes): too general
 
-- **Wrong background:** Using whole genome instead of measured proteins (ORA)
-- **Wrong identifiers:** Mixing Entrez IDs, gene symbols, UniProt IDs
-- **Ignoring multiple testing:** Always check FDR, not just p-value
-- **Over-interpretation:** Enrichment ≠ causation
-- **Cherry-picking:** Report all significant results, not just expected ones
+**Recommendation:** Filter to 15-500 genes
+]
+
+---
+# Common Pitfalls (2/2)
+
+.pull-left[
+**Wrong background (ORA)**
+- Using whole genome instead of measured proteins
+
+**Wrong identifiers**
+- Mixing Entrez IDs, gene symbols, UniProt IDs
 
 **Species mismatch**
 - Ensure gene sets match your organism
 - Mouse vs human orthologs may differ
+]
+
+.pull-right[
+**Statistical issues**
+- Ignoring multiple testing: Always check FDR, not just p-value
+
+**Interpretation issues**
+- Over-interpretation: Enrichment ≠ causation
+- Cherry-picking: Report all significant results, not just expected ones
 ]
 
 ---
@@ -623,10 +636,9 @@ dotplot(merged, showCategory = 5) #<<
 **Key Takeaways:**
 
 1. Both methods answer: *"What biological functions are affected?"*
-2. **Use both** - they reveal different aspects of your data
-3. Always use **measured proteins** as background for ORA
-4. GSEA can find enrichment even when **no individual protein is significant**
-5. Visualize results: dot plots, enrichment plots, network plots
+2. Always use **measured proteins** as background for ORA
+3. Enrichment can be found even when **no individual protein is significant**
+4. Visualize results: dot plots, enrichment plots, network plots
 
 ---
 class: inverse, center, middle
